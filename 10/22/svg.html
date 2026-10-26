@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<!-- 罗亚博 24001010409 · 计算机24004 · 方案二 内联 SVG -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>我的 · SVG 方案</title>
+<!--
+  图像解决方案 · 方案二：内联 SVG
+  · 全部图标均为手写 <svg>，尺寸/线宽/圆角与设计稿一一对应
+  · 颜色统一用 currentColor，跟随文字色（选中的 tab 直接继承绿色）
+  · 相比字体图标：不受字形库限制，形状可以做到像素级还原
+-->
+<style>
+:root{
+  --g:#3fd298;          /* 主题绿 */
+  --bg:#f8f8f8;         /* 页面底色 */
+  --t1:#1a1a1a;         /* 主文字 */
+  --t2:#a4a4a4;         /* 次级文字 */
+  --ico:#cbcbcb;        /* 灰色图标 */
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:#e8e8ea}
+body{
+  min-height:100vh;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC","MiSans","Microsoft YaHei",sans-serif;
+  color:var(--t1);-webkit-font-smoothing:antialiased;
+}
+img{display:block}
+svg{display:block;overflow:visible}
+.phone{
+  width:530px;height:939px;margin:0 auto;background:var(--bg);
+  display:flex;flex-direction:column;overflow:hidden;position:relative;
+  box-shadow:0 14px 50px rgba(0,0,0,.13);
+}
+
+/* ---------- 状态栏 ---------- */
+.statusbar{height:30px;flex:none;display:flex;align-items:center;padding:0 8px 0 12px;position:relative;font-size:15px}
+.sb-l,.sb-r{display:flex;align-items:center}
+.sb-l{gap:8px}
+.sb-r{gap:8px;margin-left:auto}
+.sb-c{position:absolute;left:50%;transform:translateX(-50%);font-size:15px;font-weight:600;letter-spacing:.3px}
+.net{font-weight:600;font-size:14px;margin-left:-2px}
+.pct{font-size:14.5px;letter-spacing:-.2px}
+
+/* ---------- 顶部栏 ---------- */
+.appbar{height:66px;flex:none;display:flex;align-items:center;padding:0 26px 0 20px}
+.appbar h1{font-size:28px;font-weight:700;letter-spacing:.5px;line-height:1;position:relative;top:-2px}
+.search{
+  width:364px;height:40px;margin-left:15px;background:#fff;border-radius:20px;flex:none;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  color:#a8a8a8;font-size:15px;
+}
+
+/* ---------- 用户卡片 ---------- */
+.user-card{flex:none;margin:13px 20px 0;background:#fff;border-radius:9px;overflow:hidden}
+.uc-top{height:82px;display:flex;align-items:center;padding:0 32px 0 29px}
+.uc-avatar{width:64px;height:64px;flex:none}
+.uc-name{display:flex;align-items:center;margin-left:3px}
+.uc-name b{font-size:20px;font-weight:600;letter-spacing:0}
+.uc-badges{height:28px;width:auto;margin-left:8px}
+.uc-mail{margin-left:auto}
+.uc-line{height:1px;background:#f1f1f1}
+.uc-promo{height:92px;display:flex;align-items:flex-start;padding-top:18px}
+.promo-col{flex:1;display:flex;align-items:center;gap:19px;padding-left:42px}
+.promo-col+.promo-col{padding-left:28px}
+.promo-ico{flex:none;width:20px;display:flex;justify-content:center;color:var(--ico)}
+.promo-t{font-size:18px;font-weight:500;line-height:24px;display:flex;align-items:center;gap:7px;letter-spacing:.2px}
+.promo-s{font-size:13px;color:#969696;line-height:17px;margin-top:8px}
+.dot{width:6px;height:6px;border-radius:50%;background:#fb4040}
+
+/* ---------- 四宫格 ---------- */
+.quick{flex:none;display:flex;padding:30px 24px 0}
+.quick-a{flex:1;text-align:center}
+.qi{height:47px;display:flex;align-items:center;justify-content:center;color:var(--g)}
+.qn{font-size:16.5px;color:#222;line-height:20px;margin-top:4px;letter-spacing:.3px}
+.qv{font-size:14px;color:#8c8c8c;line-height:18px;margin-top:7px;letter-spacing:.3px}
+
+/* ---------- 智能分类 ---------- */
+.tag-card{flex:none;margin:25px 20px 0;background:#fff;border-radius:9px;padding:15px 20px 18px}
+.tag-card h2{font-size:20px;font-weight:600;line-height:32px;letter-spacing:.4px}
+.chips{display:flex;gap:11px;margin-top:1px;overflow:hidden}
+.chip{
+  flex:none;height:43px;border:1px solid #e6e6e6;border-radius:21.5px;
+  display:flex;align-items:center;justify-content:center;padding:0 11px;
+  font-size:17px;color:#333;letter-spacing:.3px;background:#fff;
+}
+.chip.more{width:43px;padding:0;font-size:17px;letter-spacing:1.5px;color:#666}
+
+/* ---------- 歌单 ---------- */
+.plist{flex:none;margin-top:40px}
+.pl-head{display:flex;align-items:center;height:30px;padding:0 20px}
+.pl-title{font-size:20px;font-weight:600;letter-spacing:.3px}
+.pl-title em{font-style:normal;margin-left:7px}
+.pl-sub{font-size:17px;color:#9c9c9c;margin-left:16px}
+.pl-tools{margin-left:auto;display:flex;align-items:center;gap:19px;color:#656565}
+.pl-underline{width:57px;height:2px;border-radius:1px;background:#e3e3e3;margin:7px 0 0 20px}
+.pl-item{display:flex;align-items:center;padding:0 20px;height:78px}
+.pl-item.first{margin-top:19px}
+.pl-item+.pl-item{margin-top:14px}
+.pl-cover{width:78px;height:78px;border-radius:6px;flex:none;object-fit:cover}
+.pl-info{flex:1;margin-left:23px}
+.pl-name{font-size:19px;line-height:24px;letter-spacing:.2px}
+.pl-count{font-size:15.5px;color:#969696;line-height:21px;margin-top:6px;letter-spacing:.2px}
+.pl-arrow{flex:none;margin-top:-2px;color:#b8b8b8}
+
+/* ---------- 播放条 ---------- */
+.player{
+  flex:none;height:56px;margin-top:10px;background:#fff;display:flex;align-items:center;
+  padding:0 22px 0 10px;position:relative;z-index:3;
+}
+.player::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:#f0f0f0}
+.disc{width:54px;height:54px;border-radius:7px;flex:none}
+.p-title{font-size:17px;margin-left:15px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p-play{
+  width:37px;height:37px;border:2px solid var(--g);border-radius:50%;flex:none;
+  display:flex;align-items:center;justify-content:center;color:var(--g);margin-left:10px;
+}
+.p-list{margin-left:25px;flex:none;color:var(--g)}
+
+/* ---------- 底部导航 ---------- */
+.tabbar{flex:none;height:61px;background:#fff;display:flex;padding:10px 24px 0;position:relative;z-index:2}
+.tabbar::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:#ededed}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;color:#9c9c9c;text-decoration:none;font-size:15px;letter-spacing:.3px}
+.ti{height:37px;display:flex;align-items:center;justify-content:center;line-height:1}
+.tab .lb{font-size:12px;margin-top:3px}
+.tab.on{color:var(--g)}
+
+/* ================= 交互层 ================= */
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+.tab,.chip,.pl-item,.quick-a,.promo-col,.uc-mail,.p-play,.p-list,.search,.pl-tools>*,.uc-name,.uc-avatar{cursor:pointer}
+.tab:active,.chip:active,.pl-item:active,.quick-a:active,.promo-col:active,.p-play:active,.p-list:active,
+.search:active,.pl-tools>:active,.uc-name:active{opacity:.62}
+
+/* 占位子页面 */
+.view{position:absolute;left:0;right:0;top:30px;bottom:117px;background:var(--bg);z-index:6;
+  transform:translateX(100%);transition:transform .32s cubic-bezier(.32,.72,0,1);
+  display:flex;flex-direction:column;will-change:transform}
+.view.show{transform:none}
+.vhead{height:54px;flex:none;display:flex;align-items:center;gap:12px;padding:0 20px}
+.vback{width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.05);display:flex;align-items:center;
+  justify-content:center;color:#333;font-size:15px;transition:background .15s}
+.vback:active{background:rgba(0,0,0,.11)}
+.vtitle{font-size:20px;font-weight:600;letter-spacing:.3px}
+.vbody{flex:1;display:flex;align-items:center;justify-content:center;padding-bottom:70px}
+.vempty{text-align:center}
+.vico{display:flex;align-items:center;justify-content:center;width:92px;height:92px;border-radius:50%;
+  background:#fff;color:#cfcfcf;margin:0 auto 18px;font-size:38px}
+.vt1{font-size:16px;color:#8e8e8e}
+.vt2{font-size:13px;color:#b0b0b0;margin-top:8px}
+
+/* 侧边抽屉 */
+.mask{position:absolute;inset:0;background:rgba(0,0,0,.32);opacity:0;pointer-events:none;transition:opacity .25s;z-index:7}
+.mask.show{opacity:1;pointer-events:auto}
+.drawer{position:absolute;top:0;right:0;bottom:0;width:296px;background:#fff;z-index:8;
+  transform:translateX(100%);transition:transform .32s cubic-bezier(.32,.72,0,1);
+  display:flex;flex-direction:column;box-shadow:-8px 0 30px rgba(0,0,0,.07)}
+.drawer.show{transform:none}
+.dhead{display:flex;align-items:center;gap:12px;padding:64px 22px 20px;border-bottom:1px solid #f2f2f2}
+.dava{width:44px;height:44px}
+.dinfo b{font-size:17px}
+.dinfo span{display:block;font-size:12px;color:#a4a4a4;margin-top:3px}
+.ditem{padding:17px 22px;text-align:left;font-size:15.5px;color:#333;border-bottom:1px solid #f7f7f7;width:100%}
+.ditem:active{background:#f6f6f6}
+
+/* 轻提示 */
+.toast{position:absolute;left:50%;bottom:208px;transform:translate(-50%,10px);background:rgba(28,28,28,.86);
+  color:#fff;font-size:14px;padding:9px 18px;border-radius:20px;opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;z-index:9;white-space:nowrap;max-width:440px;overflow:hidden}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* 搜索页 */
+.sview{position:absolute;inset:0;background:var(--bg);z-index:10;transform:translateY(-101%);
+  transition:transform .32s cubic-bezier(.32,.72,0,1);display:flex;flex-direction:column}
+.sview.show{transform:none}
+.sbar{height:76px;flex:none;display:flex;align-items:center;gap:12px;padding:28px 18px 0}
+.sfield{flex:1;height:40px;background:#fff;border-radius:20px;display:flex;align-items:center;gap:8px;padding:0 14px;color:#a8a8a8}
+.sfield input{flex:1;border:0;outline:0;background:none;font:inherit;font-size:15px;color:#1a1a1a;min-width:0}
+.sfield input::placeholder{color:#b8b8b8}
+.scancel{font-size:15px;color:var(--g);padding:6px 4px;flex:none}
+.sbody{padding:6px 20px}
+.slabel{font-size:13px;color:#9c9c9c;margin:16px 0 12px}
+.stags{display:flex;flex-wrap:wrap;gap:10px}
+.stag{height:34px;padding:0 15px;border-radius:17px;background:#fff;border:1px solid #ececec;font-size:14px;color:#444;display:flex;align-items:center}
+.stag:active{background:#f2f2f2}
+
+/* 状态 */
+.chip.on{border-color:#9fe4c6;background:#f0fbf6;color:#25a97a}
+.p-play .i-pause{display:none}
+.p-play.playing .i-play{display:none}
+.p-play.playing .i-pause{display:block}
+
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- 状态栏 -->
+  <div class="statusbar">
+    <div class="sb-l">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor" aria-hidden="true">
+        <rect x="0" y="8" width="3" height="4" rx="1"/>
+        <rect x="5" y="5.5" width="3" height="6.5" rx="1"/>
+        <rect x="10" y="3" width="3" height="9" rx="1"/>
+        <rect x="15" y="0.5" width="3" height="11.5" rx="1" opacity=".28"/>
+      </svg>
+      <span class="carrier">中国移动</span>
+      <span class="net">4G</span>
+    </div>
+    <div class="sb-c">11:23</div>
+    <div class="sb-r">
+      <!-- 闹钟 -->
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="currentColor" aria-hidden="true">
+        <path d="M3.1 2.1 1 4.2l1.1 1.1L4.2 3.2zM11.9 2.1l2.1 2.1-1.1 1.1L10.8 3.2z"/>
+        <circle cx="7.5" cy="8.2" r="5.4"/>
+        <path d="M7.5 5.2v3.2h2.1" fill="none" stroke="#f8f8f8" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+      <!-- 方向锁定 -->
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" aria-hidden="true">
+        <path d="M12.6 7.5a5.1 5.1 0 1 1-1.6-3.7" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M11.4 1.2v3.1H8.3" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="5.6" y="7.4" width="3.8" height="3.1" rx=".7" fill="currentColor" stroke="none"/>
+        <path d="M6.5 7.4V6.6a1 1 0 0 1 2 0v.8" stroke-width="1" stroke-linecap="round"/>
+      </svg>
+      <span class="pct">34%</span>
+      <!-- 电池 -->
+      <svg width="25" height="12" viewBox="0 0 25 12" aria-hidden="true">
+        <rect x=".7" y=".7" width="21" height="10.6" rx="3" fill="none" stroke="currentColor" stroke-width="1.4"/>
+        <rect x="2.6" y="2.6" width="7.6" height="6.8" rx="1.6" fill="currentColor"/>
+        <rect x="22.6" y="4" width="1.9" height="4" rx=".9" fill="currentColor"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 顶部栏 -->
+  <div class="appbar">
+    <h1>我的</h1>
+    <div class="search">
+      <svg width="19" height="19" viewBox="0 0 19 19" fill="none" stroke="currentColor" aria-hidden="true">
+        <circle cx="8" cy="8" r="6.6" stroke-width="1.8"/>
+        <path d="M12.9 12.9 17.9 17.9" stroke-width="1.9" stroke-linecap="round"/>
+      </svg>
+      搜索
+    </div>
+    <svg id="menuBtn" role="button" width="25" height="21" viewBox="0 0 25 21" fill="#4b4b4b" aria-hidden="true" style="margin-left:auto">
+      <rect x="0" y="0" width="25" height="2.6" rx="1.3"/>
+      <rect x="0" y="9.2" width="25" height="2.6" rx="1.3"/>
+      <rect x="0" y="18.4" width="25" height="2.6" rx="1.3"/>
+    </svg>
+  </div>
+
+  <!-- 用户卡片 -->
+  <div class="user-card">
+    <div class="uc-top">
+      <img class="uc-avatar" src="images/avatar.jpg" alt="头像">
+      <div class="uc-name">
+        <b>lemon</b>
+        <img class="uc-badges" src="images/badges.png" alt="等级徽章">
+      </div>
+      <!-- 信封 -->
+      <svg class="uc-mail" width="26" height="20" viewBox="0 0 26 20" aria-hidden="true">
+        <rect width="26" height="20" rx="3.4" fill="#d6dce7"/>
+        <path d="M2.9 5.1 13 12.6l10.1-7.5" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="uc-line"></div>
+    <div class="uc-promo">
+      <div class="promo-col">
+        <!-- 书签 -->
+        <span class="promo-ico">
+          <svg width="17" height="20" viewBox="0 0 17 20" fill="currentColor" aria-hidden="true">
+            <path d="M2.2 0h12.6A2.2 2.2 0 0 1 17 2.2V20l-8.5-5.4L0 20V2.2A2.2 2.2 0 0 1 2.2 0z"/>
+          </svg>
+        </span>
+        <div>
+          <div class="promo-t">活动中心<span class="dot"></span></div>
+          <div class="promo-s">好书福利最后 2 天</div>
+        </div>
+      </div>
+      <div class="promo-col">
+        <!-- 宝石 -->
+        <span class="promo-ico">
+          <svg width="18" height="17" viewBox="0 0 20 19" fill="currentColor" aria-hidden="true">
+            <path d="M6.1 0h7.8l6.1 6.2L10 19 0 6.2z"/>
+          </svg>
+        </span>
+        <div>
+          <div class="promo-t">会员中心</div>
+          <div class="promo-s">5 个月 VIP，快领</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 四宫格 -->
+  <div class="quick">
+    <div class="quick-a">
+      <div class="qi">
+        <!-- 喜欢：心形右上角带月牙缺口 -->
+        <svg width="34" height="30" viewBox="0 0 34 30" fill="currentColor" aria-hidden="true">
+          <defs><mask id="mHeart"><rect width="34" height="30" fill="#fff"/><circle cx="21.2" cy="3.8" r="3.4" fill="#000"/></mask></defs>
+          <path mask="url(#mHeart)" d="M17 29.4C17 29.4 1.6 20 1.6 10.6 1.6 5.6 5.4 1.6 9.9 1.6c3.2 0 5.7 1.9 7.1 4.2 1.4-2.3 3.9-4.2 7.1-4.2 4.5 0 8.3 4 8.3 9 0 9.4-15.4 18.8-15.4 18.8z"/>
+        </svg>
+      </div>
+      <div class="qn">喜欢</div><div class="qv">286</div>
+    </div>
+    <div class="quick-a">
+      <div class="qi">
+        <!-- 最近：实心时钟 -->
+        <svg width="30" height="30" viewBox="0 0 33 33" aria-hidden="true">
+          <circle cx="16.5" cy="16.5" r="16.5" fill="currentColor"/>
+          <path d="M16.5 1.9v14.6l5.6 5.6" fill="none" stroke="#f8f8f8" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="qn">最近</div><div class="qv">200</div>
+    </div>
+    <div class="quick-a">
+      <div class="qi">
+        <!-- 本地：下载箭头 -->
+        <svg width="29" height="30" viewBox="0 0 29 30" fill="currentColor" aria-hidden="true">
+          <path stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"
+                d="M11.4 1.8h6.2v11.4h9.6c1.5 0 2.3 1.7 1.3 2.8L17.7 28.6a2.1 2.1 0 0 1-3.2 0L3.7 16c-1-1.1-.2-2.8 1.3-2.8h6.4z"/>
+        </svg>
+      </div>
+      <div class="qn">本地</div><div class="qv">1</div>
+    </div>
+    <div class="quick-a">
+      <div class="qi">
+        <!-- 已购：圆圈勾选 -->
+        <svg width="31" height="31" viewBox="0 0 34 34" aria-hidden="true">
+          <circle cx="17" cy="17" r="17" fill="currentColor"/>
+          <path d="M8.4 17.6l5.4 5.5 11.8-13.2" fill="none" stroke="#f8f8f8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="qn">已购</div><div class="qv"></div>
+    </div>
+  </div>
+
+  <!-- 智能分类 -->
+  <div class="tag-card">
+    <h2>智能分类</h2>
+    <div class="chips">
+      <span class="chip">全部音乐</span>
+      <span class="chip">粤语慢歌</span>
+      <span class="chip">也很难过</span>
+      <span class="chip">王力宏</span>
+      <span class="chip more">···</span>
+    </div>
+  </div>
+
+  <!-- 歌单 -->
+  <div class="plist">
+    <div class="pl-head">
+      <span class="pl-title">自建歌单<em>21</em></span>
+      <span class="pl-sub">收藏歌单 2</span>
+      <span class="pl-tools">
+        <!-- 新建歌单 -->
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" aria-hidden="true">
+          <rect x="1.1" y="1.1" width="19.8" height="19.8" rx="5.6" stroke-width="2.2"/>
+          <path d="M11 6v10M6 11h10" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        <!-- 歌单管理 -->
+        <svg width="22" height="18" viewBox="0 0 22 18" fill="none" stroke="currentColor" aria-hidden="true">
+          <path d="M.9 1.6 2.9 3.6 6.4 0" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M.9 7.6 2.9 9.6 6.4 6" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M.9 13.6 2.9 15.6 6.4 12" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9.6 2h11.6M9.6 8.9h11.6M9.6 15.8h11.6" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+    </div>
+    <div class="pl-underline"></div>
+
+    <div class="pl-item first">
+      <img class="pl-cover" src="images/cover-bang.jpg" alt="封面">
+      <div class="pl-info">
+        <div class="pl-name">新跑步歌单</div>
+        <div class="pl-count">3 首</div>
+      </div>
+      <svg class="pl-arrow" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" aria-hidden="true">
+        <path d="M1.4 1.4 6.6 7l-5.2 5.6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="pl-item">
+      <img class="pl-cover" src="images/cover-qing.jpg" alt="封面">
+      <div class="pl-info">
+        <div class="pl-name">轻松</div>
+        <div class="pl-count">20 首</div>
+      </div>
+      <svg class="pl-arrow" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" aria-hidden="true">
+        <path d="M1.4 1.4 6.6 7l-5.2 5.6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 播放条 -->
+  <div class="player">
+    <img class="disc" src="images/disc.jpg" alt="播放中">
+    <div class="p-title">比我幸福 - 陈晓东</div>
+    <span class="p-play" id="playBtn" role="button" aria-label="播放">
+      <svg class="i-play" width="15" height="16" viewBox="0 0 15 16" fill="currentColor" aria-hidden="true">
+        <path d="M1.4 1.9a1.8 1.8 0 0 1 2.7-1.5l9.5 6.1a1.8 1.8 0 0 1 0 3l-9.5 6.1a1.8 1.8 0 0 1-2.7-1.5z"/>
+      </svg>
+      <svg class="i-pause" width="13" height="15" viewBox="0 0 13 15" fill="currentColor" aria-hidden="true">
+        <rect x="1" y="1" width="3.6" height="13" rx="1.6"/><rect x="8.4" y="1" width="3.6" height="13" rx="1.6"/>
+      </svg>
+    </span>
+    <!-- 播放列表：三行 + 音符 -->
+    <span class="p-list">
+      <svg width="27" height="24" viewBox="0 0 27 24" aria-hidden="true">
+        <g fill="currentColor">
+          <rect x="0" y="0" width="25" height="3.4" rx="1.7"/>
+          <rect x="0" y="9" width="19" height="3.4" rx="1.7"/>
+          <rect x="0" y="18" width="13" height="3.4" rx="1.7"/>
+          <path d="M26.4 5.6v10.9a3.1 3.1 0 1 1-2-2.9V8.2a4.6 4.6 0 0 1-3.1-1.3l1.5-1.4c1 .9 2.2 1.2 3.6.1z"/>
+        </g>
+      </svg>
+    </span>
+  </div>
+
+  <!-- 底部导航 -->
+  <nav class="tabbar">
+    <a class="tab">
+      <span class="ti">
+        <!-- 音乐馆：双八分音符 -->
+        <svg width="25" height="24" viewBox="0 0 25 24" fill="none" stroke="currentColor" aria-hidden="true">
+          <circle cx="4.1" cy="20" r="2.6" stroke-width="1.9" fill="#fff"/>
+          <circle cx="17.7" cy="21.4" r="2.6" stroke-width="1.9" fill="#fff"/>
+          <path d="M6.7 20V4.6M20.3 21.4V7.4" stroke-width="1.9" stroke-linecap="round"/>
+          <path d="M6.7 4.6 20.3 7.4" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="lb">音乐馆</span>
+    </a>
+    <a class="tab">
+      <span class="ti">
+        <!-- 推荐：24 日历 -->
+        <svg width="30" height="28" viewBox="0 0 30 28" fill="none" aria-hidden="true">
+          <rect x="1" y="1" width="28" height="26" rx="6" stroke="currentColor" stroke-width="2"/>
+          <path d="M1.8 9.4h26.4" stroke="currentColor" stroke-width="2"/>
+          <text x="15" y="23.4" text-anchor="middle" font-size="15" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" fill="currentColor">24</text>
+        </svg>
+      </span>
+      <span class="lb">推荐</span>
+    </a>
+    <a class="tab">
+      <span class="ti">
+        <!-- 动态：罗盘 -->
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" aria-hidden="true">
+          <circle cx="14" cy="14" r="13" stroke-width="2"/>
+          <path d="M8.4 19.6c1.2-6 5.2-10 11.2-11.2-1.2 6-5.2 10-11.2 11.2z" stroke-width="1.9" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="lb">动态</span>
+    </a>
+    <a class="tab on">
+      <span class="ti">
+        <!-- 我的：实心人像 -->
+        <svg width="25" height="28" viewBox="0 0 26 29" fill="currentColor" aria-hidden="true">
+          <defs><mask id="mUser"><rect width="26" height="29" fill="#fff"/><rect x="11.6" y="19.6" width="2.8" height="6" rx="1.4" fill="#000"/></mask></defs>
+          <circle cx="13" cy="7.4" r="6.4"/>
+          <path mask="url(#mUser)" d="M13 15.4c-5.6 0-10.1 3.3-10.1 7.4 0 .9.7 1.6 1.6 1.6h17c.9 0 1.6-.7 1.6-1.6 0-4.1-4.5-7.4-10.1-7.4z"/>
+        </svg>
+      </span>
+      <span class="lb">我的</span>
+    </a>
+  </nav>
+
+  <!-- ================= 交互层 ================= -->
+  <!-- 占位子页面（点歌单 / 点其他 tab 时从右侧滑入） -->
+  <section class="view" id="subView" aria-hidden="true">
+    <div class="vhead">
+      <button class="vback" type="button" aria-label="返回"><svg width="9" height="16" viewBox="0 0 9 16" fill="none" stroke="currentColor" aria-hidden="true"><path d="M7.4 1.6 1.6 8l5.8 6.4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h2 class="vtitle">标题</h2>
+    </div>
+    <div class="vbody">
+      <div class="vempty">
+        <span class="vico"><svg width="34" height="33" viewBox="0 0 25 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="4.1" cy="20" r="2.6" stroke-width="1.9"/><circle cx="17.7" cy="21.4" r="2.6" stroke-width="1.9"/><path d="M6.7 20V4.6M20.3 21.4V7.4" stroke-width="1.9" stroke-linecap="round"/><path d="M6.7 4.6 20.3 7.4" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+        <p class="vt1">这里还什么都没有</p>
+        <p class="vt2">演示占位页 · 点左上角返回</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 侧边抽屉 -->
+  <div class="mask" id="mask"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="dhead">
+      <img class="dava" src="images/avatar.jpg" alt="">
+      <div class="dinfo"><b>lemon</b><span>5 个月 VIP · 快领</span></div>
+    </div>
+    <button class="ditem" type="button">播放设置</button>
+    <button class="ditem" type="button">定时关闭</button>
+    <button class="ditem" type="button">音质与下载</button>
+    <button class="ditem" type="button">关于本页</button>
+  </aside>
+
+  <!-- 轻提示 -->
+  <div class="toast" id="toast" role="status"></div>
+
+  <!-- 搜索页 -->
+  <section class="sview" id="searchView" aria-hidden="true">
+    <div class="sbar">
+      <div class="sfield"><svg width="17" height="17" viewBox="0 0 19 19" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="8" cy="8" r="6.6" stroke-width="1.8"/><path d="M12.9 12.9 17.9 17.9" stroke-width="1.9" stroke-linecap="round"/></svg><input id="sinput" type="text" placeholder="搜索歌曲、歌手、歌单"></div>
+      <button class="scancel" type="button" id="scancel">取消</button>
+    </div>
+    <div class="sbody">
+      <div class="slabel">热门搜索</div>
+      <div class="stags">
+        <button class="stag" type="button">比我幸福</button>
+        <button class="stag" type="button">陈晓东</button>
+        <button class="stag" type="button">粤语慢歌</button>
+        <button class="stag" type="button">跑步歌单</button>
+        <button class="stag" type="button">王力宏</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ---------------- 交互脚本 ---------------- */
+(function(){
+  var $ = function(s, r){ return (r || document).querySelector(s) };
+  var $$ = function(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)) };
+
+  /* 轻提示 */
+  var toastEl = $('#toast'), tTimer;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(tTimer);
+    tTimer = setTimeout(function(){ toastEl.classList.remove('show') }, 1500);
+  }
+
+  /* 占位子页面 */
+  var sub = $('#subView'), subTitle = $('.vtitle', sub), subNote = $('.vt2', sub);
+  function openPage(title, note){
+    subTitle.textContent = title;
+    subNote.textContent = note || '演示占位页 · 点左上角返回';
+    sub.classList.add('show');
+    sub.setAttribute('aria-hidden', 'false');
+  }
+  function closePage(){
+    sub.classList.remove('show');
+    sub.setAttribute('aria-hidden', 'true');
+  }
+
+  /* 底部 tab */
+  var tabs = $$('.tab'), cur = 3;
+  tabs.forEach(function(t, i){
+    t.addEventListener('click', function(e){
+      e.preventDefault();
+      if (i === cur) return;
+      tabs.forEach(function(x){ x.classList.remove('on') });
+      t.classList.add('on'); cur = i;
+      var name = t.querySelector('.lb').textContent;
+      openPage(name, '「' + name + '」这个 tab 还没做 · 点左上角回「我的」');
+    });
+  });
+
+  /* 返回：恢复「我的」tab */
+  $('.vback', sub).addEventListener('click', function(){
+    closePage();
+    tabs.forEach(function(x, i){ x.classList.toggle('on', i === 3) });
+    cur = 3;
+  });
+
+  /* 歌单 -> 详情占位 */
+  $$('.pl-item').forEach(function(it){
+    it.addEventListener('click', function(){
+      var name = it.querySelector('.pl-name').textContent;
+      var cnt = it.querySelector('.pl-count').textContent;
+      openPage(name, cnt + ' · 歌单详情待实现');
+    });
+  });
+
+  /* 四宫格 */
+  $$('.quick-a').forEach(function(a){
+    a.addEventListener('click', function(){
+      var n = a.querySelector('.qn').textContent;
+      var v = a.querySelector('.qv').textContent;
+      if (n === '喜欢') openPage('我喜欢的音乐', '共 ' + v + ' 首 · 演示占位页');
+      else if (n === '最近') openPage('最近播放', '共 ' + v + ' 首 · 演示占位页');
+      else toast(n + '：' + (v ? v + ' 首' : '暂无内容'));
+    });
+  });
+
+  /* 活动中心 / 会员中心 / 私信 */
+  $$('.promo-col').forEach(function(c, i){
+    c.addEventListener('click', function(){
+      if (i === 0) openPage('活动中心', '好书福利最后 2 天');
+      else openPage('会员中心', '5 个月 VIP，快领');
+    });
+  });
+  $('.uc-mail').addEventListener('click', function(){ toast('暂无新私信') });
+
+  /* 播放 / 暂停 */
+  var play = $('#playBtn');
+  play.addEventListener('click', function(){
+    var on = play.classList.toggle('playing');
+    play.setAttribute('aria-label', on ? '暂停' : '播放');
+    toast(on ? '正在播放：比我幸福 - 陈晓东' : '已暂停');
+  });
+
+  /* 播放列表 */
+  $('.p-list').addEventListener('click', function(){ openPage('当前播放列表', '3 首 · 演示占位页') });
+
+  /* 智能分类芯片 */
+  $$('.chip').forEach(function(c){
+    c.addEventListener('click', function(){
+      if (c.classList.contains('more')) { toast('更多智能分类'); return }
+      c.classList.toggle('on');
+      toast(c.classList.contains('on') ? '已选「' + c.textContent + '」' : '取消「' + c.textContent + '」');
+    });
+  });
+
+  /* 新建歌单 / 歌单管理 */
+  $$('.pl-tools > *').forEach(function(el, i){
+    el.addEventListener('click', function(){ toast(i === 0 ? '新建歌单' : '歌单管理') });
+  });
+
+  /* 搜索 */
+  var sv = $('#searchView'), si = $('#sinput');
+  $('.search').addEventListener('click', function(){
+    sv.classList.add('show');
+    sv.setAttribute('aria-hidden', 'false');
+    setTimeout(function(){ si.focus() }, 220);
+  });
+  function closeSearch(){
+    sv.classList.remove('show');
+    sv.setAttribute('aria-hidden', 'true');
+    si.value = ''; si.blur();
+  }
+  $('#scancel').addEventListener('click', closeSearch);
+  $$('.stag').forEach(function(t){
+    t.addEventListener('click', function(){ si.value = t.textContent; si.focus(); toast('搜索：' + t.textContent) });
+  });
+  si.addEventListener('keydown', function(e){
+    if (e.key === 'Enter' && si.value.trim()) toast('搜索：' + si.value.trim());
+  });
+
+  /* 抽屉 */
+  var mask = $('#mask'), drawer = $('#drawer');
+  $('#menuBtn').addEventListener('click', function(){
+    mask.classList.add('show'); drawer.classList.add('show');
+    drawer.setAttribute('aria-hidden', 'false');
+  });
+  function closeDrawer(){
+    mask.classList.remove('show'); drawer.classList.remove('show');
+    drawer.setAttribute('aria-hidden', 'true');
+  }
+  mask.addEventListener('click', closeDrawer);
+  $$('.ditem').forEach(function(d){
+    d.addEventListener('click', function(){ closeDrawer(); toast(d.textContent + '（演示）') });
+  });
+
+  /* Esc 逐层关闭 */
+  document.addEventListener('keydown', function(e){
+    if (e.key !== 'Escape') return;
+    if (sv.classList.contains('show')) { closeSearch(); return }
+    if (drawer.classList.contains('show')) { closeDrawer(); return }
+    if (sub.classList.contains('show')) closePage();
+  });
+})();
+</script>
+</body>
+</html>

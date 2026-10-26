@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>CSS 长度单位</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: "Microsoft YaHei", sans-serif;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    min-height: 100vh;
+    padding: 40px 20px;
+    color: #eee;
+}
+
+#luo_title {
+    text-align: center;
+    font-size: 32px;
+    letter-spacing: 4px;
+    margin-bottom: 40px;
+    color: #e94560;
+}
+
+.luo_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.luo_card {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.luo_card h3 {
+    color: #0f3460;
+    background: #e94560;
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    font-size: 16px;
+}
+
+.luo_card .luo_desc {
+    font-size: 13px;
+    color: #aaa;
+    margin-bottom: 12px;
+}
+
+.luo_box {
+    height: 30px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #533483, #e94560);
+    margin-bottom: 8px;
+}
+
+.luo_label {
+    font-size: 12px;
+    color: #ccc;
+    font-family: Consolas, monospace;
+}
+
+.luo_px    { width: 200px; }
+.luo_em    { width: 12.5em; font-size: 16px; }
+.luo_rem   { width: 12.5rem; }
+.luo_vw    { width: 25vw; }
+.luo_vh    { width: 50%; }
+.luo_pct   { width: 75%; }
+.luo_cm    { width: 5cm; }
+.luo_mm    { width: 50mm; }
+.luo_in    { width: 2in; }
+.luo_pt    { width: 150pt; }
+.luo_pc    { width: 12.5pc; }
+.luo_ch    { width: 20ch; }
+.luo_vmin  { width: 20vmin; }
+.luo_vmax  { width: 15vmax; }
+.luo_ex    { width: 25ex; font-size: 16px; }
+</style>
+</head>
+<body>
+
+<div idluo_title">CSS 长度单位</div>
+
+<div class="luo_grid">
+
+    <div class="luo_card">
+        <h3>px 像素</h3>
+        <p class="luo_desc">绝对单位，1px = 1 物理像素（屏幕）</p>
+        <div class="luo_box luo_px"></div>
+        <span class="luo-label">width: 200px;</span>
+    </div>
+
+    <div class="luo_card">
+        <h3>em</h3>
+        <p class="luo_desc">相对于当前元素字体大小（16px 时 1em=16px）</p>
+        <div class="luo_box luo_em"></div>
+        <span class="luo-label">width: 12.5em; (font-size: 16px)</span>
+    </div>
+
+    <div class="luo_card">
+        <h3>rem</h3>
+        <p class="luo_desc">相对于根元素 html 的字体大小</p>
+        <div class="luo_box luo_rem"></div>
+        <span class="luo-label">width: 12.5rem;</span>
+    </div>
+
+    <div class="luo_card">
+        <h3>vw 视口宽度</h3>
+        <p class="luo_desc">1vw = 视口宽度的 1%</p>
+        <div class="luo_box luo_vw"></div>
+        <span class="luo-label">width: 25vw;</span>
+    </div>
+
+    <div class="luo_card">
+        <h3>% 百分比</h3>
+        <p class="luo_desc">相对于父元素宽度的百分比</p>
+        <div class="luo_box luo_pct"></div>
+        <span class="luo-label">width: 75%;</span>
+    </div>
+
+    <div class="luo_card">
+        <h3>cm 厘米</h3>
+        <p class="luo_desc">物理长度单位，1cm ≈ 37.8px</p>
+        <div class="luo_box luo_cm"></div>
+        <span class="luo-label">width: 5cm;</span>
+    </div>
+
+    <div class="luo_card">
+        <h3>mm 毫米</h3>
+        <p class="luo_desc">物理长度单位，1mm = 1/10 cm</p>
+        <div class="luo_box luo_mm"></div>
+        <span class="luo-label">width: 50mm;</span>
+    </div>
+
+    <div class="luo_card">
+        <h3>in 英寸</h3>
+        <p class="luo_desc">物理长度单位，1in = 2.54cm = 96px</p>
+        <div class="luo_box luo_in"></div>
+        <span class="luo-label">width: 2in;</span>
+    </div>
+
+    <div class="luo_card">
+        <h3>pt 磅</h3>
+        <p class="luo_desc">印刷单位，1pt = 1/72 in</p>
+        <div class="luo_box luo_pt"></div>
+        <span class="luo-label">width: 150pt;</span>
+    </div>
+
+    <div class="luo_card">
+        <h3>pc 派卡</h3>
+        <p class="luo_desc">印刷单位，1pc = 12pt</p>
+        <div class="luo_box luo_pc"></div>
+        <span class="luo-label">width: 12.5pc;</span>
+    </div>
+
+    <div class="luo_card">
+        <h3>ch</h3>
+        <p class="luo_desc">当前字体中 "0" 字符的宽度</p>
+        <div class="luo_box luo_ch"></div>
+        <span class="luo-label">width: 20ch;</span>
+    </div>
+
+    <div class="luo_card">
+        <h3>vmin</h3>
+        <p class="luo_desc">视口宽高较小值的 1%</p>
+        <div class="luo_box luo_vmin"></div>
+        <span class="luo-label">width: 20vmin;</span>
+    </div>
+
+    <div class="luo_card">
+        <h3>vmax</h3>
+        <p class="luo_desc">视口宽高较大值的 1%</p>
+        <div class="luo_box luo_vmax"></div>
+        <span class="luo-label">width: 15vmax;</span>
+    </div>
+
+    <div class="luo_card">
+        <h3>ex</h3>
+        <p class="luo_desc">当前字体中小写 x 的高度</p>
+        <div class="luo_box luo_ex"></div>
+        <span class="luo-label">width: 25ex; (font-size: 16px)</span>
+    </div>
+
+</div>
+
+</body>
+</html>

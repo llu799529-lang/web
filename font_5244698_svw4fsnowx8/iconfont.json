@@ -1,0 +1,156 @@
+{
+  "id": "5244698",
+  "name": "l",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "46258568",
+      "name": "202_大象",
+      "font_class": "a-202_daxiang",
+      "unicode": "e96c",
+      "unicode_decimal": 59756
+    },
+    {
+      "icon_id": "46258570",
+      "name": "202_蜜蜂",
+      "font_class": "a-202_mifeng",
+      "unicode": "e96d",
+      "unicode_decimal": 59757
+    },
+    {
+      "icon_id": "46258571",
+      "name": "202_兔子",
+      "font_class": "a-202_tuzi",
+      "unicode": "e96e",
+      "unicode_decimal": 59758
+    },
+    {
+      "icon_id": "46258572",
+      "name": "202_鲸鱼",
+      "font_class": "a-202_jingyu",
+      "unicode": "e96f",
+      "unicode_decimal": 59759
+    },
+    {
+      "icon_id": "46258573",
+      "name": "202_小猫",
+      "font_class": "a-202_xiaomao",
+      "unicode": "e970",
+      "unicode_decimal": 59760
+    },
+    {
+      "icon_id": "46258574",
+      "name": "202_小猪",
+      "font_class": "a-202_xiaozhu",
+      "unicode": "e971",
+      "unicode_decimal": 59761
+    },
+    {
+      "icon_id": "46258578",
+      "name": "202_狮子",
+      "font_class": "a-202_shizi",
+      "unicode": "e972",
+      "unicode_decimal": 59762
+    },
+    {
+      "icon_id": "46258584",
+      "name": "202_鸭子",
+      "font_class": "a-202_yazi",
+      "unicode": "e973",
+      "unicode_decimal": 59763
+    },
+    {
+      "icon_id": "46258585",
+      "name": "202_海豹",
+      "font_class": "a-202_haibao",
+      "unicode": "e974",
+      "unicode_decimal": 59764
+    },
+    {
+      "icon_id": "46258590",
+      "name": "202_变色龙",
+      "font_class": "a-202_bianselong",
+      "unicode": "e975",
+      "unicode_decimal": 59765
+    },
+    {
+      "icon_id": "46258591",
+      "name": "202_河豚",
+      "font_class": "a-202_hetun",
+      "unicode": "e976",
+      "unicode_decimal": 59766
+    },
+    {
+      "icon_id": "46258576",
+      "name": "202_乌龟",
+      "font_class": "a-202_wugui",
+      "unicode": "e96b",
+      "unicode_decimal": 59755
+    },
+    {
+      "icon_id": "145727",
+      "name": "搜索_填充",
+      "font_class": "sousuotianchong",
+      "unicode": "e694",
+      "unicode_decimal": 59028
+    },
+    {
+      "icon_id": "2328357",
+      "name": "返回",
+      "font_class": "fanhui",
+      "unicode": "e626",
+      "unicode_decimal": 58918
+    },
+    {
+      "icon_id": "3785708",
+      "name": "牛奶",
+      "font_class": "niunai",
+      "unicode": "e667",
+      "unicode_decimal": 58983
+    },
+    {
+      "icon_id": "5122924",
+      "name": "苹果",
+      "font_class": "tubiaozhizuomoban-",
+      "unicode": "e60c",
+      "unicode_decimal": 58892
+    },
+    {
+      "icon_id": "8768049",
+      "name": "微信",
+      "font_class": "weixin",
+      "unicode": "e609",
+      "unicode_decimal": 58889
+    },
+    {
+      "icon_id": "8939940",
+      "name": "发现",
+      "font_class": "faxian",
+      "unicode": "e604",
+      "unicode_decimal": 58884
+    },
+    {
+      "icon_id": "18208987",
+      "name": "icon_瑞幸咖啡",
+      "font_class": "icon_ruixingkafei1",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "19981962",
+      "name": "我 的",
+      "font_class": "wode",
+      "unicode": "e61b",
+      "unicode_decimal": 58907
+    },
+    {
+      "icon_id": "43909767",
+      "name": "更多",
+      "font_class": "gengduo",
+      "unicode": "e62e",
+      "unicode_decimal": 58926
+    }
+  ]
+}

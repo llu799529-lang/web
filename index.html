@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高级网页设计 · 课堂练习索引</title>
+    <!--
+      作者：lyb
+      建立时间：2026-10-26
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：课堂练习总入口（把 web 目录下的页面汇总成导航首页）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            padding: 48px 24px 64px;
+            background: #f5f6f8;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #1f2329;
+        }
+
+        .wrap { max-width: 1040px; margin: 0 auto; }
+
+        h1 { font-size: 28px; font-weight: 600; letter-spacing: .5px; }
+
+        .sub { margin-top: 10px; font-size: 14px; color: #646a73; }
+
+        .group { margin-top: 34px; }
+
+        .group h2 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #646a73;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e5e6eb;
+        }
+
+        .list {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 12px;
+        }
+
+        .item {
+            display: block;
+            padding: 15px 16px;
+            background: #fff;
+            border: 1px solid #e5e6eb;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #1f2329;
+            transition: box-shadow .18s, transform .18s, border-color .18s;
+        }
+
+        .item:hover {
+            border-color: #1d6fe0;
+            box-shadow: 0 8px 22px rgba(29, 111, 224, .12);
+            transform: translateY(-2px);
+        }
+
+        .item b { display: block; font-size: 14.5px; font-weight: 600; }
+
+        .item span { display: block; margin-top: 6px; font-size: 12.5px; color: #8a9099; }
+
+        footer {
+            margin-top: 46px;
+            font-size: 12.5px;
+            color: #a0a6ad;
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>高级网页设计 · 课堂练习</h1>
+    <p class="sub">按讲次整理的 HTML / CSS / JavaScript 练习页面，点卡片直接打开。</p>
+
+    <section class="group">
+        <h2>基础与表单</h2>
+        <div class="list">
+            <a class="item" href="2.html"><b>2 · 基础页面</b><span>HTML 基本结构</span></a>
+            <a class="item" href="2-2.html"><b>2-2 · 页面练习</b><span>409</span></a>
+            <a class="item" href="3.html"><b>3 · 表单示例</b><span>表单控件</span></a>
+            <a class="item" href="3-1.html"><b>3-1 · 层叠样式表</b><span>CSS 选择器与颜色</span></a>
+            <a class="item" href="4.html"><b>4 · 页面练习</b><span>盒模型</span></a>
+            <a class="item" href="盒子.html"><b>盒子模型</b><span>border / padding / margin</span></a>
+        </div>
+    </section>
+
+    <section class="group">
+        <h2>布局与动画</h2>
+        <div class="list">
+            <a class="item" href="5.html/5.html"><b>5 · 层叠与继承</b><span>CSS 层叠、继承优先级</span></a>
+            <a class="item" href="7.html"><b>7 · Flex 布局</b><span>四组示例</span></a>
+            <a class="item" href="8.html"><b>8 · Flex 布局进阶</b><span>四组示例 + 三个长方形框</span></a>
+            <a class="item" href="9.html"><b>9 · transition 过渡</b><span>卡片放大效果</span></a>
+            <a class="item" href="10.html"><b>10 · CSS 动画</b><span>变色盒子</span></a>
+            <a class="item" href="10/8/1.html"><b>10-8 · 变色盒子</b><span>@keyframes 练习</span></a>
+        </div>
+    </section>
+
+    <section class="group">
+        <h2>图像解决方案（图标）</h2>
+        <div class="list">
+            <a class="item" href="10/19/13-1.html"><b>13-1 · Font Awesome</b><span>字体图标</span></a>
+            <a class="item" href="10/19/13-2.html"><b>13-2 · Lucide</b><span>SVG 图标</span></a>
+            <a class="item" href="10/19/13-3.html"><b>13-3 · iconfont 下导航</b><span>字体图标实现底部导航</span></a>
+            <a class="item" href="10/19/13-4.html"><b>13-4 · iconfont SVG 下导航</b><span>SVG 实现底部导航</span></a>
+            <a class="item" href="10/22/font.html"><b>我的 · 字体图标方案</b><span>音乐 App「我的」页 · icon font</span></a>
+            <a class="item" href="10/22/svg.html"><b>我的 · SVG 方案</b><span>同一页面的内联 SVG 实现</span></a>
+        </div>
+    </section>
+
+    <section class="group">
+        <h2>综合页面</h2>
+        <div class="list">
+            <a class="item" href="zy.html"><b>亚博 · 课堂实践</b><span>综合练习页</span></a>
+            <a class="item" href="10/15/index.html"><b>CSS Icon · luoyabo</b><span>图标综合页</span></a>
+        </div>
+    </section>
+
+    <footer>罗亚博 · 24001010409 · 计算机24004</footer>
+</div>
+</body>
+</html>

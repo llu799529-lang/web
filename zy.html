@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>亚博 · 《高级网页设计》课堂实践</title>
+<style>
+    /* ============================================================
+       设计语言：Dark Editorial / Technical Archive
+       底色：深墨 #0d0e10  ·  强调：电光石灰 #c8f856
+       字体：系统无衬线 + 系统等宽（无 CDN，全本地）
+       布局：非对称编号档案列表，大字号排印
+       ============================================================ */
+
+    :root {
+        --ink:      #0d0e10;
+        --ink-2:    #14161a;
+        --ink-3:    #1c1f24;
+        --line:     #2a2d33;
+        --line-2:   #3a3e45;
+        --paper:    #ece9e1;
+        --muted:    #8a8d93;
+        --muted-2:  #5e6168;
+        --accent:   #c8f856;
+        --accent-2: #9fd400;
+        --danger:   #ff6b4a;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+        background: var(--ink);
+        color: var(--paper);
+        font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+        min-height: 100vh;
+        overflow-x: hidden;
+        /* 底纹：极淡的径向光 + 细网格，避免纯色平面 */
+        background-image:
+            radial-gradient(900px 500px at 85% -8%, rgba(200,248,86,0.06), transparent 60%),
+            radial-gradient(700px 600px at -10% 110%, rgba(255,107,74,0.05), transparent 60%),
+            linear-gradient(180deg, #0d0e10 0%, #0a0b0d 100%);
+        background-attachment: fixed;
+    }
+
+    /* 细颗粒纹理（纯 CSS，无图片） */
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.035;
+        background-image:
+            repeating-linear-gradient(0deg, #fff 0 1px, transparent 1px 3px),
+            repeating-linear-gradient(90deg, #fff 0 1px, transparent 1px 3px);
+        mix-blend-mode: normal;
+    }
+
+    .wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 0 32px;
+    }
+
+    /* ===== 顶部元信息条 ===== */
+    .meta-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 22px 0 18px;
+        border-bottom: 1px solid var(--line);
+        font-family: "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+    }
+    .meta-bar .dot {
+        display: inline-block;
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: var(--accent);
+        margin-right: 9px;
+        box-shadow: 0 0 12px var(--accent);
+        animation: pulse 2.4s ease-in-out infinite;
+        vertical-align: middle;
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.45; transform: scale(0.82); }
+    }
+    .meta-bar .right { display: flex; gap: 28px; }
+    .meta-bar .right span b { color: var(--paper); font-weight: 500; }
+
+    /* ===== Hero ===== */
+    .hero {
+        padding: 92px 0 64px;
+        border-bottom: 1px solid var(--line);
+        position: relative;
+    }
+    .hero .kicker {
+        font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
+        font-size: 12px;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 26px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    .hero .kicker::before {
+        content: "";
+        width: 42px; height: 1px;
+        background: var(--accent);
+        display: inline-block;
+    }
+    .hero h1 {
+        font-weight: 800;
+        font-size: clamp(40px, 7.2vw, 96px);
+        line-height: 0.96;
+        letter-spacing: -0.03em;
+        color: var(--paper);
+        margin-bottom: 28px;
+    }
+    .hero h1 .accent {
+        color: var(--accent);
+        font-style: italic;
+        font-weight: 800;
+    }
+    .hero h1 .small {
+        display: block;
+        font-size: clamp(20px, 2.6vw, 34px);
+        font-weight: 400;
+        letter-spacing: -0.01em;
+        color: var(--muted);
+        margin-top: 14px;
+        font-style: normal;
+    }
+    .hero .lede {
+        max-width: 620px;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.7;
+    }
+    .hero .lede b { color: var(--paper); font-weight: 500; }
+
+    /* Hero 右侧坐标标签 */
+    .hero .coord {
+        position: absolute;
+        top: 96px;
+        right: 0;
+        font-family: "SF Mono", Consolas, monospace;
+        font-size: 11px;
+        letter-spacing: 0.15em;
+        color: var(--muted-2);
+        text-align: right;
+        line-height: 1.9;
+    }
+    .hero .coord b { color: var(--accent); font-weight: 400; }
+
+    /* ===== 区块标题 ===== */
+    .section-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        padding: 64px 0 28px;
+    }
+    .section-head h2 {
+        font-size: 13px;
+        font-family: "SF Mono", Consolas, monospace;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-weight: 500;
+    }
+    .section-head h2 .num {
+        color: var(--accent);
+        margin-right: 10px;
+    }
+    .section-head .count {
+        font-family: "SF Mono", Consolas, monospace;
+        font-size: 12px;
+        color: var(--muted-2);
+        letter-spacing: 0.1em;
+    }
+
+    /* ===== 作品档案列表（非对称） ===== */
+    .archive { border-top: 1px solid var(--line); }
+    .entry {
+        display: grid;
+        grid-template-columns: 90px 1fr 220px 160px;
+        gap: 32px;
+        align-items: center;
+        padding: 30px 18px;
+        border-bottom: 1px solid var(--line);
+        text-decoration: none;
+        color: inherit;
+        position: relative;
+        transition: background 0.4s ease, padding 0.4s ease;
+    }
+    .entry::before {
+        content: "";
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 0;
+        background: var(--accent);
+        transition: width 0.45s cubic-bezier(.2,.7,.2,1);
+    }
+    .entry:hover {
+        background: linear-gradient(90deg, rgba(200,248,86,0.05), transparent 70%);
+        padding-left: 34px;
+    }
+    .entry:hover::before { width: 3px; }
+    .entry:hover .e-title { color: var(--accent); }
+    .entry:hover .e-go { transform: translateX(8px); color: var(--accent); }
+
+    .e-num {
+        font-family: "SF Mono", Consolas, monospace;
+        font-size: 14px;
+        color: var(--muted-2);
+        letter-spacing: 0.1em;
+    }
+    .e-num b { color: var(--paper); font-weight: 500; }
+    .e-body { min-width: 0; }
+    .e-title {
+        font-size: clamp(22px, 2.4vw, 30px);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+        margin-bottom: 8px;
+        transition: color 0.35s ease;
+    }
+    .e-desc {
+        color: var(--muted);
+        font-size: 14.5px;
+        line-height: 1.55;
+        max-width: 52ch;
+    }
+    .e-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        font-family: "SF Mono", Consolas, monospace;
+        font-size: 10.5px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+    .e-tags span {
+        border: 1px solid var(--line-2);
+        padding: 4px 9px;
+        border-radius: 2px;
+        color: var(--muted);
+    }
+    .e-go {
+        font-family: "SF Mono", Consolas, monospace;
+        font-size: 13px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--paper);
+        justify-self: end;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: transform 0.35s ease, color 0.35s ease;
+    }
+    .e-go::after {
+        content: "→";
+        font-size: 18px;
+        font-family: inherit;
+    }
+
+    /* ===== 提示词原文面板 ===== */
+    .brief {
+        margin-top: 12px;
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, var(--ink-2), var(--ink));
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .brief-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 22px;
+        border-bottom: 1px solid var(--line);
+        background: var(--ink-3);
+        font-family: "SF Mono", Consolas, monospace;
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+    }
+    .brief-head .lhs { display: flex; align-items: center; gap: 10px; }
+    .brief-head .lhs i {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--danger);
+        box-shadow: 0 0 0 3px rgba(255,107,74,0.18);
+        display: inline-block;
+    }
+    .brief-head .rhs { color: var(--muted-2); }
+    .brief-body {
+        padding: 26px 28px 30px;
+        font-family: "SF Mono", "Cascadia Code", Consolas, "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.85;
+        color: var(--paper);
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+    .brief-body .hl { color: var(--accent); }
+    .brief-body .dim { color: var(--muted); }
+
+    /* ===== 页脚 ===== */
+    footer {
+        margin-top: 84px;
+        padding: 40px 0 56px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+    footer .sig {
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1;
+    }
+    footer .sig span { color: var(--accent); }
+    footer .colofon {
+        font-family: "SF Mono", Consolas, monospace;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted-2);
+        text-align: right;
+        line-height: 2;
+    }
+    footer .colofon b { color: var(--muted); font-weight: 500; }
+
+    /* ===== 响应式 ===== */
+    @media (max-width: 880px) {
+        .wrap { padding: 0 20px; }
+        .hero { padding: 64px 0 44px; }
+        .hero .coord { display: none; }
+        .entry {
+            grid-template-columns: 1fr;
+            gap: 12px;
+            padding: 24px 14px;
+        }
+        .entry:hover { padding-left: 18px; }
+        .e-go { justify-self: start; }
+        .meta-bar .right { display: none; }
+        .brief-body { font-size: 13px; padding: 20px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+    <!-- ===== 顶部元信息条 ===== -->
+    <div class="meta-bar">
+        <div><span class="dot"></span>ARCHIVE · 课堂实践档案</div>
+        <div class="right">
+            <span>课程 / <b>高级网页设计</b></span>
+            <span>学号 / <b>409</b></span>
+            <span>归档 / <b>2026.09</b></span>
+        </div>
+    </div>
+
+    <!-- ===== Hero ===== -->
+    <section class="hero">
+        <div class="kicker">CLASSROOM PRACTICE INDEX</div>
+        <h1>
+            亚博的<br>
+            <span class="accent">《高级网页设计》</span>
+            <span class="small">— 课堂实践作品总览，原生代码归档</span>
+        </h1>
+        <p class="lede">
+            本页为本目录下全部课堂练习作品的<b>索引入口</b>。所有页面均使用
+            <b>原生 HTML / CSS</b> 编写，<b>未引入任何 CDN</b>。
+            从首张 HTML 元素页到 CSS 进阶练习，按时间线归档如下。
+        </p>
+        <div class="coord">
+            N 34°22′ <b>·</b> E 108°54′<br>
+            ENTRY <b>05</b> / FILES<br>
+            NATIVE <b>·</b> NO-CDN
+        </div>
+    </section>
+
+    <!-- ===== 作品档案 ===== -->
+    <div class="section-head">
+        <h2><span class="num">01</span>WORKS · 实践目录</h2>
+        <div class="count">共 05 件</div>
+    </div>
+
+    <div class="archive">
+        <a class="entry" href="2.html">
+            <div class="e-num">N° <b>01</b></div>
+            <div class="e-body">
+                <div class="e-title">第一个网页 · HTML 元素</div>
+                <div class="e-desc">HTML 语义性练习：标题层级、段落、列表，以及内联样式的初次接触。含《静夜思》与阅兵武器列表。</div>
+            </div>
+            <div class="e-tags"><span>H2/H3</span><span>P</span><span>UL</span><span>SPAN</span></div>
+            <div class="e-go">查看</div>
+        </a>
+
+        <a class="entry" href="2-2.html">
+            <div class="e-num">N° <b>02</b></div>
+            <div class="e-body">
+                <div class="e-title">超链接 · 图片 · 表格</div>
+                <div class="e-desc">a 超链接、img 图片与图片超链接，大国重器四行三列表格练习，含表头 thead/tbody 结构。</div>
+            </div>
+            <div class="e-tags"><span>A</span><span>IMG</span><span>TABLE</span><span>THEAD</span></div>
+            <div class="e-go">查看</div>
+        </a>
+
+        <a class="entry" href="3.html">
+            <div class="e-num">N° <b>03</b></div>
+            <div class="e-body">
+                <div class="e-title">HTML 表单 form</div>
+                <div class="e-desc">完整表单元素演练：文本、密码、单选、复选、日期、文本域、多文件上传，及表单内外按钮组。</div>
+            </div>
+            <div class="e-tags"><span>FORM</span><span>INPUT</span><span>RADIO</span><span>CHECKBOX</span></div>
+            <div class="e-go">查看</div>
+        </a>
+
+        <a class="entry" href="3-1.html">
+            <div class="e-num">N° <b>04</b></div>
+            <div class="e-body">
+                <div class="e-title">层叠样式表 · CSS 选择器</div>
+                <div class="e-desc">内部样式表首练：标签、ID、类选择器，名字逐字配色，h2 黑底白字，span 包裹局部染色。</div>
+            </div>
+            <div class="e-tags"><span>STYLE</span><span>ID</span><span>CLASS</span><span>SPAN</span></div>
+            <div class="e-go">查看</div>
+        </a>
+
+        <a class="entry" href="4.html">
+            <div class="e-num">N° <b>05</b></div>
+            <div class="e-body">
+                <div class="e-title">CSS 进阶 · 群组与后代选择器</div>
+                <div class="e-desc">学号蓝、姓名深、难度红、知识点紫边框；群组选择器、后代选择器、层叠与继承的进阶综合练习。</div>
+            </div>
+            <div class="e-tags"><span>GROUP</span><span>DESCENDANT</span><span>CASCADE</span></div>
+            <div class="e-go">查看</div>
+        </a>
+    </div>
+
+    <!-- ===== 提示词原文 ===== -->
+    <div class="section-head">
+        <h2><span class="num">02</span>BRIEF · 本页提示词原文</h2>
+        <div class="count">verbatim</div>
+    </div>
+
+    <div class="brief">
+        <div class="brief-head">
+            <div class="lhs"><i></i>PROMPT · 原始指令</div>
+            <div class="rhs">SOURCE / USER INPUT</div>
+        </div>
+        <div class="brief-body"><span class="dim">“</span>创建一个新页面，包括本目录下的所有网页的超链接，使用原生代码，不使用cdn，新页面名称为<span class="hl">index.html</span>，主题为亚博的<span class="hl">《高级网页设计》课堂实践</span>，美化页面，页面中包括本提示词。 调用skill  不要用我之前说的背景颜色 因为每个网页设计因该是不同的<span class="dim">”</span></div>
+    </div>
+
+    <!-- ===== 页脚 ===== -->
+    <footer>
+        <div class="sig">亚博<span>.</span>实践档案</div>
+        <div class="colofon">
+            <b>构建</b> · 纯原生 HTML / CSS<br>
+            <b>依赖</b> · 无 CDN · 无外部字体<br>
+            <b>设计</b> · Dark Editorial Archive
+        </div>
+    </footer>
+
+</div>
+
+</body>
+</html>

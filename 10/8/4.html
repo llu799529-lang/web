@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10-4 媒体查询8盒子响应式</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body{
+            padding: 20px;
+        }
+        .title{
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .wrap{
+            display: flex;
+            flex-wrap: wrap;
+            gap:10px;
+        }
+        .box{
+            min-width: 320px;
+            height:120px;
+            background:#4285f4;
+            color:white;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            font-size:24px;
+        }
+
+        /* >=320px 手机：一行1个 */
+        @media (min-width:320px) and (max-width:767px){
+            .box{
+                width:100%;
+            }
+        }
+        /* 平板：一行2个 */
+        @media (min-width:768px) and (max-width:1199px){
+            .box{
+                width:calc(50% - 5px);
+            }
+        }
+        /* 电脑：一行4个 */
+        @media (min-width:1200px){
+            .box{
+                width:calc(25% - 8px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="title">lyb</div>
+    <div class="wrap">
+        <div class="box">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+        <div class="box">4</div>
+        <div class="box">5</div>
+        <div class="box">6</div>
+        <div class="box">7</div>
+        <div class="box">8</div>
+    </div>
+</body>
+</html>

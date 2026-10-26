@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>变色盒子</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .box {
+            width: 250px;
+            height: 250px;
+            /* 同时执行两个动画：变色 + 缩放 */
+            animation: colorChange 8s infinite linear, scaleAni 8s infinite ease-in-out;
+        }
+        /* 动画1：4种颜色切换 */
+        @keyframes colorChange {
+            0%   { background: #ff5555; }
+            25%  { background: #33bb77; }
+            50%  { background: #4488ff; }
+            75%  { background: #ffcc44; }
+            100% { background: #ff5555; }
+        }
+        /* 动画2：放大缩小 */
+        @keyframes scaleAni {
+            0%   { transform: scale(1); }
+            50%  { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="box"></div>
+</body>
+</html>

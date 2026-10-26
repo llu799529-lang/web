@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>幻灯片</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .slide-container {
+            width: 600px;
+            position: relative;
+        }
+        .img-viewport {
+            width: 600px;
+            height: 360px;
+            overflow: hidden;
+        }
+        .img-group {
+            width: 1800px;
+            display: flex;
+            animation: slideMove 9s infinite linear;
+        }
+        .img-group img {
+            width: 600px;
+            height: 360px;
+            object-fit: cover;
+        }
+        /* 文字浮在图片上，背景透明 */
+        .txt {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 36px;
+            color: #fff;
+            background: transparent;
+            text-shadow: 2px 2px 4px #000;
+        }
+        @keyframes slideMove {
+            0%   { transform: translateX(0); }
+            33%  { transform: translateX(-600px); }
+            66%  { transform: translateX(-1200px); }
+            100% { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="img-viewport">
+            <div class="img-group">
+                <img src="1.png">
+                <img src="2.png">
+                <img src="3.png">
+            </div>
+        </div>
+        <div class="txt">lyb</div>
+    </div>
+</body>
+</html>

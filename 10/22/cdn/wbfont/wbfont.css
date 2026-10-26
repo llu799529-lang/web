@@ -1,0 +1,20 @@
+/* 自绘图标字体 wbicon · 罗亚博 24001010409 · 计算机24004 */
+@font-face{
+  font-family:"wbicon";
+  src:url("wbfont.ttf") format("truetype");
+  font-weight:normal;font-style:normal;font-display:block;
+}
+.wb{
+  font-family:"wbicon"!important;font-style:normal;font-weight:normal;
+  line-height:1;display:inline-block;speak:never;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+}
+.wb-heart:before{content:"\e900"}
+.wb-clock:before{content:"\e901"}
+.wb-down:before{content:"\e902"}
+.wb-check:before{content:"\e903"}
+.wb-cal:before{content:"\e904"}
+.wb-plus:before{content:"\e905"}
+.wb-list:before{content:"\e906"}
+.wb-playlist:before{content:"\e907"}
+.wb-menu:before{content:"\e908"}

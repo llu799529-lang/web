@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Flex布局四组示例</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body{
+            display: flex;
+            gap:20px;
+            padding:20px;
+        }
+        /* 外层画板容器 */
+        .wrap{
+            width: 420px;
+            height: 480px;
+            border:1px solid #999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        /* 第1个：单个方块居中 */
+        .box1{
+            width:120px;
+            height:160px;
+            background:#4285F4;
+            border:1px solid #222;
+        }
+        /* 第2个容器：纵向排列2个矩形 */
+        .wrap2{
+            flex-direction: column;
+            gap:15px;
+        }
+        .box2-1{
+            width:180px;
+            height:100px;
+            background:#34A853;
+            border:1px solid #222;
+        }
+        .box2-2{
+            width:180px;
+            height:100px;
+            background:#FBBC05;
+            border:1px solid #222;
+        }
+        /* ==========第三个容器========== */
+        .wrap3{
+            flex-direction: column;
+            gap:15px;
+        }
+        .box3-1{
+            width:140px;
+            height:100px;
+            background:#EA4335;
+            border:1px solid #222;
+        }
+        .box3-2{
+            width:140px;
+            height:100px;
+            background:#7B61FF;
+            border:1px solid #222;
+        }
+        .box3-3{
+            width:140px;
+            height:100px;
+            background:#17A2B8;
+            border:1px solid #222;
+        }
+        .box3-4{
+            width:140px;
+            height:100px;
+            background:#FF7D00;
+            border:1px solid #222;
+        }
+        /* 第4个容器：上通栏，下面两个并排 */
+        .wrap4{
+            flex-direction: column;
+            gap:15px;
+        }
+        .top-box{
+            width:280px;
+            height:100px;
+            background:#6F42C1;
+            border:1px solid #222;
+        }
+        .bottom-group{
+            display:flex;
+            gap:15px;
+        }
+        .box4-1{
+            width:130px;
+            height:130px;
+            background:#20C997;
+            border:1px solid #222;
+        }
+        .box4-2{
+            width:130px;
+            height:130px;
+            background:#DC3545;
+            border:1px solid #222;
+        }
+    </style>
+</head>
+<body>
+    <!-- 1.单个方块 -->
+    <div class="wrap">
+        <div class="box1"></div>
+    </div>
+    <!-- 2.上下两个 -->
+    <div class="wrap wrap2">
+        <div class="box2-1"></div>
+        <div class="box2-2"></div>
+    </div>
+    <!-- 3.纵向4个矩形垂直排列 -->
+    <div class="wrap wrap3">
+        <div class="box3-1"></div>
+        <div class="box3-2"></div>
+        <div class="box3-3"></div>
+        <div class="box3-4"></div>
+    </div>
+    <!-- 4.上通栏，下两个并排 -->
+    <div class="wrap wrap4">
+        <div class="top-box"></div>
+        <div class="bottom-group">
+            <div class="box4-1"></div>
+            <div class="box4-2"></div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>媒体查询rem全屏盒子</title>
+    <style>
+        /* 根元素，设置rem基准 */
+        html {
+            font-size: 16px;
+        }
+        .full-box {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* 默认背景 */
+            background-color: #87CEEB;
+        }
+        .text-name{
+            /* rem单位，满足扩展要求 */
+            font-size: 3rem;
+            color: #fff;
+        }
+
+        /* 媒体查询：视口宽度变化，换背景色 + 文字rem大小 */
+        @media (max-width:768px){
+            .full-box{
+                background-color: #ff8888;
+            }
+            html{
+                font-size:14px;
+            }
+        }
+        @media (min-width:769px) and (max-width:1200px){
+            .full-box{
+                background-color: #88dd88;
+            }
+            html{
+                font-size:18px;
+            }
+        }
+        @media (min-width:1201px){
+            .full-box{
+                background-color: #7799ff;
+            }
+            html{
+                font-size:20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="full-box">
+        <div class="text-name">lyb</div>
+    </div>
+</body>
+</html>

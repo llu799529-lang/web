@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSS Icon · luoyabo</title>
+<style>
+  /* ========== ① CSS 变量：所有颜色/尺寸集中在此 ========== */
+  :root {
+    --bg:        #0f172a;
+    --card:      #1e293b;
+    --text:      #e2e8f0;
+    --muted:     #94a3b8;
+    --border:    #334155;
+
+    /* 图标像素色板 —— 对应字符矩阵 a ~ f */
+    --a: transparent;   /* 透明（背景位） */
+    --b: #5b8def;      /* 蓝 */
+    --c: #3b5bdb;      /* 深蓝 */
+    --d: #fab005;      /* 黄 */
+    --e: #40c057;      /* 绿 */
+    --f: #fa5252;      /* 红 */
+
+    --cell: 56px;      /* 单格边长 */
+    --gap:  4px;       /* 格间距 */
+    --radius: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 40px;
+    text-align: center;
+  }
+
+  h1 { font-size: 20px; font-weight: 600; }
+  .sub { color: var(--muted); font-size: 13px; margin: 6px 0 26px; }
+
+  /* ========== ② Grid 布局：3 列 × 4 行 ========== */
+  .icon {
+    display: grid;
+    grid-template-columns: repeat(3, var(--cell));
+    grid-template-rows:    repeat(4, var(--cell));
+    gap: var(--gap);
+    width: fit-content;
+    margin: 0 auto 26px;
+  }
+
+  /* ========== ③ CSS 图标：每格取一个变量色 ========== */
+  .cell { border-radius: var(--radius); }
+
+  /* 矩阵:
+     a b b
+     c b b
+     c d e
+     c d f  */
+  .a { background: var(--a); }
+  .b { background: var(--b); }
+  .c { background: var(--c); }
+  .d { background: var(--d); }
+  .e { background: var(--e); }
+  .f { background: var(--f); }
+
+  /* 色板图例 */
+  .palette {
+    display: grid;
+    grid-template-columns: repeat(6, auto);
+    gap: 12px;
+    justify-content: center;
+  }
+  .swatch {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--muted);
+    font-family: ui-monospace, Consolas, monospace;
+  }
+  .dot {
+    width: 14px; height: 14px; border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>CSS Icon</h1>
+    <div class="sub">CSS 变量 · Grid 布局 · CSS 图标 &nbsp;|&nbsp; luoyabo</div>
+
+    <!-- 3 列 4 行像素图标 -->
+    <div class="icon">
+      <div class="cell a"></div><div class="cell b"></div><div class="cell b"></div>
+      <div class="cell c"></div><div class="cell b"></div><div class="cell b"></div>
+      <div class="cell c"></div><div class="cell d"></div><div class="cell e"></div>
+      <div class="cell c"></div><div class="cell d"></div><div class="cell f"></div>
+    </div>
+
+    <!-- 色板图例 -->
+    <div class="palette">
+      <div class="swatch"><span class="dot" style="background:var(--a)"></span>a</div>
+      <div class="swatch"><span class="dot" style="background:var(--b)"></span>b</div>
+      <div class="swatch"><span class="dot" style="background:var(--c)"></span>c</div>
+      <div class="swatch"><span class="dot" style="background:var(--d)"></span>d</div>
+      <div class="swatch"><span class="dot" style="background:var(--e)"></span>e</div>
+      <div class="swatch"><span class="dot" style="background:var(--f)"></span>f</div>
+    </div>
+  </div>
+</body>
+</html>

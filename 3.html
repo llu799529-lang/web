@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>表单示例</title>
+</head>
+<body>
+    <h2>HTML表单form</h2>
+    <form action="http://huanqiu.com" name="y1" enctype="multipart/form-data">
+        <p>
+            用户名: <input type="text" name="username">
+        </p>
+        <p>
+            密码: <input type="password" name="password">
+        </p>
+        <p>
+            性别: <input type="radio" name="sex" value="m">男
+            <input type="radio" name="sex" value="f">女
+            <!-- 保密 -->
+            <input type="radio" name="sex" value="s">保密
+        </p>
+        <p>
+            爱好: <input type="checkbox" name="hobby" value="1">篮球
+            <input type="checkbox" name="hobby" value="2">足球
+            <input type="checkbox" name="hobby" value="3">羽毛球
+        </p>
+        <p>
+            籍贯: <input type="text" name="nativeplace">
+        </p>
+        <p>
+            出生日期: <input type="date" name="birthday">
+        </p>
+        <p>
+            个人简历:<br>
+            <textarea name="resume" rows="6" cols="40"></textarea>
+        </p>
+        <!-- 多文件上传 multiple 允许多选文件 -->
+        <p>
+            上传附件：<input type="file" name="files" multiple>
+        </p>
+        <!-- 表单内部按钮组：普通按钮、提交按钮、重置按钮 -->
+        <p>
+            <input type="button" value="表单内普通按钮">
+            <input type="submit" value="提交">
+            <input type="reset" value="重置">
+        </p>
+    </form>
+
+    <!-- form标签外面：表单外部的普通按钮，脱离表单，不会触发提交/重置 -->
+    <p>
+        <input type="button" value="表单外独立按钮">
+    </p>
+
+</body>
+</html>

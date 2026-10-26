@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>13-4 · iconfont SVG 底部导航</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f2f3f7; min-height: 100vh; padding-bottom: 70px;
+  }
+  .phone { max-width: 420px; margin: 0 auto; background: #f2f3f7; min-height: 100vh; }
+  .header {
+    background: #fff; padding: 16px; font-size: 16px; font-weight: 600;
+    text-align: center; border-bottom: 1px solid #eee;
+  }
+  .content { padding: 16px; color: #666; font-size: 14px; line-height: 1.8; }
+
+  .searchbar {
+    margin: 12px 16px; background: #fff; border-radius: 20px;
+    display: flex; align-items: center; gap: 8px; padding: 8px 14px;
+    color: #999;
+  }
+  .searchbar input { border: none; outline: none; flex: 1; font-size: 14px; background: transparent; }
+  .icon.sm { width: 16px; height: 16px; }
+
+  .feed { background: #fff; margin: 0 12px; border-radius: 12px; overflow: hidden; }
+  .feed-item {
+    display: flex; align-items: center; gap: 12px; padding: 14px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .feed-item:last-child { border-bottom: none; }
+  .avatar {
+    width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+  }
+  .avatar .icon.sm { width: 22px; height: 22px; }
+  .av1 { background: #ff9f43; }
+  .av2 { background: #54a0ff; }
+  .av3 { background: #ee5253; }
+  .av4 { background: #10ac84; }
+  .feed-title { font-size: 15px; color: #222; }
+  .feed-sub { font-size: 12px; color: #999; margin-top: 2px; }
+
+  /* ===== 底部固定导航 ===== */
+  .tabbar {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 420px;
+    display: flex; background: #fff; border-top: 1px solid #e5e5e5;
+    padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
+  }
+  .tab {
+    flex: 1; text-align: center; text-decoration: none; color: #666;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    font-size: 11px;
+  }
+  .tab.active { color: #40c057; }
+  .icon-wrap { position: relative; display: inline-flex; }
+  .tab .icon { width: 22px; height: 22px; fill: currentColor; }
+
+  .badge {
+    position: absolute; top: -6px; right: -10px;
+    min-width: 16px; height: 16px; padding: 0 4px;
+    background: #fa5151; color: #fff; font-size: 10px; line-height: 16px;
+    border-radius: 9px; font-style: normal;
+  }
+  .dot {
+    position: absolute; top: -2px; right: -6px;
+    width: 8px; height: 8px; background: #fa5151; border-radius: 50%;
+    border: 1px solid #fff;
+  }
+</style>
+</head>
+<body>
+  <div class="phone">
+    <div class="header">发现</div>
+
+    <div class="searchbar">
+      <svg class="icon sm"><use href="#icon-sousuotianchong"></use></svg>
+      <input type="text" placeholder="搜索你感兴趣的内容">
+    </div>
+
+    <div class="feed">
+      <div class="feed-item">
+        <div class="avatar av1"><svg class="icon sm"><use href="#icon-a-202_xiaomao"></use></svg></div>
+        <div class="feed-body">
+          <div class="feed-title">猫咪的午后阳光</div>
+          <div class="feed-sub">12 分钟前 · 大连</div>
+        </div>
+      </div>
+      <div class="feed-item">
+        <div class="avatar av2"><svg class="icon sm"><use href="#icon-a-202_tuzi"></use></svg></div>
+        <div class="feed-body">
+          <div class="feed-title">周末兔子咖啡馆探店</div>
+          <div class="feed-sub">1 小时前 · 中山广场</div>
+        </div>
+      </div>
+      <div class="feed-item">
+        <div class="avatar av3"><svg class="icon sm"><use href="#icon-a-202_shizi"></use></svg></div>
+        <div class="feed-body">
+          <div class="feed-title">动物园新出生的小狮子</div>
+          <div class="feed-sub">3 小时前 · 森林动物园</div>
+        </div>
+      </div>
+      <div class="feed-item">
+        <div class="avatar av4"><svg class="icon sm"><use href="#icon-a-202_yazi"></use></svg></div>
+        <div class="feed-body">
+          <div class="feed-title">东港海边的鸭子又胖了</div>
+          <div class="feed-sub">昨天 18:24 · 东港</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="tabbar">
+      <a class="tab active" href="javascript:;">
+        <span class="icon-wrap">
+          <svg class="icon"><use href="#icon-faxian"></use></svg>
+        </span>
+        <span>发现</span>
+      </a>
+      <a class="tab" href="javascript:;">
+        <span class="icon-wrap">
+          <svg class="icon"><use href="#icon-sousuotianchong"></use></svg>
+        </span>
+        <span>搜索</span>
+      </a>
+      <a class="tab" href="javascript:;">
+        <span class="icon-wrap">
+          <svg class="icon"><use href="#icon-weixin"></use></svg>
+          <sup class="badge">5</sup>
+        </span>
+        <span>消息</span>
+      </a>
+      <a class="tab" href="javascript:;">
+        <span class="icon-wrap">
+          <svg class="icon"><use href="#icon-wode"></use></svg>
+          <sup class="dot"></sup>
+        </span>
+        <span>我的</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- 引入 iconfont.js（symbol sprite） -->
+  <script src="cdn/iconfont/iconfont.js"></script>
+</body>
+</html>

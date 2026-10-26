@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>409罗亚博</title>
+    <style>
+        p{
+            color: #94a;
+            font-size:50px;
+        }
+        #box{
+            width: 600px;
+            height:500px;
+            background-color: bisque;
+        }
+        /* 扩展1：名字每个字不同颜色 */
+        .zi1{
+            color:red;
+        }
+        .zi2{
+            color:rgb(166, 4, 215);
+        }
+        .zi3{
+            color:blue;
+        }
+        /* 扩展2：h2黑底白字 */
+        h2{
+            background-color: black;
+            color:white;
+        }
+        /* 扩展3：“选择器”三个字白色，用span包裹文字 */
+        .white-text{
+            color:white;
+        }
+    </style>
+</head>
+<body>
+    <h2>层叠样式表 CSS</h2>
+    <div id="box">
+        <p>CSS<span class="white-text">选择器</span></p>
+        <!-- 扩展1：同一行，每个字单独span，不同class不同颜色 -->
+        <p><span class="zi1">罗</span><span class="zi2">亚</span><span class="zi3">博</span></p>
+        <p>CSS属性</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>层叠与继承</title>
+    <style>
+        /* 优先级：id>class>标签 */
+        #box {
+            /* 宽1400，高400，灰色背景，距离，字间距 */
+            width: 1400px;
+            height: 400px;
+            background-color: gray; 
+            margin: 10px;
+            padding: 10px;
+            letter-spacing: 25px;
+            /* 圆角矩形50% */
+            border-radius: 10px;
+            
+            /* 以下样式为居中显示大号文字补充 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #box h1 {
+            color: #f4ea2a; /* 黄色文字 */
+            font-size: 80px;
+            margin: 0;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        #box p {
+            color: #f4ea2a;
+            font-size: 60px;
+            margin: 20px 0 0 0;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <!-- 后定义的覆盖前定义的 -->
+    <div id="box">
+        <h1>409 亚博</h1>
+        <p>层叠与继承的讲解</p>
+    </div>
+</body>
+</html>

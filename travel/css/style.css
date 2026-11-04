@@ -1,0 +1,937 @@
+@charset "utf-8";
+
+/* ============================================================
+   网页元素设计 —— 版式参考马蜂窝旅游网首页
+   学号：24001010409    姓名：罗亚博
+   说明：类名统一使用 lyb- 前缀（姓名缩写），不使用 id 选择器，
+        不使用 table 布局，主体布局采用 flex 与 grid。
+   ============================================================ */
+
+/* ---------- 1. 全局变量 ---------- */
+:root {
+    --lyb-orange: #ff9d00;
+    --lyb-orange-deep: #f08a00;
+    --lyb-text: #333333;
+    --lyb-text-sub: #666666;
+    --lyb-text-weak: #999999;
+    --lyb-line: #ebebeb;
+    --lyb-bg: #f5f5f5;
+    --lyb-white: #ffffff;
+    --lyb-radius: 4px;
+    --lyb-container: 1100px;
+}
+
+/* ---------- 2. 全局重置（公共 CSS） ---------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--lyb-text);
+    background-color: var(--lyb-bg);
+    -webkit-font-smoothing: antialiased;
+}
+
+ul,
+ol {
+    list-style: none;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+img {
+    display: block;
+    width: 100%;
+    border: none;
+}
+
+h1,
+h2,
+h3 {
+    font-weight: normal;
+}
+
+input,
+button {
+    font-family: inherit;
+    font-size: inherit;
+    border: none;
+    outline: none;
+}
+
+/* 通用容器：全站统一的版心宽度与居中方式 */
+.lyb-container {
+    width: 100%;
+    max-width: var(--lyb-container);
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ---------- 3. 顶部导航 ---------- */
+.lyb-header {
+    position: relative;
+    z-index: 10;
+    background-color: var(--lyb-white);
+    border-bottom: 1px solid var(--lyb-line);
+}
+
+.lyb-header__inner {
+    display: flex;
+    align-items: center;
+    height: 60px;
+}
+
+/* 站点标识 */
+.lyb-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 28px;
+    flex-shrink: 0;
+}
+
+.lyb-logo__mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: var(--lyb-orange);
+    color: var(--lyb-white);
+    font-size: 17px;
+    font-weight: 700;
+    font-style: italic;
+}
+
+.lyb-logo__text {
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--lyb-text);
+}
+
+/* 主导航 */
+.lyb-nav {
+    flex: 1;
+    min-width: 0;
+}
+
+.lyb-nav__list {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.lyb-nav__item a {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 60px;
+    padding: 0 14px;
+    font-size: 15px;
+    color: var(--lyb-text);
+    transition: color 0.2s;
+}
+
+.lyb-nav__item a:hover {
+    color: var(--lyb-orange);
+}
+
+/* 当前页高亮：橙色实底 */
+.lyb-nav__item--active a,
+.lyb-nav__item--active a:hover {
+    background-color: var(--lyb-orange);
+    color: var(--lyb-white);
+}
+
+/* 下拉小三角 */
+.lyb-caret {
+    width: 0;
+    height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 4px solid currentColor;
+    opacity: 0.6;
+}
+
+/* 右侧工具区 */
+.lyb-header__tools {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    font-size: 13px;
+    color: var(--lyb-text-sub);
+}
+
+.lyb-tool {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid var(--lyb-line);
+    color: var(--lyb-orange);
+    transition: background-color 0.2s;
+}
+
+.lyb-tool:hover {
+    background-color: #fff7e8;
+}
+
+.lyb-icon {
+    display: block;
+    width: 14px;
+    height: 14px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.lyb-icon--service {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff9d00' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M4 14v-2a8 8 0 0116 0v2'/%3E%3Crect x='2' y='13' width='4' height='6' rx='1.5'/%3E%3Crect x='18' y='13' width='4' height='6' rx='1.5'/%3E%3C/svg%3E");
+}
+
+.lyb-icon--download {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff9d00' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M12 3v12M7 11l5 5 5-5M4 20h16'/%3E%3C/svg%3E");
+}
+
+.lyb-icon--star {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff9d00' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2-5.5-2.9-5.5 2.9 1-6.2L3 9.6l6.2-.9z'/%3E%3C/svg%3E");
+}
+
+.lyb-header__line {
+    width: 1px;
+    height: 14px;
+    background-color: var(--lyb-line);
+}
+
+.lyb-header__login:hover,
+.lyb-header__reg:hover {
+    color: var(--lyb-orange);
+}
+
+.lyb-header__split {
+    color: #dddddd;
+}
+
+/* ---------- 4. 首屏大图 ---------- */
+.lyb-hero {
+    position: relative;
+    height: 400px;
+    overflow: hidden;
+    background-color: #2b2b2b;
+}
+
+.lyb-hero__bg {
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 底部压暗，保证文字可读 */
+.lyb-hero__mask {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.12) 40%, rgba(0, 0, 0, 0.5) 100%);
+}
+
+.lyb-hero__caption {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    width: 100%;
+    max-width: var(--lyb-container);
+    padding: 0 20px;
+    transform: translateX(-50%);
+    color: var(--lyb-white);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+}
+
+.lyb-hero__date {
+    font-size: 22px;
+    letter-spacing: 1px;
+}
+
+.lyb-hero__title {
+    margin-top: 6px;
+    font-size: 17px;
+    letter-spacing: 0.5px;
+}
+
+/* 右侧竖排缩略图 */
+.lyb-hero__thumbs {
+    position: absolute;
+    top: 70px;
+    right: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-right: -530px;
+}
+
+.lyb-hero__thumb {
+    width: 82px;
+    height: 56px;
+    overflow: hidden;
+    border-radius: 2px;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    opacity: 0.9;
+    transition: opacity 0.2s;
+}
+
+.lyb-hero__thumb:hover {
+    opacity: 1;
+}
+
+.lyb-hero__thumb--active {
+    border-color: var(--lyb-orange);
+    opacity: 1;
+}
+
+.lyb-hero__thumb img {
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ---------- 5. 搜索条（标签切换 + 输入框） ---------- */
+.lyb-search {
+    position: absolute;
+    left: 50%;
+    bottom: 40px;
+    width: 560px;
+    transform: translateX(-50%);
+    border-radius: var(--lyb-radius);
+    background-color: rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+}
+
+.lyb-search__tabs {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 8px 16px 2px;
+}
+
+.lyb-search__tab a {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* 未选中项前面的小圆点 */
+.lyb-search__tab a::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.75);
+}
+
+.lyb-search__tab--active a {
+    color: var(--lyb-orange);
+}
+
+.lyb-search__tab--active a::before {
+    background-color: var(--lyb-orange);
+    border-color: var(--lyb-orange);
+}
+
+.lyb-search__form {
+    display: flex;
+    gap: 8px;
+    padding: 8px 10px 10px;
+}
+
+.lyb-search__input {
+    flex: 1;
+    min-width: 0;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 2px;
+    background-color: var(--lyb-white);
+    font-size: 13px;
+    color: var(--lyb-text);
+}
+
+.lyb-search__input::placeholder {
+    color: #bbbbbb;
+}
+
+.lyb-search__btn {
+    width: 46px;
+    height: 36px;
+    border-radius: 2px;
+    background-color: var(--lyb-orange);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M16.5 16.5L21 21'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.lyb-search__btn:hover {
+    background-color: var(--lyb-orange-deep);
+}
+
+/* ---------- 6. 服务入口 ---------- */
+.lyb-entries {
+    background-color: var(--lyb-white);
+}
+
+.lyb-entries__list {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    padding: 18px 0;
+}
+
+.lyb-entry {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: var(--lyb-radius);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.lyb-entry:hover {
+    background-color: #fafafa;
+}
+
+/* 入口之间的细分隔线 */
+.lyb-entry + .lyb-entry::before {
+    content: "";
+    position: absolute;
+    left: -6px;
+    top: 50%;
+    width: 1px;
+    height: 26px;
+    transform: translateY(-50%);
+    background-color: var(--lyb-line);
+}
+
+.lyb-entry__icon {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 22px;
+}
+
+.lyb-entry__icon--tour {
+    background-color: #fff1e0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff9d00' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M12 21s7-6.3 7-11a7 7 0 10-14 0c0 4.7 7 11 7 11z'/%3E%3Ccircle cx='12' cy='10' r='2.5'/%3E%3C/svg%3E");
+}
+
+.lyb-entry__icon--free {
+    background-color: #ffe9ec;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff5b7f' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M21 3L3 10.5l7 3 3 7L21 3z'/%3E%3C/svg%3E");
+}
+
+.lyb-entry__icon--group {
+    background-color: #e8f3ff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='9' cy='8' r='3'/%3E%3Cpath d='M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6'/%3E%3Cpath d='M16 5.2a3 3 0 010 5.6M18 14.5c2 .8 3 2.6 3 5.5'/%3E%3C/svg%3E");
+}
+
+.lyb-entry__icon--hotel {
+    background-color: #f0e9ff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M3 19v-9h11a4 4 0 014 4v5M3 19h18'/%3E%3Ccircle cx='7' cy='7' r='2'/%3E%3C/svg%3E");
+}
+
+.lyb-entry__icon--visa {
+    background-color: #e6f7ee;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='3' width='16' height='18' rx='2'/%3E%3Cpath d='M8 8h8M8 12h8M8 16h4'/%3E%3C/svg%3E");
+}
+
+.lyb-entry__icon--ship {
+    background-color: #e6f2ff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230ea5e9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 15l1.8 4.2A2 2 0 006.6 20h10.8a2 2 0 001.8-1.2L21 15z'/%3E%3Cpath d='M12 15V6M8 9h8'/%3E%3C/svg%3E");
+}
+
+.lyb-entry__title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--lyb-text);
+    line-height: 1.4;
+}
+
+.lyb-entry__desc {
+    font-size: 12px;
+    color: var(--lyb-text-weak);
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+/* ---------- 6.5 热门目的地（上图下文） ---------- */
+.lyb-dest {
+    padding: 26px 0 10px;
+}
+
+.lyb-dest__title {
+    position: relative;
+    padding-left: 10px;
+    margin-bottom: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--lyb-text);
+    line-height: 1.4;
+}
+
+.lyb-dest__title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 3px;
+    width: 3px;
+    height: 16px;
+    border-radius: 2px;
+    background-color: var(--lyb-orange);
+}
+
+.lyb-dest__list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.lyb-dest__link {
+    display: block;
+    padding: 10px 10px 14px;
+    background-color: var(--lyb-white);
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.lyb-dest__link:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.09);
+    transform: translateY(-2px);
+}
+
+/* 图片在上、文字在下的卡片结构 */
+.lyb-dest__pic {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--lyb-radius);
+}
+
+.lyb-dest__name {
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--lyb-text);
+    line-height: 1.4;
+}
+
+.lyb-dest__desc {
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--lyb-text-weak);
+    line-height: 1.5;
+}
+
+/* ---------- 7. 主体两栏（一左一右） ---------- */
+.lyb-main {
+    padding: 24px 0 48px;
+}
+
+.lyb-main__inner {
+    display: grid;
+    grid-template-columns: 236px 1fr;
+    gap: 32px;
+    align-items: start;
+}
+
+/* 左栏 */
+.lyb-side {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.lyb-panel__title {
+    position: relative;
+    padding-left: 10px;
+    margin-bottom: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--lyb-text);
+    line-height: 1.4;
+}
+
+/* 标题前的橙色竖条 */
+.lyb-panel__title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 3px;
+    width: 3px;
+    height: 15px;
+    border-radius: 2px;
+    background-color: var(--lyb-orange);
+}
+
+/* ---------- 8. 旅游攻略卡（左图右文） ---------- */
+.lyb-guide {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.lyb-guide__link {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.lyb-guide__pic {
+    flex-shrink: 0;
+    width: 88px;
+    height: 60px;
+    border-radius: var(--lyb-radius);
+    object-fit: cover;
+    transition: opacity 0.2s;
+}
+
+.lyb-guide__link:hover .lyb-guide__pic {
+    opacity: 0.85;
+}
+
+.lyb-guide__info {
+    min-width: 0;
+}
+
+.lyb-guide__name {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--lyb-text);
+    /* 两行溢出省略 */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+.lyb-guide__link:hover .lyb-guide__name {
+    color: var(--lyb-orange);
+}
+
+.lyb-guide__tag {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--lyb-text-weak);
+}
+
+/* ---------- 9. 最新资讯列表 ---------- */
+.lyb-news {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+}
+
+.lyb-news__item {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 0;
+}
+
+.lyb-news__date {
+    flex-shrink: 0;
+    font-size: 12px;
+    color: var(--lyb-text-weak);
+}
+
+.lyb-news__link {
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    color: var(--lyb-text-sub);
+    /* 单行溢出显示省略号：三件套 */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.lyb-news__link:hover {
+    color: var(--lyb-orange);
+}
+
+/* ---------- 10. 游记列表 ---------- */
+.lyb-feed {
+    min-width: 0;
+}
+
+.lyb-feed__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--lyb-line);
+}
+
+.lyb-feed__tabs {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+}
+
+.lyb-feed__tab a {
+    position: relative;
+    display: block;
+    padding-bottom: 10px;
+    font-size: 16px;
+    color: var(--lyb-text-sub);
+}
+
+.lyb-feed__tab--active a {
+    color: var(--lyb-text);
+    font-weight: 600;
+}
+
+/* 选中项底部橙色指示条 */
+.lyb-feed__tab--active a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -12px;
+    width: 100%;
+    height: 2px;
+    background-color: var(--lyb-orange);
+}
+
+.lyb-feed__write {
+    padding: 5px 14px;
+    border-radius: var(--lyb-radius);
+    background-color: var(--lyb-orange);
+    color: var(--lyb-white);
+    font-size: 13px;
+    transition: background-color 0.2s;
+}
+
+.lyb-feed__write:hover {
+    background-color: var(--lyb-orange-deep);
+}
+
+.lyb-feed__list {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    padding-top: 22px;
+}
+
+/* ---------- 11. 游记卡片（上图下文） ---------- */
+.lyb-note__link {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+}
+
+.lyb-note__pic {
+    flex-shrink: 0;
+    width: 236px;
+    height: 148px;
+    border-radius: var(--lyb-radius);
+    object-fit: cover;
+    transition: opacity 0.2s;
+}
+
+.lyb-note__link:hover .lyb-note__pic {
+    opacity: 0.9;
+}
+
+.lyb-note__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.lyb-note__title {
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--lyb-text);
+    transition: color 0.2s;
+}
+
+.lyb-note__link:hover .lyb-note__title {
+    color: var(--lyb-orange);
+}
+
+.lyb-note__desc {
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--lyb-text-sub);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+.lyb-note__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--lyb-text-weak);
+}
+
+.lyb-note__place {
+    padding: 1px 7px;
+    border-radius: 10px;
+    background-color: #f4f4f4;
+    color: var(--lyb-text-sub);
+}
+
+.lyb-note__like {
+    color: var(--lyb-orange);
+}
+
+/* ---------- 12. 页脚 ---------- */
+.lyb-footer {
+    padding: 22px 0;
+    background-color: var(--lyb-white);
+    border-top: 1px solid var(--lyb-line);
+    text-align: center;
+}
+
+.lyb-footer__text {
+    font-size: 12px;
+    line-height: 2;
+    color: var(--lyb-text-weak);
+}
+
+/* ---------- 13. 响应式：宽屏收敛 ---------- */
+@media (max-width: 1024px) {
+    .lyb-main__inner {
+        grid-template-columns: 200px 1fr;
+        gap: 24px;
+    }
+
+    .lyb-note__pic {
+        width: 200px;
+        height: 126px;
+    }
+
+    .lyb-hero__thumbs {
+        margin-right: -480px;
+    }
+
+    .lyb-entries__list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* 平板及以下：两栏合并为单栏 */
+@media (max-width: 768px) {
+    .lyb-header__inner {
+        height: auto;
+        flex-wrap: wrap;
+        padding-top: 10px;
+    }
+
+    .lyb-nav {
+        order: 3;
+        flex: 0 0 100%;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+
+    .lyb-nav__list {
+        gap: 0;
+    }
+
+    .lyb-header__tools {
+        margin-left: auto;
+    }
+
+    .lyb-nav__item a {
+        height: 42px;
+        padding: 0 11px;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .lyb-hero {
+        height: 260px;
+    }
+
+    .lyb-hero__thumbs {
+        display: none;
+    }
+
+    .lyb-hero__title {
+        font-size: 14px;
+    }
+
+    .lyb-search {
+        width: calc(100% - 32px);
+        bottom: 24px;
+    }
+
+    .lyb-search__tabs {
+        gap: 12px;
+    }
+
+    .lyb-main__inner {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+
+    .lyb-dest__list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .lyb-note__link {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .lyb-note__pic {
+        width: 100%;
+        height: 200px;
+    }
+}
+
+/* 手机：卡片单列，服务入口两列 */
+@media (max-width: 480px) {
+    .lyb-header__tools {
+        gap: 8px;
+    }
+
+    /* 手机端收起三个圆形工具图标，只保留登录注册 */
+    .lyb-tool,
+    .lyb-header__line {
+        display: none;
+    }
+
+    .lyb-entries__list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .lyb-note__pic {
+        height: 170px;
+    }
+}

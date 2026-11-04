@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课堂测试 2 · 点击排行（24小时）</title>
+    <!--
+      作者：lyb
+      建立时间：2026-10-29
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：点击排行（实时点击 / 24小时排行 两个标签，前三名带边框序号）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            padding: 24px;
+            background: #fff;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            color: #333;
+        }
+
+        .box { width: 420px; }
+
+        h1 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        h1 .ico {
+            width: 26px;
+            height: 26px;
+            border: 1px solid #bbb;
+            border-radius: 3px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .tabs { display: flex; margin-top: 10px; }
+
+        .tab {
+            flex: 1;
+            height: 32px;
+            line-height: 32px;
+            text-align: center;
+            font-size: 15px;
+            color: #333;
+            background: #dcdcdc;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all .15s;
+        }
+
+        .tab:hover { background: #d0d0d0; }
+
+        .tab.on {
+            background: #fff;
+            color: #f60;
+            font-weight: 600;
+            border-bottom-color: #f60;
+        }
+
+        ul { margin-top: 12px; }
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            height: 38px;
+            list-style: none;
+            font-size: 14.5px;
+            border-bottom: 1px dashed #e6e6e6;
+            cursor: pointer;
+        }
+
+        li:hover .t { color: #f60; }
+
+        .no {
+            flex: 0 0 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            font-style: normal;
+            color: #f60;
+        }
+
+        li:nth-child(-n+3) .no {
+            border: 1px solid #f60;
+            border-radius: 2px;
+        }
+
+        .t {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .n {
+            font-family: Arial, sans-serif;
+            font-size: 12.5px;
+            color: #999;
+        }
+
+        .panel { display: none; }
+        .panel.on { display: block; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <h1><span class="ico">☝</span>点击排行</h1>
+
+    <div class="tabs">
+        <div class="tab" data-i="0">实时点击</div>
+        <div class="tab on" data-i="1">24小时排行</div>
+    </div>
+
+    <ul class="panel" data-i="0">
+        <li><i class="no">1</i><span class="t">今天是世界睡眠日 你昨晚睡够了吗</span><span class="n">9631</span></li>
+        <li><i class="no">2</i><span class="t">春分到 昼夜平分 这些习俗你都知道吗</span><span class="n">8452</span></li>
+        <li><i class="no">3</i><span class="t">春季流感高发 医生提醒这三件事别做</span><span class="n">7310</span></li>
+        <li><i class="no">4</i><span class="t">地铁早高峰拥堵 乘客建议错峰出行</span><span class="n">6221</span></li>
+        <li><i class="no">5</i><span class="t">高校食堂推出半份菜 学生点赞</span><span class="n">5140</span></li>
+        <li><i class="no">6</i><span class="t">城市公园樱花进入最佳观赏期</span><span class="n">4288</span></li>
+        <li><i class="no">7</i><span class="t">共享单车涨价 用户怎么看</span><span class="n">3401</span></li>
+        <li><i class="no">8</i><span class="t">社区开设老年手机课堂 报名火爆</span><span class="n">2597</span></li>
+    </ul>
+
+    <ul class="panel on" data-i="1">
+        <li><i class="no">1</i><span class="t">灯塔水母：地球上唯一不死生物</span><span class="n">356322</span></li>
+        <li><i class="no">2</i><span class="t">阿里巴巴全资收购UC 俞永福称U</span><span class="n">311246</span></li>
+        <li><i class="no">3</i><span class="t">亚马逊惊现三米长巨滑舌鱼用肺</span><span class="n">295883</span></li>
+        <li><i class="no">4</i><span class="t">奉化男子上山抓野味 遭遇极濒</span><span class="n">266061</span></li>
+        <li><i class="no">5</i><span class="t">大白鲨深海失踪 或被大型生物</span><span class="n">243936</span></li>
+        <li><i class="no">6</i><span class="t">南非小犀牛目睹母亲被猎杀不肯</span><span class="n">224346</span></li>
+        <li><i class="no">7</i><span class="t">余额宝周岁：收益率“过山车”</span><span class="n">172694</span></li>
+        <li><i class="no">8</i><span class="t">“尸油入餐桌”纯属无稽之谈</span><span class="n">128789</span></li>
+    </ul>
+</div>
+
+<script>
+    (function () {
+        var tabs = document.querySelectorAll('.tab');
+        var panels = document.querySelectorAll('.panel');
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                var i = Number(tab.dataset.i);
+                tabs.forEach(function (t) { t.classList.remove('on'); });
+                panels.forEach(function (p) {
+                    p.classList.toggle('on', Number(p.dataset.i) === i);
+                });
+                tab.classList.add('on');
+            });
+        });
+    })();
+</script>
+</body>
+</html>

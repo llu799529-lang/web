@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17-5 JavaScript 的两种定时器</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <!--
+      作者：lyb
+      建立时间：2026-11-02
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：两种定时器演示（setTimeout 延时一次 / setInterval 循环执行，可开始、取消、暂停、清零）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            padding: 40px 24px 56px;
+            background: #f5f6f8;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #1f2329;
+        }
+
+        .wrap { max-width: 1000px; margin: 0 auto; }
+
+        h1 { font-size: 26px; font-weight: 600; letter-spacing: .5px; }
+
+        .sub { margin-top: 10px; font-size: 14px; line-height: 1.9; color: #646a73; }
+
+        .sub code { font-family: Consolas, monospace; font-size: 12.5px; background: #eceef2; padding: 1px 5px; border-radius: 4px; }
+
+        .gh {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            padding: 6px 13px;
+            border-radius: 999px;
+            background: #1f2329;
+            color: #fff;
+            font-size: 12.5px;
+            text-decoration: none;
+            transition: background .18s, transform .18s;
+        }
+
+        .gh:hover { background: #000; transform: translateY(-1px); }
+
+        .grid {
+            margin-top: 22px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #e5e6eb;
+            border-radius: 12px;
+            padding: 18px 20px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card h2 {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .card h2 em {
+            font-style: normal;
+            font-family: Consolas, monospace;
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #e8f3ff;
+            color: #1d6fe0;
+        }
+
+        .card h2 em.alt { background: #e7f8f0; color: #0b8a5c; }
+
+        .desc { margin-top: 8px; font-size: 12.5px; line-height: 1.75; color: #8a9099; }
+
+        /* ---------- 演示区 ---------- */
+        .stage {
+            margin-top: 16px;
+            padding: 20px 18px;
+            background: #fbfcfd;
+            border: 1px solid #eef0f3;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .big {
+            font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+            font-size: 44px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #1f2329;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .big.run { color: #1d6fe0; }
+        .big.done { color: #0b8a5c; }
+        .big.stop { color: #b0b6bd; }
+
+        .unit { font-size: 15px; font-weight: 400; color: #a0a6ad; margin-left: 3px; }
+
+        .track {
+            margin-top: 16px;
+            height: 8px;
+            border-radius: 99px;
+            background: #e9edf2;
+            overflow: hidden;
+        }
+
+        .fill {
+            height: 100%;
+            width: 0;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #4a9bff, #1d6fe0);
+        }
+
+        .fill.green { background: linear-gradient(90deg, #4fd1a5, #0b8a5c); }
+
+        .msg {
+            margin-top: 14px;
+            min-height: 22px;
+            font-size: 13px;
+            color: #646a73;
+        }
+
+        .msg.hit { color: #0b8a5c; font-weight: 600; }
+
+        .btns { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
+        .btns button {
+            padding: 8px 16px;
+            border: 1px solid #e5e6eb;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 13px;
+            color: #3d4653;
+            cursor: pointer;
+            transition: all .16s;
+        }
+
+        .btns button:hover:not(:disabled) { border-color: #1d6fe0; color: #1d6fe0; }
+
+        .btns button.primary {
+            background: #1d6fe0;
+            border-color: #1d6fe0;
+            color: #fff;
+        }
+
+        .btns button.primary:hover:not(:disabled) { background: #1559c0; color: #fff; }
+
+        .btns button:disabled { color: #c3c8cf; cursor: not-allowed; background: #f7f8fa; }
+
+        /* ---------- 代码 ---------- */
+        pre {
+            margin-top: 16px;
+            padding: 13px 15px;
+            border-radius: 9px;
+            background: #f7f8fa;
+            border: 1px solid #eef0f3;
+            overflow-x: auto;
+        }
+
+        pre code {
+            font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+            font-size: 12.5px;
+            line-height: 1.8;
+            white-space: pre;
+            color: #24292f;
+        }
+
+        .cmt { color: #a0a6ad; }
+
+        /* ---------- 对比表 ---------- */
+        table {
+            margin-top: 24px;
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border: 1px solid #e5e6eb;
+            border-radius: 12px;
+            overflow: hidden;
+            font-size: 13.5px;
+        }
+
+        th {
+            padding: 12px 15px;
+            text-align: left;
+            background: #f7f8fa;
+            border-bottom: 1px solid #e5e6eb;
+            font-weight: 600;
+            color: #3d4653;
+        }
+
+        td { padding: 12px 15px; border-bottom: 1px solid #f0f1f3; line-height: 1.75; }
+
+        td:first-child { color: #646a73; width: 18%; }
+        td code { font-family: Consolas, monospace; font-size: 12.5px; color: #c7254e; background: #f7f8fa; padding: 1px 5px; border-radius: 4px; }
+
+        .tips {
+            margin-top: 18px;
+            padding: 15px 18px;
+            background: #fff8e6;
+            border: 1px solid #ffe1a6;
+            border-radius: 11px;
+            font-size: 13px;
+            line-height: 1.95;
+            color: #8a6100;
+        }
+
+        .tips b { color: #6b4c00; }
+
+        @media (max-width: 860px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>JavaScript 的两种定时器</h1>
+    <p class="sub">
+        <code>setTimeout</code> 是「过一会儿做一次」，<code>setInterval</code> 是「每隔一会儿做一次」。
+        两个都返回一个数字 id，拿这个 id 就能用 <code>clearTimeout</code> / <code>clearInterval</code> 把它取消。
+        下面的演示都是真的在跑，可以随时取消或暂停。
+    </p>
+    <a class="gh" href="https://github.com/llu799529-lang/html-homework" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub 仓库
+    </a>
+
+    <div class="grid">
+        <!-- ============ setTimeout ============ -->
+        <div class="card">
+            <h2>只执行一次<em>setTimeout</em></h2>
+            <p class="desc">3 秒之后做一件事，做完就结束。中途可以取消，取消后什么都不会发生。</p>
+
+            <div class="stage">
+                <div class="big" id="stBig">3.0<span class="unit">s</span></div>
+                <div class="track"><div class="fill" id="stFill"></div></div>
+                <div class="msg" id="stMsg">还没开始</div>
+            </div>
+
+            <div class="btns">
+                <button class="primary" id="stStart">开始（3 秒后执行）</button>
+                <button id="stCancel" disabled>取消 clearTimeout</button>
+            </div>
+
+            <pre><code><span class="cmt">// 3 秒后执行一次</span>
+let t = setTimeout(function () {
+  console.log('时间到');
+}, 3000);
+
+<span class="cmt">// 反悔了就取消，回调不会再跑</span>
+clearTimeout(t);</code></pre>
+        </div>
+
+        <!-- ============ setInterval ============ -->
+        <div class="card">
+            <h2>每隔一段执行<em class="alt">setInterval</em></h2>
+            <p class="desc">每隔 100 毫秒跑一次，直到你叫停。下面的秒表就是它一秒跑十次攒出来的。</p>
+
+            <div class="stage">
+                <div class="big stop" id="ivBig">00:00.0</div>
+                <div class="track"><div class="fill green" id="ivFill"></div></div>
+                <div class="msg" id="ivMsg">已执行 0 次</div>
+            </div>
+
+            <div class="btns">
+                <button class="primary" id="ivStart">开始</button>
+                <button id="ivStop" disabled>暂停 clearInterval</button>
+                <button id="ivReset">清零</button>
+            </div>
+
+            <pre><code><span class="cmt">// 每 100 毫秒跑一次，不会自己停</span>
+let timer = setInterval(function () {
+  ms += 100;
+  render(ms);
+}, 100);
+
+<span class="cmt">// 必须自己清，否则一直跑</span>
+clearInterval(timer);</code></pre>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr><th>对比项</th><th>setTimeout</th><th>setInterval</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>执行次数</td><td>只执行 1 次</td><td>一直重复，直到被清除</td></tr>
+            <tr><td>时间含义</td><td>等多久之后执行</td><td>每隔多久执行一次</td></tr>
+            <tr><td>返回值</td><td>一个数字 id</td><td>一个数字 id</td></tr>
+            <tr><td>清除方法</td><td><code>clearTimeout(id)</code></td><td><code>clearInterval(id)</code></td></tr>
+            <tr><td>典型用途</td><td>延迟提示、输入防抖、广告 3 秒后关闭</td><td>秒表、轮播图、时钟、进度刷新</td></tr>
+            <tr><td>忘了清除会怎样</td><td>影响不大，跑完就结束</td><td>一直占着资源，页面越用越卡</td></tr>
+        </tbody>
+    </table>
+
+    <div class="tips">
+        <b>两个容易踩的点：</b><br>
+        1. 定时器的时间是「至少等这么久」，不是精确时间。主线程忙着执行别的代码时，回调会排队等着，实测常常晚几毫秒到几十毫秒。<br>
+        2. <code>setTimeout(fn, 0)</code> 不是立刻执行，而是「等当前代码跑完、排到队列末尾再执行」，这正好说明了 JS 是单线程 + 事件循环。
+    </div>
+</div>
+
+<script>
+    /* ================= setTimeout 演示 ================= */
+    var stBig = document.getElementById('stBig');
+    var stFill = document.getElementById('stFill');
+    var stMsg = document.getElementById('stMsg');
+    var stStart = document.getElementById('stStart');
+    var stCancel = document.getElementById('stCancel');
+
+    var DURATION = 3000;
+    var stTimer = null;      // setTimeout 返回的 id
+    var stRaf = null;        // 只用来刷新进度显示
+    var stStartAt = 0;
+
+    function stRender(left) {
+        stBig.innerHTML = (left / 1000).toFixed(1) + '<span class="unit">s</span>';
+        stFill.style.width = ((DURATION - left) / DURATION * 100) + '%';
+    }
+
+    function stStopRaf() {
+        if (stRaf) { cancelAnimationFrame(stRaf); stRaf = null; }
+    }
+
+    function stReset() {
+        if (stTimer) { clearTimeout(stTimer); stTimer = null; }
+        stStopRaf();
+        stBig.className = 'big';
+        stRender(DURATION);
+        stFill.style.width = '0%';
+        stMsg.className = 'msg';
+        stMsg.textContent = '还没开始';
+        stStart.disabled = false;
+        stCancel.disabled = true;
+    }
+
+    stStart.addEventListener('click', function () {
+        stReset();
+        stStart.disabled = true;
+        stCancel.disabled = false;
+        stBig.className = 'big run';
+        stMsg.textContent = '计时中…3 秒后回调执行';
+        stStartAt = performance.now();
+
+        /* 真正的定时器：3 秒后执行一次 */
+        stTimer = setTimeout(function () {
+            stStopRaf();
+            stRender(0);
+            stBig.className = 'big done';
+            stMsg.className = 'msg hit';
+            stMsg.textContent = '时间到！回调执行了一次（setTimeout 到此结束）';
+            stTimer = null;
+            stStart.disabled = false;
+            stCancel.disabled = true;
+        }, DURATION);
+
+        /* 只是为了让数字和进度条动起来 */
+        (function tick() {
+            var left = Math.max(0, DURATION - (performance.now() - stStartAt));
+            stRender(left);
+            if (left > 0) stRaf = requestAnimationFrame(tick);
+        })();
+    });
+
+    stCancel.addEventListener('click', function () {
+        if (stTimer) {
+            clearTimeout(stTimer);
+            stTimer = null;
+        }
+        stStopRaf();
+        var left = Math.max(0, DURATION - (performance.now() - stStartAt));
+        stRender(left);
+        stBig.className = 'big stop';
+        stMsg.className = 'msg';
+        stMsg.textContent = '已取消 —— clearTimeout 之后回调永远不会执行';
+        stStart.disabled = false;
+        stCancel.disabled = true;
+    });
+
+    stReset();
+
+    /* ================= setInterval 演示 ================= */
+    var ivBig = document.getElementById('ivBig');
+    var ivFill = document.getElementById('ivFill');
+    var ivMsg = document.getElementById('ivMsg');
+    var ivStart = document.getElementById('ivStart');
+    var ivStop = document.getElementById('ivStop');
+    var ivReset = document.getElementById('ivReset');
+
+    var ivTimer = null;
+    var ms = 0;
+    var ticks = 0;
+
+    function fmt(t) {
+        var total = Math.floor(t / 100) / 10;
+        var m = Math.floor(total / 60);
+        var s = total - m * 60;
+        return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s.toFixed(1) : s.toFixed(1));
+    }
+
+    function ivRender() {
+        ivBig.textContent = fmt(ms);
+        ivMsg.textContent = '已执行 ' + ticks + ' 次（每 100ms 一次）';
+        ivFill.style.width = (ms % 10000) / 100 + '%';
+    }
+
+    ivStart.addEventListener('click', function () {
+        if (ivTimer) return;
+        ivBig.className = 'big run';
+        ivStart.disabled = true;
+        ivStop.disabled = false;
+
+        ivTimer = setInterval(function () {
+            ms += 100;
+            ticks++;
+            ivRender();
+        }, 100);
+    });
+
+    ivStop.addEventListener('click', function () {
+        if (!ivTimer) return;
+        clearInterval(ivTimer);
+        ivTimer = null;
+        ivBig.className = 'big stop';
+        ivStart.disabled = false;
+        ivStop.disabled = true;
+        ivMsg.textContent = '已暂停，累计 ' + ticks + ' 次。setInterval 已经清掉了';
+    });
+
+    ivReset.addEventListener('click', function () {
+        if (ivTimer) {
+            clearInterval(ivTimer);
+            ivTimer = null;
+        }
+        ms = 0;
+        ticks = 0;
+        ivBig.className = 'big stop';
+        ivFill.style.width = '0%';
+        ivStart.disabled = false;
+        ivStop.disabled = true;
+        ivRender();
+    });
+
+    ivRender();
+</script>
+</body>
+</html>

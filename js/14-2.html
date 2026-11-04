@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>14-2 JavaScript 六种基本数据类型</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <!--
+      作者：lyb
+      建立时间：2026-10-26
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：JavaScript 六种基本数据类型演示（类型徽章 / 说明 / 示例代码 / typeof 实时结果）
+    -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            padding: 40px 24px 56px;
+            background: #f5f6f8;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #1f2329;
+        }
+
+        header {
+            max-width: 1080px;
+            margin: 0 auto 28px;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 600;
+            letter-spacing: .5px;
+        }
+
+        .sub {
+            margin-top: 10px;
+            font-size: 14px;
+            line-height: 1.9;
+            color: #646a73;
+        }
+
+        .cards {
+            max-width: 1080px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #e5e6eb;
+            border-radius: 14px;
+            padding: 20px 20px 18px;
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow .2s, transform .2s;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 26px rgba(31, 35, 41, .08);
+            transform: translateY(-2px);
+        }
+
+        .badge {
+            align-self: flex-start;
+            padding: 4px 11px;
+            border-radius: 999px;
+            font-size: 12.5px;
+            font-weight: 600;
+            letter-spacing: .3px;
+            background: #eef1f6;
+            color: #3d4653;
+        }
+
+        .card h2 {
+            margin-top: 13px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .desc {
+            margin-top: 8px;
+            font-size: 13.5px;
+            line-height: 1.75;
+            color: #646a73;
+        }
+
+        pre {
+            margin-top: 14px;
+            padding: 12px 13px;
+            border-radius: 9px;
+            background: #f7f8fa;
+            border: 1px solid #eef0f3;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+            font-size: 12.5px;
+            line-height: 1.7;
+            color: #24292f;
+            white-space: pre;
+        }
+
+        .result {
+            margin-top: auto;
+            padding-top: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px dashed #e9ebef;
+            font-size: 13px;
+            color: #8a9099;
+        }
+
+        .result b {
+            font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+            font-size: 13.5px;
+            color: #1d6fe0;
+            font-weight: 600;
+        }
+
+        /* 按类型上色，便于区分 */
+        .t-number   { background: #e8f3ff; color: #1d6fe0; }
+        .t-string   { background: #e6fcf5; color: #0ca678; }
+        .t-boolean  { background: #fff4e6; color: #e8590c; }
+        .t-undefined{ background: #f3f0ff; color: #6741d9; }
+        .t-null     { background: #f1f3f5; color: #495057; }
+        .t-object   { background: #fff0f6; color: #c2255c; }
+
+        @media (max-width: 900px) {
+            .cards { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 620px) {
+            .cards { grid-template-columns: 1fr; }
+        }
+
+        .gh {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            padding: 6px 13px;
+            border-radius: 999px;
+            background: #1f2329;
+            color: #fff;
+            font-size: 12.5px;
+            text-decoration: none;
+            transition: background .18s, transform .18s;
+        }
+
+        .gh:hover { background: #000; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>JavaScript 六种基本数据类型</h1>
+        <p class="sub">
+            在 JavaScript 里用 <code>typeof</code> 判断数据类型。下面六张卡片各自给出一个示例变量，
+            卡片底部的 <b>typeof 结果</b> 是页面加载时用 JS 实时计算出来的，不是写死的文字。
+        </p>
+        <a class="gh" href="https://github.com/llu799529-lang/html-homework" target="_blank" rel="noopener">
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+            GitHub 仓库
+        </a>
+    </header>
+
+    <main class="cards" id="cards"></main>
+
+    <script>
+        // 六种类型：值、徽章样式、标题、说明、示例代码
+        var types = [
+            {
+                key: 'number',
+                cls: 't-number',
+                title: '数字 Number',
+                desc: '整数和浮点数都只有这一个类型，没有 int / float 之分；Infinity、NaN 也属于 number。',
+                code: 'let n = 42;\nlet pi = 3.14;'
+            },
+            {
+                key: 'string',
+                cls: 't-string',
+                title: '字符串 String',
+                desc: '用单引号、双引号或反引号包裹的文本，反引号支持 ${} 插值和换行。',
+                code: "let s = '你好，JS';\nlet t = `1 + 1 = ${1 + 1}`;"
+            },
+            {
+                key: 'boolean',
+                cls: 't-boolean',
+                title: '布尔 Boolean',
+                desc: '只有 true 和 false 两个值，常用来做条件判断的结果。',
+                code: 'let isReady = true;\nlet isEmpty = 0 > 1;'
+            },
+            {
+                key: 'undefined',
+                cls: 't-undefined',
+                title: '未定义 Undefined',
+                desc: '变量声明了但没有赋值时就是 undefined；函数没有返回值时，结果也是它。',
+                code: 'let u;\nconsole.log(u);'
+            },
+            {
+                key: 'null',
+                cls: 't-null',
+                title: '空值 Null',
+                desc: '表示“有意为之的空”，需要手动赋值。注意 typeof null 会返回 object，这是 JS 的历史遗留问题。',
+                code: 'let empty = null;'
+            },
+            {
+                key: 'object',
+                cls: 't-object',
+                title: '对象 Object',
+                desc: '除上面五种之外的都是对象，包括普通对象、数组、函数和日期等。',
+                code: "let obj = { name: 'lyb' };\nlet arr = [1, 2, 3];"
+            }
+        ];
+
+        // 真实的值，用来实时计算 typeof
+        var values = {
+            number: 42,
+            string: '你好，JS',
+            boolean: true,
+            undefined: undefined,
+            null: null,
+            object: { name: 'lyb' }
+        };
+
+        var html = '';
+        types.forEach(function (t) {
+            var v = values[t.key];
+            var result = typeof v;
+            // typeof null 返回 object，这里把真实值也标出来，避免误解
+            var extra = (t.key === 'null') ? '（实际值是 null）' : '';
+
+            html +=
+                '<article class="card">' +
+                    '<span class="badge ' + t.cls + '">' + t.key + '</span>' +
+                    '<h2>' + t.title + '</h2>' +
+                    '<p class="desc">' + t.desc + '</p>' +
+                    '<pre><code>' + t.code + '</code></pre>' +
+                    '<div class="result"><span>typeof 结果' + extra + '</span>' +
+                        '<b>' + result + '</b></div>' +
+                '</article>';
+        });
+
+        document.getElementById('cards').innerHTML = html;
+    </script>
+</body>
+</html>

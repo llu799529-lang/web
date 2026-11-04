@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课堂测试 7 · SUV 频道</title>
+    <!--
+      作者：lyb
+      建立时间：2026-10-29
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：SUV 频道导购（按价格区间切换，红色主标题 + 新闻列表带日期）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            padding: 24px;
+            background: #fff;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            color: #333;
+        }
+
+        .box { width: 480px; }
+
+        .hd {
+            display: flex;
+            align-items: stretch;
+            border-bottom: 1px solid #d8d8d8;
+        }
+
+        .tabs { display: flex; flex: 1; }
+
+        .tab {
+            padding: 7px 14px 8px;
+            font-size: 14.5px;
+            color: #444;
+            cursor: pointer;
+            border-top: 2px solid transparent;
+            transition: all .15s;
+        }
+
+        .tab:hover { color: #1a5fb4; }
+
+        .tab.on {
+            border-top-color: #1a3f7a;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .badge {
+            padding: 7px 14px 8px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a3f7a;
+        }
+
+        h2 {
+            margin-top: 16px;
+            font-size: 17px;
+            font-weight: 700;
+            color: #d0021b;
+        }
+
+        ul { margin-top: 10px; }
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 0;
+            list-style: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        li::before {
+            content: "";
+            flex: 0 0 4px;
+            width: 4px;
+            height: 4px;
+            background: #333;
+        }
+
+        li:hover .t { color: #d0021b; }
+
+        .t {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .t b { color: #1a5fb4; font-weight: 400; }
+
+        .d {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .panel { display: none; }
+        .panel.on { display: block; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <div class="hd">
+        <div class="tabs">
+            <div class="tab on" data-i="0">导购</div>
+            <div class="tab" data-i="1">3-9万</div>
+            <div class="tab" data-i="2">9-17万</div>
+            <div class="tab" data-i="3">17-42万</div>
+        </div>
+        <div class="badge">SUV</div>
+    </div>
+
+    <div class="panel on" data-i="0">
+        <h2>改变品牌的未来 认识豪华品牌最便宜车型</h2>
+        <ul>
+            <li><span class="t">推荐：<b>X1</b>等城市四驱<b>Style</b>+经济省油的<b>SUV</b></span><span class="d">12/19</span></li>
+            <li><span class="t">全景天窗/保养便利 30万办齐四驱<b>SUV</b>推荐</span><span class="d">12/19</span></li>
+            <li><span class="t">最高暴降20万！奥迪<b>Q5</b>等年底特惠<b>SUV</b>盘点</span><span class="d">12/18</span></li>
+            <li><span class="t">比拼硬实力 8款低配四驱紧凑<b>SUV</b>性能点评</span><span class="d">12/18</span></li>
+            <li><span class="t">花小钱也能养<b>SUV</b> 翼博等入门<b>SUV</b>使用手册</span><span class="d">12/17</span></li>
+            <li><span class="t">最高优惠4.3万 十款15万<b>SUV</b>年末购买推荐</span><span class="d">12/16</span></li>
+        </ul>
+    </div>
+
+    <div class="panel" data-i="1">
+        <h2>五万出头就能买 四款高性价比小型SUV</h2>
+        <ul>
+            <li><span class="t">月销过万不是梦 三款8万级<b>SUV</b>推荐</span><span class="d">12/19</span></li>
+            <li><span class="t">预算有限也任性 六款6万左右<b>SUV</b>行情</span><span class="d">12/18</span></li>
+            <li><span class="t">代步首选 瑞风<b>S2</b>等小型<b>SUV</b>优惠汇总</span><span class="d">12/18</span></li>
+            <li><span class="t">配置够用就好 5-9万自主<b>SUV</b>口碑调查</span><span class="d">12/17</span></li>
+            <li><span class="t">年轻人的第一台车 三款入门<b>SUV</b>对比</span><span class="d">12/16</span></li>
+            <li><span class="t">养护成本不到一块 小排量<b>SUV</b>用车调查</span><span class="d">12/15</span></li>
+        </ul>
+    </div>
+
+    <div class="panel" data-i="2">
+        <h2>十万元级合资SUV怎么选 这四款最值</h2>
+        <ul>
+            <li><span class="t">15万内落地 三款紧凑<b>SUV</b>终端行情</span><span class="d">12/19</span></li>
+            <li><span class="t">优惠两万起 合资紧凑<b>SUV</b>年末促销汇总</span><span class="d">12/19</span></li>
+            <li><span class="t">空间动力兼得 四款12万<b>SUV</b>实测对比</span><span class="d">12/18</span></li>
+            <li><span class="t">家用首选 哈弗<b>H6</b>等热门<b>SUV</b>落地价</span><span class="d">12/17</span></li>
+            <li><span class="t">油耗实测 五款1.5T<b>SUV</b>谁最省油</span><span class="d">12/17</span></li>
+            <li><span class="t">首付三万起 紧凑级<b>SUV</b>金融方案盘点</span><span class="d">12/16</span></li>
+        </ul>
+    </div>
+
+    <div class="panel" data-i="3">
+        <h2>二十万到四十万 SUV 该看哪几款</h2>
+        <ul>
+            <li><span class="t">豪华品牌入门<b>SUV</b> 30万以内全都有</span><span class="d">12/19</span></li>
+            <li><span class="t">降价换销量 奥迪<b>Q3</b>等优惠直逼8万</span><span class="d">12/18</span></li>
+            <li><span class="t">中型<b>SUV</b>怎么挑 汉兰达等三车横评</span><span class="d">12/18</span></li>
+            <li><span class="t">四驱才是刚需 25万级四驱<b>SUV</b>推荐</span><span class="d">12/17</span></li>
+            <li><span class="t">七座布局实用吗 三款中大型<b>SUV</b>体验</span><span class="d">12/16</span></li>
+            <li><span class="t">年底冲量 40万内豪华<b>SUV</b>最高降12万</span><span class="d">12/15</span></li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var tabs = document.querySelectorAll('.tab');
+        var panels = document.querySelectorAll('.panel');
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                var i = Number(tab.dataset.i);
+                tabs.forEach(function (t) { t.classList.remove('on'); });
+                panels.forEach(function (p) {
+                    p.classList.toggle('on', Number(p.dataset.i) === i);
+                });
+                tab.classList.add('on');
+            });
+        });
+    })();
+</script>
+</body>
+</html>

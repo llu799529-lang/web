@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课堂测试 0 · 排行榜</title>
+    <!--
+      作者：lyb
+      建立时间：2026-10-29
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：排行榜（新闻 / 证券 / 理财 / 博客 四个标签，前十名列表）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            padding: 24px;
+            background: #fff;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            color: #333;
+        }
+
+        .box { width: 560px; }
+
+        .hd {
+            display: flex;
+            align-items: flex-end;
+            border-bottom: 1px solid #d7e1f0;
+        }
+
+        .hd h1 {
+            flex: 1;
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a5fb4;
+            padding-bottom: 10px;
+        }
+
+        .tabs { display: flex; gap: 2px; }
+
+        .tab {
+            padding: 6px 12px 7px;
+            font-size: 15px;
+            color: #1a5fb4;
+            background: #eaf1fa;
+            cursor: pointer;
+            border-top: 2px solid transparent;
+            transition: background .15s;
+        }
+
+        .tab:hover { background: #dbe7f7; }
+
+        .tab.on {
+            background: #fff;
+            border-top-color: #1a5fb4;
+            font-weight: 600;
+        }
+
+        ul { margin-top: 14px; }
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 0;
+            list-style: none;
+            font-size: 14.5px;
+            border-bottom: 1px dashed #e8e8e8;
+            cursor: pointer;
+            transition: color .15s;
+        }
+
+        li:hover { color: #1a5fb4; }
+
+        li em { display: none; }
+
+        .no {
+            flex: 0 0 18px;
+            height: 18px;
+            line-height: 18px;
+            text-align: center;
+            font-size: 11px;
+            font-style: normal;
+            font-family: Arial, sans-serif;
+            color: #fff;
+            background: #a8a8a8;
+            border-radius: 2px;
+        }
+
+        li:nth-child(1) .no,
+        li:nth-child(2) .no,
+        li:nth-child(3) .no { background: #d0021b; }
+
+        .t { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .panel { display: none; }
+        .panel.on { display: block; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <div class="hd">
+        <h1>排行榜</h1>
+        <div class="tabs">
+            <div class="tab on" data-i="0">新闻</div>
+            <div class="tab" data-i="1">证券</div>
+            <div class="tab" data-i="2">理财</div>
+            <div class="tab" data-i="3">博客</div>
+        </div>
+    </div>
+
+    <ul class="panel on" data-i="0">
+        <li><i class="no">1</i><span class="t">构建“股市+债市”稳市机制！央行新工具来了</span></li>
+        <li><i class="no">2</i><span class="t">美媒：美军已准备好再打击伊朗 特朗普或中期选举后</span></li>
+        <li><i class="no">3</i><span class="t">姆巴佩发表涉中国不当言论，多家品牌终止合作，媒</span></li>
+        <li><i class="no">4</i><span class="t">东鹏饮料集团：零容忍伤害民族感情行为，终止与姆</span></li>
+        <li><i class="no">5</i><span class="t">300672，业绩暴增超5600%！10股业绩大增（附股）</span></li>
+        <li><i class="no">6</i><span class="t">史上最大IPO要来了！7位创始人身家均超130亿美元</span></li>
+        <li><i class="no">7</i><span class="t">外交部：对英国警方任意、过度执法行为表示强烈不</span></li>
+        <li><i class="no">8</i><span class="t">1000000美元！特朗普重金悬赏</span></li>
+        <li><i class="no">9</i><span class="t">张一鸣以6700亿元刷新中首富财富纪录！《2026胡</span></li>
+        <li><i class="no">10</i><span class="t">Gucci卖不动了 开云今年将关掉至少125家门店</span></li>
+    </ul>
+
+    <ul class="panel" data-i="1">
+        <li><i class="no">1</i><span class="t">沪指站上3400点 两市成交额连续三日破万亿</span></li>
+        <li><i class="no">2</i><span class="t">券商板块集体拉升 三只个股封涨停</span></li>
+        <li><i class="no">3</i><span class="t">北向资金今日净买入58亿元 加仓电子与医药</span></li>
+        <li><i class="no">4</i><span class="t">创业板指涨超2% 新能源赛道全线反弹</span></li>
+        <li><i class="no">5</i><span class="t">监管出手规范程序化交易 高频交易纳入重点监控</span></li>
+        <li><i class="no">6</i><span class="t">首批科创板做市商名单公布 十家券商入选</span></li>
+        <li><i class="no">7</i><span class="t">上市公司中报披露收官 超六成公司实现盈利增长</span></li>
+        <li><i class="no">8</i><span class="t">可转债市场回暖 新债上市首日平均涨幅超15%</span></li>
+        <li><i class="no">9</i><span class="t">港股通标的调整生效 多只科技股获纳入</span></li>
+        <li><i class="no">10</i><span class="t">央行开展4000亿元MLF操作 中标利率维持不变</span></li>
+    </ul>
+
+    <ul class="panel" data-i="2">
+        <li><i class="no">1</i><span class="t">银行理财规模重回30万亿 固收类产品占比超八成</span></li>
+        <li><i class="no">2</i><span class="t">存款利率再度下调 三年期定存跌破2%</span></li>
+        <li><i class="no">3</i><span class="t">黄金价格创历史新高 大妈们又开始排队买金</span></li>
+        <li><i class="no">4</i><span class="t">养老目标基金业绩回暖 平均年化收益转正</span></li>
+        <li><i class="no">5</i><span class="t">货币基金收益率下行 余额宝七日年化跌破1.5%</span></li>
+        <li><i class="no">6</i><span class="t">分红险重新走俏 预定利率下调后如何选</span></li>
+        <li><i class="no">7</i><span class="t">国债逆回购利率尾盘飙升 一天赚出活期十倍</span></li>
+        <li><i class="no">8</i><span class="t">公募REITs扩容 消费类项目年内首度获批</span></li>
+        <li><i class="no">9</i><span class="t">个人养老金账户开户数破亿 产品货架再扩容</span></li>
+        <li><i class="no">10</i><span class="t">美元走弱 人民币资产配置价值受关注</span></li>
+    </ul>
+
+    <ul class="panel" data-i="3">
+        <li><i class="no">1</i><span class="t">房价还会跌多久？听听一线中介怎么说</span></li>
+        <li><i class="no">2</i><span class="t">我在县城开奶茶店，三个月亏掉了三十万</span></li>
+        <li><i class="no">3</i><span class="t">35岁被裁员后，我靠这三件事稳住了生活</span></li>
+        <li><i class="no">4</i><span class="t">年轻人不结婚，究竟在怕什么</span></li>
+        <li><i class="no">5</i><span class="t">读了二十年书，才明白什么叫真正的自律</span></li>
+        <li><i class="no">6</i><span class="t">为什么越来越多人选择离开互联网大厂</span></li>
+        <li><i class="no">7</i><span class="t">一个县城公务员的账本：月入六千怎么存下三千</span></li>
+        <li><i class="no">8</i><span class="t">父母那一代的节俭，我们到底学不会什么</span></li>
+        <li><i class="no">9</i><span class="t">关于“内卷”，我想说点不中听的</span></li>
+        <li><i class="no">10</i><span class="t">凌晨三点的城中村，藏着城市的另一面</span></li>
+    </ul>
+</div>
+
+<script>
+    (function () {
+        var tabs = document.querySelectorAll('.tab');
+        var panels = document.querySelectorAll('.panel');
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                var i = Number(tab.dataset.i);
+                tabs.forEach(function (t) { t.classList.remove('on'); });
+                panels.forEach(function (p) {
+                    p.classList.toggle('on', Number(p.dataset.i) === i);
+                });
+                tab.classList.add('on');
+            });
+        });
+    })();
+</script>
+</body>
+</html>

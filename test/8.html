@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课堂测试 8 · 音乐手机</title>
+    <!--
+      作者：lyb
+      建立时间：2026-10-29
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：音乐手机频道（行情 / 导购 / 新品 / 评测 四个标签，蓝色标题列表带日期）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            padding: 24px;
+            background: #fff;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            color: #333;
+        }
+
+        .box { width: 470px; }
+
+        .hd {
+            display: flex;
+            align-items: flex-end;
+            border-bottom: 1px solid #d5deeb;
+        }
+
+        .hd h1 {
+            flex: 1;
+            font-size: 17px;
+            font-weight: 700;
+            padding-bottom: 9px;
+        }
+
+        .tabs { display: flex; }
+
+        .tab {
+            padding: 5px 12px 6px;
+            font-size: 13.5px;
+            color: #333;
+            background: #eff3f9;
+            cursor: pointer;
+            border-top: 2px solid transparent;
+            transition: all .15s;
+        }
+
+        .tab:hover { background: #e2eaf6; }
+
+        .tab.on {
+            background: #fff;
+            color: #1a5fb4;
+            font-weight: 600;
+            border-top-color: #1a5fb4;
+        }
+
+        ul { margin-top: 12px; }
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 0;
+            list-style: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        li::before {
+            content: "";
+            flex: 0 0 4px;
+            width: 4px;
+            height: 4px;
+            background: #1a5fb4;
+        }
+
+        .t {
+            flex: 1;
+            color: #1a5fb4;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        li:hover .t { text-decoration: underline; }
+
+        .d {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .panel { display: none; }
+        .panel.on { display: block; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <div class="hd">
+        <h1>音乐手机</h1>
+        <div class="tabs">
+            <div class="tab on" data-i="0">行情</div>
+            <div class="tab" data-i="1">导购</div>
+            <div class="tab" data-i="2">新品</div>
+            <div class="tab" data-i="3">评测</div>
+        </div>
+    </div>
+
+    <ul class="panel on" data-i="0">
+        <li><span class="t">音乐强机苹果iPhone 5s价格稳定</span><span class="d">(12/19)</span></li>
+        <li><span class="t">高性能双四核音乐机 魅族MX3低价热卖</span><span class="d">(12/19)</span></li>
+        <li><span class="t">音乐品质最出色 vivo X3促销2199</span><span class="d">(12/12)</span></li>
+        <li><span class="t">时尚音乐手机 vivo Xplay济南2798元</span><span class="d">(11/27)</span></li>
+        <li><span class="t">好音乐好拍照 OPPO Find5今报价2580元</span><span class="d">(08/27)</span></li>
+        <li><span class="t">1.5GHz四核1080p OPPO Find 5降价热卖</span><span class="d">(07/30)</span></li>
+        <li><span class="t">彩色呼吸带双核机 索尼M35h促销2299</span><span class="d">(06/08)</span></li>
+        <li><span class="t">1.7GHz四核1080p屏 vivo Xplay热卖中</span><span class="d">(06/07)</span></li>
+    </ul>
+
+    <ul class="panel" data-i="1">
+        <li><span class="t">两千元内听歌最合适 四款音乐手机推荐</span><span class="d">(12/19)</span></li>
+        <li><span class="t">独立音频芯片 三款Hi-Fi手机怎么挑</span><span class="d">(12/18)</span></li>
+        <li><span class="t">耳机党福音 带DAC的手机盘点</span><span class="d">(12/16)</span></li>
+        <li><span class="t">千元也有好声音 五款入门音乐机推荐</span><span class="d">(12/15)</span></li>
+        <li><span class="t">外放够响 双扬声器手机选购指南</span><span class="d">(12/13)</span></li>
+        <li><span class="t">学生党看过来 1500元档音乐手机横评</span><span class="d">(12/11)</span></li>
+        <li><span class="t">听歌不将就 三千元档Hi-Fi手机对比</span><span class="d">(12/09)</span></li>
+        <li><span class="t">续航与音质兼得 大电池音乐机推荐</span><span class="d">(12/06)</span></li>
+    </ul>
+
+    <ul class="panel" data-i="2">
+        <li><span class="t">vivo X5发布 主打Hi-Fi音质</span><span class="d">(12/19)</span></li>
+        <li><span class="t">魅族新机入网 或配独立音频芯片</span><span class="d">(12/18)</span></li>
+        <li><span class="t">OPPO新旗舰曝光 双扬声器设计</span><span class="d">(12/17)</span></li>
+        <li><span class="t">索尼新一代Walkman手机渲染图流出</span><span class="d">(12/15)</span></li>
+        <li><span class="t">小米新机通过认证 支持无损音频</span><span class="d">(12/14)</span></li>
+        <li><span class="t">华为nova系列添新成员 主打影音</span><span class="d">(12/12)</span></li>
+        <li><span class="t">LG新机搭载四路DAC 音质参数曝光</span><span class="d">(12/10)</span></li>
+        <li><span class="t">三星Galaxy新机或将取消耳机孔</span><span class="d">(12/08)</span></li>
+    </ul>
+
+    <ul class="panel" data-i="3">
+        <li><span class="t">vivo X3评测：薄机身里的好声音</span><span class="d">(12/19)</span></li>
+        <li><span class="t">魅族MX3音质实测：推力够不够</span><span class="d">(12/18)</span></li>
+        <li><span class="t">OPPO Find5听感报告：三频均衡</span><span class="d">(12/16)</span></li>
+        <li><span class="t">索尼M35h评测：中端也有好音质</span><span class="d">(12/15)</span></li>
+        <li><span class="t">iPhone 5s音频测试：底噪控制出色</span><span class="d">(12/13)</span></li>
+        <li><span class="t">五款音乐手机盲听对比 结果出人意料</span><span class="d">(12/11)</span></li>
+        <li><span class="t">Hi-Fi手机音质真的更好吗 实测告诉你</span><span class="d">(12/09)</span></li>
+        <li><span class="t">外放音量实测 八款手机谁最响</span><span class="d">(12/07)</span></li>
+    </ul>
+</div>
+
+<script>
+    (function () {
+        var tabs = document.querySelectorAll('.tab');
+        var panels = document.querySelectorAll('.panel');
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                var i = Number(tab.dataset.i);
+                tabs.forEach(function (t) { t.classList.remove('on'); });
+                panels.forEach(function (p) {
+                    p.classList.toggle('on', Number(p.dataset.i) === i);
+                });
+                tab.classList.add('on');
+            });
+        });
+    })();
+</script>
+</body>
+</html>

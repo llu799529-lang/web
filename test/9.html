@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课堂测试 9 · 最新投诉</title>
+    <!--
+      作者：lyb
+      建立时间：2026-10-29
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：新闻列表标签页（最新投诉 / 官方回应 / 追踪调查，三组内容点击切换）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            padding: 9px 0 40px 12px;
+            background: #fff;
+            font-family: "宋体", SimSun, "Songti SC", serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ---------- 标签栏 ---------- */
+        .tabs {
+            display: flex;
+            width: 399px;
+            border-bottom: 2px solid #5f7fd4;
+        }
+
+        .tab {
+            flex: 0 0 111px;
+            height: 39px;
+            line-height: 33px;
+            border: 3px solid transparent;
+            margin-bottom: -2px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer;
+            user-select: none;
+            transition: color .15s;
+        }
+
+        .tab:hover { color: #c00; }
+
+        .tab.on {
+            border-color: #c00;
+            color: #c00;
+        }
+
+        /* ---------- 列表 ---------- */
+        .panel {
+            display: none;
+            margin-top: 18px;
+        }
+
+        .panel.on { display: block; }
+
+        .panel li {
+            position: relative;
+            width: 399px;
+            height: 36px;
+            line-height: 36px;
+            padding-left: 33px;
+            list-style: none;
+            font-size: 18px;
+            color: #000;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        /* 行首的黑色小方块 */
+        .panel li::before {
+            content: "";
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            width: 6px;
+            height: 6px;
+            margin-top: -3px;
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="tabs">
+    <div class="tab on" data-i="0">最新投诉</div>
+    <div class="tab" data-i="1">官方回应</div>
+    <div class="tab" data-i="2">追踪调查</div>
+</div>
+
+<ul class="panel on" data-i="0">
+    <li>北京火车站出租车乱象调查 司机称计价器坏了</li>
+    <li>公园仙人掌遭刻字“毁容” 一棵仙人掌被刻字</li>
+    <li>昆明屡现游客“辣手摧鸥” 网友谴责（组图）</li>
+    <li>四川一星级公厕开建1年未开放变“茶楼”</li>
+    <li>北京北海地坛公园暗藏高端会所 园方称“曝光”</li>
+    <li>北京北海金丝楠木柱遭英文字母“签名”破坏</li>
+    <li>北京动物园门票玩猫腻 低价门票遭“雪藏”</li>
+    <li>女子不满“无购物”投诉旅行社 称东西一样没少</li>
+    <li>老年人参团游权益易受损 旅行社被曝对老人加价</li>
+</ul>
+
+<ul class="panel" data-i="1">
+    <li>大绿鸭、翘尾鸭凑热闹 法官解读“山寨鸭”是否合法</li>
+    <li>国家旅游局回应涨价：“团队游价格系正常调整”</li>
+    <li>国家旅游局回应“新旅游法实施后旅行社团队价格上涨”</li>
+    <li>出游遇纠纷可依《旅游法》维权 明确旅游投诉渠道</li>
+    <li>解读新旅游法三“谣传” 扫货族可安心</li>
+    <li>《旅游法》将抑制“零负团费”和“门票经济”</li>
+    <li>文明旅游将入旅游合同 行为指南和公约将作为附件</li>
+    <li>天津二季度旅行社服务质量发布 投诉涉及8家</li>
+    <li>敦煌：国家法定节假日所有景点景区免收停车费</li>
+</ul>
+
+<ul class="panel" data-i="2">
+    <li>《旅游法》实施半月 自费景区遭正规一日游冲击</li>
+    <li>追踪香格里拉旅游“怪象”：涉事导游等已被处理</li>
+    <li>导游挣钱新“攻略”：逃离旅行社自己接团</li>
+    <li>九寨沟为何变成“死胡同”？——数千游客滞留</li>
+    <li>九寨沟为何仍现游客滞留？</li>
+    <li>旅游之尴尬：“膀爷”游博物馆、女士超性感进入</li>
+    <li>记者暗访兵马俑景区：玉器店买玉 过期门票泛滥</li>
+    <li>假冒香港游客借卡转账 两女子忽悠女大学生</li>
+    <li>39家旅游单位违法被罚1800万 购物店结盟统一</li>
+</ul>
+
+<script>
+    (function () {
+        var tabs = document.querySelectorAll('.tab');
+        var panels = document.querySelectorAll('.panel');
+        var title = document.title.split('·')[0] + '· ';
+
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                var i = Number(tab.dataset.i);
+
+                tabs.forEach(function (t) { t.classList.remove('on'); });
+                panels.forEach(function (p) {
+                    p.classList.toggle('on', Number(p.dataset.i) === i);
+                });
+
+                tab.classList.add('on');
+                document.title = title + tab.textContent;
+            });
+        });
+    })();
+</script>
+</body>
+</html>

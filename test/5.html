@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课堂测试 5 · 影视排行</title>
+    <!--
+      作者：lyb
+      建立时间：2026-10-29
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：影视排行榜（每日 / 每周 / 每月 / 全部 四个标签，两列前十名）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            padding: 24px;
+            background: #fff;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            color: #333;
+        }
+
+        .box { width: 500px; }
+
+        .tabs { display: flex; gap: 6px; }
+
+        .tab {
+            flex: 1;
+            height: 36px;
+            line-height: 36px;
+            text-align: center;
+            font-size: 15px;
+            color: #333;
+            background: #e9e9e9;
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+        .tab:hover { background: #dedede; }
+
+        .tab.on {
+            background: #666;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        ul {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 24px;
+            row-gap: 16px;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            list-style: none;
+            font-size: 14.5px;
+            cursor: pointer;
+        }
+
+        li:hover .t { color: #e10000; }
+
+        .no {
+            flex: 0 0 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            font-style: normal;
+            color: #fff;
+            background: #bbb;
+            border-radius: 2px;
+        }
+
+        li.top .no { background: #e10000; }
+
+        .t { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .panel { display: none; }
+        .panel.on { display: grid; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <div class="tabs">
+        <div class="tab on" data-i="0">每日</div>
+        <div class="tab" data-i="1">每周</div>
+        <div class="tab" data-i="2">每月</div>
+        <div class="tab" data-i="3">全部</div>
+    </div>
+
+    <ul class="panel on" data-i="0">
+        <li class="top"><i class="no">1</i><span class="t">最美的时光</span></li>
+        <li><i class="no">6</i><span class="t">极品女士第2季</span></li>
+        <li class="top"><i class="no">2</i><span class="t">咱们结婚吧</span></li>
+        <li><i class="no">7</i><span class="t">爱闪亮</span></li>
+        <li class="top"><i class="no">3</i><span class="t">渗透</span></li>
+        <li><i class="no">8</i><span class="t">狼烟（2013）</span></li>
+        <li><i class="no">4</i><span class="t">继承者们</span></li>
+        <li><i class="no">9</i><span class="t">钱多多炼爱记</span></li>
+        <li><i class="no">5</i><span class="t">烽火佳人</span></li>
+        <li><i class="no">10</i><span class="t">苍狼</span></li>
+    </ul>
+
+    <ul class="panel" data-i="1">
+        <li class="top"><i class="no">1</i><span class="t">父母爱情</span></li>
+        <li><i class="no">6</i><span class="t">老有所依</span></li>
+        <li class="top"><i class="no">2</i><span class="t">大丈夫</span></li>
+        <li><i class="no">7</i><span class="t">咱们结婚吧</span></li>
+        <li class="top"><i class="no">3</i><span class="t">辣妈正传</span></li>
+        <li><i class="no">8</i><span class="t">小爸爸</span></li>
+        <li><i class="no">4</i><span class="t">推拿</span></li>
+        <li><i class="no">9</i><span class="t">一代枭雄</span></li>
+        <li><i class="no">5</i><span class="t">渗透</span></li>
+        <li><i class="no">10</i><span class="t">打狗棍</span></li>
+    </ul>
+
+    <ul class="panel" data-i="2">
+        <li class="top"><i class="no">1</i><span class="t">甄嬛传</span></li>
+        <li><i class="no">6</i><span class="t">北京青年</span></li>
+        <li class="top"><i class="no">2</i><span class="t">琅琊榜</span></li>
+        <li><i class="no">7</i><span class="t">悬崖</span></li>
+        <li class="top"><i class="no">3</i><span class="t">潜伏</span></li>
+        <li><i class="no">8</i><span class="t">士兵突击</span></li>
+        <li><i class="no">4</i><span class="t">亮剑</span></li>
+        <li><i class="no">9</i><span class="t">闯关东</span></li>
+        <li><i class="no">5</i><span class="t">我的团长我的团</span></li>
+        <li><i class="no">10</i><span class="t">大宅门</span></li>
+    </ul>
+
+    <ul class="panel" data-i="3">
+        <li class="top"><i class="no">1</i><span class="t">西游记（1986）</span></li>
+        <li><i class="no">6</i><span class="t">三国演义（1994）</span></li>
+        <li class="top"><i class="no">2</i><span class="t">红楼梦（1987）</span></li>
+        <li><i class="no">7</i><span class="t">水浒传（1998）</span></li>
+        <li class="top"><i class="no">3</i><span class="t">还珠格格</span></li>
+        <li><i class="no">8</i><span class="t">新白娘子传奇</span></li>
+        <li><i class="no">4</i><span class="t">射雕英雄传（1983）</span></li>
+        <li><i class="no">9</i><span class="t">渴望</span></li>
+        <li><i class="no">5</i><span class="t">上海滩</span></li>
+        <li><i class="no">10</i><span class="t">编辑部的故事</span></li>
+    </ul>
+</div>
+
+<script>
+    (function () {
+        var tabs = document.querySelectorAll('.tab');
+        var panels = document.querySelectorAll('.panel');
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                var i = Number(tab.dataset.i);
+                tabs.forEach(function (t) { t.classList.remove('on'); });
+                panels.forEach(function (p) {
+                    p.classList.toggle('on', Number(p.dataset.i) === i);
+                });
+                tab.classList.add('on');
+            });
+        });
+    })();
+</script>
+</body>
+</html>

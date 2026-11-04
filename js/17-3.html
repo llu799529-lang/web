@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17-3 商品列表</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <!--
+      作者：lyb
+      建立时间：2026-11-02
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：商品列表页（fetch 请求 dummyjson 商品列表并渲染，点击跳转到详情页并带上 ID）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            padding: 40px 24px 56px;
+            background: #f5f6f8;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #1f2329;
+        }
+
+        .wrap { max-width: 1060px; margin: 0 auto; }
+
+        h1 { font-size: 26px; font-weight: 600; letter-spacing: .5px; }
+
+        .sub { margin-top: 10px; font-size: 14px; line-height: 1.9; color: #646a73; }
+
+        .sub code { font-family: Consolas, monospace; font-size: 12.5px; background: #eceef2; padding: 1px 5px; border-radius: 4px; }
+
+        .gh {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            padding: 6px 13px;
+            border-radius: 999px;
+            background: #1f2329;
+            color: #fff;
+            font-size: 12.5px;
+            text-decoration: none;
+            transition: background .18s, transform .18s;
+        }
+
+        .gh:hover { background: #000; transform: translateY(-1px); }
+
+        .bar {
+            margin-top: 22px;
+            padding: 13px 16px;
+            background: #fff;
+            border: 1px solid #e5e6eb;
+            border-radius: 12px;
+        }
+
+        .url {
+            font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+            font-size: 12px;
+            color: #646a73;
+            word-break: break-all;
+        }
+
+        .url b { color: #1d6fe0; font-weight: 400; }
+
+        .stat {
+            margin-top: 9px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            color: #8a9099;
+        }
+
+        .stat b { color: #3d4653; }
+        .stat .ok { color: #0b8a5c; }
+
+        /* ---------- 列表 ---------- */
+        .list {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        a.item {
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            border: 1px solid #e5e6eb;
+            border-radius: 12px;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            transition: box-shadow .18s, transform .18s, border-color .18s;
+        }
+
+        a.item:hover {
+            border-color: #1d6fe0;
+            box-shadow: 0 10px 24px rgba(29, 111, 224, .13);
+            transform: translateY(-3px);
+        }
+
+        .item .ph {
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border-bottom: 1px solid #f2f3f5;
+            background: #fff;
+        }
+
+        .item .ph img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+
+        .item .bd { padding: 12px 14px 14px; display: flex; flex-direction: column; flex: 1; }
+
+        .item h3 {
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 39px;
+        }
+
+        .item .meta {
+            margin-top: auto;
+            padding-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #8a9099;
+        }
+
+        .item .price { font-size: 14px; font-weight: 600; color: #e8720c; font-family: Arial, sans-serif; }
+        .item .rating { margin-left: auto; color: #f5a623; }
+
+        .item .cat {
+            margin-top: 7px;
+            font-size: 11px;
+            color: #8a9099;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #eef1f6;
+            align-self: flex-start;
+        }
+
+        .item .go { margin-top: 9px; font-size: 11.5px; color: #1d6fe0; }
+
+        .skeleton { height: 260px; border-radius: 12px; background: #fff; border: 1px solid #e5e6eb; position: relative; overflow: hidden; }
+
+        .skeleton::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(29, 111, 224, .07), transparent);
+            transform: translateX(-100%);
+            animation: sweep 1.1s infinite;
+        }
+
+        @keyframes sweep { to { transform: translateX(100%); } }
+
+        .empty {
+            margin-top: 16px;
+            padding: 34px;
+            text-align: center;
+            background: #fff;
+            border: 1px dashed #d8dce2;
+            border-radius: 12px;
+            font-size: 13.5px;
+            line-height: 1.9;
+            color: #8a9099;
+        }
+
+        .empty b { color: #b2404a; }
+
+        .empty button {
+            margin-top: 14px;
+            padding: 7px 16px;
+            border: 1px solid #1d6fe0;
+            border-radius: 8px;
+            background: #1d6fe0;
+            color: #fff;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        details {
+            margin-top: 18px;
+            background: #fff;
+            border: 1px solid #e5e6eb;
+            border-radius: 12px;
+            padding: 14px 18px;
+        }
+
+        summary { font-size: 13.5px; font-weight: 600; color: #3d4653; cursor: pointer; list-style: none; }
+        summary::-webkit-details-marker { display: none; }
+        summary::before { content: "▸ "; color: #1d6fe0; }
+        details[open] summary::before { content: "▾ "; }
+
+        details pre {
+            margin-top: 12px;
+            max-height: 360px;
+            overflow: auto;
+            padding: 14px 16px;
+            border-radius: 9px;
+            background: #fbfcfd;
+            border: 1px solid #eef0f3;
+        }
+
+        details code {
+            font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+            font-size: 12.5px;
+            line-height: 1.8;
+            white-space: pre;
+            color: #24292f;
+        }
+
+        .j-key { color: #1d6fe0; }
+        .j-str { color: #0a8a45; }
+        .j-num { color: #e8720c; }
+        .j-bool, .j-null { color: #a626a4; }
+
+        @media (max-width: 900px) {
+            .list { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>商品列表</h1>
+    <p class="sub">
+        用 <b>fetch</b> 请求 <code>dummyjson.com/products?limit=8</code>，把返回的 <code>products</code> 数组渲染成卡片。
+        这一页只负责列表，点任意一张卡片会跳到 <b>17-3-detail.html?id=编号</b>，详情由另一个页面按 ID 单独请求。
+    </p>
+    <a class="gh" href="https://github.com/llu799529-lang/html-homework" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub 仓库
+    </a>
+
+    <div class="bar">
+        <div class="url" id="url">请求地址：<b>https://dummyjson.com/products?limit=8</b></div>
+        <div class="stat" id="stat">等待请求…</div>
+    </div>
+
+    <div class="list" id="list"></div>
+
+    <details>
+        <summary>查看接口返回的原始 JSON</summary>
+        <pre><code id="raw">（请求后显示）</code></pre>
+    </details>
+</div>
+
+<script>
+    var API = 'https://dummyjson.com/products?limit=8';
+
+    var list = document.getElementById('list');
+    var stat = document.getElementById('stat');
+    var raw = document.getElementById('raw');
+
+    function escapeHtml(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function highlight(json) {
+        return escapeHtml(json).replace(
+            /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|\bnull\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+            function (m) {
+                var cls = 'j-num';
+                if (/^"/.test(m)) cls = /:$/.test(m) ? 'j-key' : 'j-str';
+                else if (/true|false/.test(m)) cls = 'j-bool';
+                else if (/null/.test(m)) cls = 'j-null';
+                return '<span class="' + cls + '">' + m + '</span>';
+            }
+        );
+    }
+
+    function card(p) {
+        var img = p.thumbnail || (p.images && p.images[0]) || '';
+        return '<a class="item" href="17-3-detail.html?id=' + p.id + '">' +
+            '<div class="ph"><img src="' + img + '" alt="" loading="lazy"></div>' +
+            '<div class="bd">' +
+            '<h3>' + escapeHtml(p.title) + '</h3>' +
+            '<div class="meta"><span class="price">$' + p.price + '</span>' +
+            '<span class="rating">★ ' + (p.rating || '-') + '</span></div>' +
+            '<span class="cat">' + escapeHtml(p.category || '') + '</span>' +
+            '<div class="go">查看详情 →</div>' +
+            '</div></a>';
+    }
+
+    function load() {
+        list.innerHTML = new Array(8).fill('<div class="skeleton"></div>').join('');
+        stat.innerHTML = '<span>状态 <b>请求中…</b></span>';
+        raw.textContent = '（请求中）';
+
+        var t0 = performance.now();
+
+        fetch(API, { headers: { 'Accept': 'application/json' } })
+            .then(function (res) {
+                if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.statusText);
+                return res.json();
+            })
+            .then(function (data) {
+                var ms = Math.round(performance.now() - t0);
+                var arr = data.products || [];
+
+                list.innerHTML = arr.length
+                    ? arr.map(card).join('')
+                    : '<div class="empty">接口返回了空列表。</div>';
+
+                stat.innerHTML =
+                    '<span>状态 <b class="ok">200 OK</b></span>' +
+                    '<span>耗时 <b>' + ms + ' ms</b></span>' +
+                    '<span>条数 <b>' + arr.length + '</b> / 共 ' + (data.total || arr.length) + ' 条</span>';
+
+                raw.innerHTML = highlight(JSON.stringify(data, null, 2));
+            })
+            .catch(function (err) {
+                list.innerHTML = '<div class="empty">' +
+                    '<b>列表请求失败：' + escapeHtml(err.message) + '</b><br>' +
+                    '可能是网络不通或接口暂时不可用。<br>' +
+                    '<button id="retry">再试一次</button></div>';
+                document.getElementById('retry').addEventListener('click', load);
+                stat.innerHTML = '<span>状态 <b style="color:#b2404a">失败</b></span>';
+                raw.textContent = '（没有拿到数据）';
+            });
+    }
+
+    load();
+</script>
+</body>
+</html>

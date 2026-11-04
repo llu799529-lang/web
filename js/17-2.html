@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17-2 调用接口展示数据</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <!--
+      作者：lyb
+      建立时间：2026-11-02
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：fetch 跨域接口并渲染数据（商品列表 → 按 ID 请求详情，另含用户 / 文章 / 图片接口，含加载态与错误处理）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            padding: 40px 24px 56px;
+            background: #f5f6f8;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #1f2329;
+        }
+
+        .wrap { max-width: 1060px; margin: 0 auto; }
+
+        h1 { font-size: 26px; font-weight: 600; letter-spacing: .5px; }
+
+        .sub { margin-top: 10px; font-size: 14px; line-height: 1.9; color: #646a73; }
+
+        .sub code { font-family: Consolas, monospace; font-size: 12.5px; background: #eceef2; padding: 1px 5px; border-radius: 4px; }
+
+        .gh {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            padding: 6px 13px;
+            border-radius: 999px;
+            background: #1f2329;
+            color: #fff;
+            font-size: 12.5px;
+            text-decoration: none;
+            transition: background .18s, transform .18s;
+        }
+
+        .gh:hover { background: #000; transform: translateY(-1px); }
+
+        /* ---------- 接口条 ---------- */
+        .bar {
+            margin-top: 22px;
+            padding: 14px 16px;
+            background: #fff;
+            border: 1px solid #e5e6eb;
+            border-radius: 12px;
+        }
+
+        .switch { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        .switch button {
+            padding: 7px 13px;
+            border: 1px solid #e5e6eb;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 12.5px;
+            color: #3d4653;
+            cursor: pointer;
+            transition: all .16s;
+        }
+
+        .switch button:hover { border-color: #1d6fe0; color: #1d6fe0; }
+
+        .switch button.on { background: #1f2329; border-color: #1f2329; color: #fff; }
+
+        .url {
+            margin-top: 12px;
+            padding: 9px 12px;
+            border-radius: 8px;
+            background: #f7f8fa;
+            border: 1px solid #eef0f3;
+            font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+            font-size: 12px;
+            color: #646a73;
+            word-break: break-all;
+        }
+
+        .url b { color: #1d6fe0; font-weight: 400; }
+
+        .stat {
+            margin-top: 10px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            color: #8a9099;
+        }
+
+        .stat b { color: #3d4653; }
+
+        .stat .ok { color: #0b8a5c; }
+
+        /* ---------- 列表 ---------- */
+        .list {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .item {
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            border: 1px solid #e5e6eb;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: box-shadow .18s, transform .18s, border-color .18s;
+        }
+
+        .item:hover {
+            border-color: #1d6fe0;
+            box-shadow: 0 10px 24px rgba(29, 111, 224, .13);
+            transform: translateY(-3px);
+        }
+
+        .item .ph {
+            height: 148px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border-bottom: 1px solid #f2f3f5;
+        }
+
+        .item .ph img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .item .bd { padding: 12px 14px 14px; display: flex; flex-direction: column; flex: 1; }
+
+        .item h3 {
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.5;
+            color: #1f2329;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .item .meta {
+            margin-top: auto;
+            padding-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #8a9099;
+        }
+
+        .item .price { font-size: 14px; font-weight: 600; color: #e8720c; font-family: Arial, sans-serif; }
+
+        .item .rating { margin-left: auto; color: #f5a623; }
+
+        .item .go {
+            margin-top: 9px;
+            font-size: 11.5px;
+            color: #1d6fe0;
+        }
+
+        .item.plain { cursor: default; }
+        .item.plain:hover { transform: none; box-shadow: none; border-color: #e5e6eb; }
+
+        .item .avatar {
+            height: 148px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f7f8fa;
+            border-bottom: 1px solid #f2f3f5;
+            font-size: 34px;
+            font-weight: 600;
+            color: #1d6fe0;
+            letter-spacing: 1px;
+        }
+
+        .tags { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+
+        .tags em {
+            font-style: normal;
+            font-size: 11px;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: #eef1f6;
+            color: #3d4653;
+        }
+
+        /* ---------- 详情 ---------- */
+        .detail {
+            margin-top: 16px;
+            background: #fff;
+            border: 1px solid #e5e6eb;
+            border-radius: 12px;
+            padding: 20px 22px 24px;
+        }
+
+        .back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 13px;
+            border: 1px solid #e5e6eb;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 12.5px;
+            color: #3d4653;
+            cursor: pointer;
+            transition: all .16s;
+        }
+
+        .back:hover { background: #1f2329; border-color: #1f2329; color: #fff; }
+
+        .dmain {
+            margin-top: 18px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 26px;
+        }
+
+        .gallery .big {
+            width: 100%;
+            height: 300px;
+            border: 1px solid #eef0f3;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .gallery .big img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        .gallery .thumbs { display: flex; gap: 8px; margin-top: 10px; }
+
+        .gallery .thumbs img {
+            width: 54px;
+            height: 54px;
+            object-fit: cover;
+            border: 2px solid transparent;
+            border-radius: 7px;
+            cursor: pointer;
+            background: #f7f8fa;
+        }
+
+        .gallery .thumbs img.on { border-color: #1d6fe0; }
+
+        .info h2 { font-size: 21px; font-weight: 600; line-height: 1.45; }
+
+        .info .brandline { margin-top: 8px; font-size: 12.5px; color: #8a9099; }
+
+        .info .priceline {
+            margin-top: 16px;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .info .priceline .p { font-size: 26px; font-weight: 600; color: #e8720c; font-family: Arial, sans-serif; }
+        .info .priceline .old { font-size: 14px; color: #b0b6bd; text-decoration: line-through; font-family: Arial, sans-serif; }
+        .info .priceline .off { font-size: 12px; padding: 2px 8px; border-radius: 6px; background: #fff1e6; color: #e8720c; }
+
+        .info .desc { margin-top: 16px; font-size: 13.5px; line-height: 1.9; color: #4a5058; }
+
+        .specs {
+            margin-top: 18px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .spec {
+            padding: 11px 13px;
+            background: #f9fafb;
+            border: 1px solid #f0f1f3;
+            border-radius: 9px;
+        }
+
+        .spec .k { font-size: 11.5px; color: #8a9099; }
+        .spec .v { margin-top: 5px; font-size: 13px; font-weight: 600; color: #1f2329; }
+
+        .detail .src {
+            margin-top: 18px;
+            padding: 9px 12px;
+            border-radius: 8px;
+            background: #f2fbf7;
+            border: 1px solid #d8f3e6;
+            font-family: Consolas, monospace;
+            font-size: 11.5px;
+            color: #0b7285;
+            word-break: break-all;
+        }
+
+        /* ---------- 状态 ---------- */
+        .skeleton { height: 250px; border-radius: 12px; background: #fff; border: 1px solid #e5e6eb; position: relative; overflow: hidden; }
+
+        .skeleton::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(29, 111, 224, .07), transparent);
+            transform: translateX(-100%);
+            animation: sweep 1.1s infinite;
+        }
+
+        @keyframes sweep { to { transform: translateX(100%); } }
+
+        .empty {
+            margin-top: 16px;
+            padding: 34px;
+            text-align: center;
+            background: #fff;
+            border: 1px dashed #d8dce2;
+            border-radius: 12px;
+            font-size: 13.5px;
+            line-height: 1.9;
+            color: #8a9099;
+        }
+
+        .empty b { color: #b2404a; }
+
+        .empty button {
+            margin-top: 14px;
+            padding: 7px 16px;
+            border: 1px solid #1d6fe0;
+            border-radius: 8px;
+            background: #1d6fe0;
+            color: #fff;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        /* ---------- 原始 JSON ---------- */
+        details {
+            margin-top: 18px;
+            background: #fff;
+            border: 1px solid #e5e6eb;
+            border-radius: 12px;
+            padding: 14px 18px;
+        }
+
+        summary { font-size: 13.5px; font-weight: 600; color: #3d4653; cursor: pointer; list-style: none; }
+        summary::-webkit-details-marker { display: none; }
+        summary::before { content: "▸ "; color: #1d6fe0; }
+        details[open] summary::before { content: "▾ "; }
+
+        details pre {
+            margin-top: 12px;
+            max-height: 380px;
+            overflow: auto;
+            padding: 14px 16px;
+            border-radius: 9px;
+            background: #fbfcfd;
+            border: 1px solid #eef0f3;
+        }
+
+        details code {
+            font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+            font-size: 12.5px;
+            line-height: 1.8;
+            white-space: pre;
+            color: #24292f;
+        }
+
+        .j-key { color: #1d6fe0; }
+        .j-str { color: #0a8a45; }
+        .j-num { color: #e8720c; }
+        .j-bool, .j-null { color: #a626a4; }
+
+        .hide { display: none !important; }
+
+        @media (max-width: 900px) {
+            .list { grid-template-columns: repeat(2, 1fr); }
+            .dmain { grid-template-columns: 1fr; }
+            .specs { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>调用接口，把数据画到页面上</h1>
+    <p class="sub">
+        页面用 <b>fetch</b> 请求公开接口，拿到 JSON 后把字段渲染成卡片。商品类的接口还做了
+        <b>列表 → 详情</b>：列表只带概要，点进去再按 ID 请求单个商品，两段数据是两个不同的地址。
+        这些接口都返回 <code>Access-Control-Allow-Origin: *</code>，可以直接跨域请求，不需要后端代理。
+    </p>
+    <a class="gh" href="https://github.com/llu799529-lang/html-homework" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub 仓库
+    </a>
+
+    <div class="bar">
+        <div class="switch" id="switch">
+            <button class="on" data-k="dum">商品列表 · dummyjson</button>
+            <button data-k="fake">商店商品 · fakestore</button>
+            <button data-k="users">用户 · jsonplaceholder</button>
+            <button data-k="posts">文章 · jsonplaceholder</button>
+            <button data-k="dogs">随机狗图 · dog.ceo</button>
+        </div>
+        <div class="url" id="url"></div>
+        <div class="stat" id="stat">等待请求…</div>
+    </div>
+
+    <div class="list" id="list"></div>
+    <div class="detail hide" id="detail"></div>
+
+    <details>
+        <summary>查看接口返回的原始 JSON</summary>
+        <pre><code id="raw">（请求后显示）</code></pre>
+    </details>
+</div>
+
+<script>
+    var SOURCES = {
+        dum: {
+            label: '商品列表 · dummyjson',
+            url: 'https://dummyjson.com/products?limit=8',
+            kind: 'product',
+            pick: function (d) { return d.products || []; },
+            detailUrl: function (id) { return 'https://dummyjson.com/products/' + id; }
+        },
+        fake: {
+            label: '商店商品 · fakestoreapi',
+            url: 'https://fakestoreapi.com/products?limit=8',
+            kind: 'product',
+            pick: function (d) { return d; },
+            detailUrl: function (id) { return 'https://fakestoreapi.com/products/' + id; }
+        },
+        users: {
+            label: '用户列表 · jsonplaceholder',
+            url: 'https://jsonplaceholder.typicode.com/users',
+            kind: 'user',
+            pick: function (d) { return d; }
+        },
+        posts: {
+            label: '文章列表 · jsonplaceholder',
+            url: 'https://jsonplaceholder.typicode.com/posts?_limit=8',
+            kind: 'post',
+            pick: function (d) { return d; }
+        },
+        dogs: {
+            label: '随机狗图 · dog.ceo',
+            url: 'https://dog.ceo/api/breed/hound/images/random/3',
+            kind: 'image',
+            pick: function (d) { return [].concat(d.message || []); }
+        }
+    };
+
+    var current = 'dum';
+    var list = document.getElementById('list');
+    var detail = document.getElementById('detail');
+    var urlBox = document.getElementById('url');
+    var stat = document.getElementById('stat');
+    var raw = document.getElementById('raw');
+
+    function escapeHtml(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function highlight(json) {
+        return escapeHtml(json).replace(
+            /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|\bnull\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+            function (m) {
+                var cls = 'j-num';
+                if (/^"/.test(m)) cls = /:$/.test(m) ? 'j-key' : 'j-str';
+                else if (/true|false/.test(m)) cls = 'j-bool';
+                else if (/null/.test(m)) cls = 'j-null';
+                return '<span class="' + cls + '">' + m + '</span>';
+            }
+        );
+    }
+
+    /* ---------- 各类型的卡片 ---------- */
+    function cardProduct(p, key) {
+        var img = p.thumbnail || p.image || '';
+        return '<div class="item" data-id="' + p.id + '" data-key="' + key + '">' +
+            '<div class="ph"><img src="' + img + '" alt="" loading="lazy"></div>' +
+            '<div class="bd">' +
+            '<h3>' + escapeHtml(p.title) + '</h3>' +
+            '<div class="meta"><span class="price">$' + p.price + '</span>' +
+            '<span class="rating">★ ' + (p.rating || '-') + '</span></div>' +
+            '<div class="go">查看详情 →</div>' +
+            '</div></div>';
+    }
+
+    function cardUser(u) {
+        var initials = u.name.split(' ').map(function (w) { return w[0]; }).join('').slice(0, 2);
+        return '<div class="item plain">' +
+            '<div class="avatar">' + initials + '</div>' +
+            '<div class="bd"><h3>' + u.name + '</h3>' +
+            '<div class="tags"><em>@' + u.username + '</em></div>' +
+            '<div class="meta" style="display:block;font-size:11.5px;line-height:1.7">' +
+            escapeHtml(u.email) + '<br>' + escapeHtml(u.phone) + '<br>' + escapeHtml(u.address.city) +
+            '</div></div></div>';
+    }
+
+    function cardPost(p) {
+        var title = p.title.charAt(0).toUpperCase() + p.title.slice(1);
+        return '<div class="item plain">' +
+            '<div class="ph" style="align-items:flex-start;justify-content:flex-start;font-size:12px;line-height:1.6;color:#646a73;height:148px;overflow:hidden;display:block">' +
+            escapeHtml(p.body.slice(0, 150)) + '…</div>' +
+            '<div class="bd"><h3>' + escapeHtml(title) + '</h3>' +
+            '<div class="tags"><em>user ' + p.userId + '</em><em>#' + p.id + '</em></div></div></div>';
+    }
+
+    function cardImage(src) {
+        return '<div class="item plain">' +
+            '<div class="ph" style="height:200px"><img src="' + src + '" alt=""></div>' +
+            '<div class="bd"><h3>hound</h3><div class="tags"><em>dog.ceo</em></div></div></div>';
+    }
+
+    function renderList(kind, arr, key) {
+        if (kind === 'product') return arr.map(function (p) { return cardProduct(p, key); }).join('');
+        if (kind === 'user') return arr.map(cardUser).join('');
+        if (kind === 'post') return arr.map(cardPost).join('');
+        return arr.map(cardImage).join('');
+    }
+
+    /* ---------- 加载列表 ---------- */
+    function load(key) {
+        current = key;
+        var api = SOURCES[key];
+
+        document.querySelectorAll('#switch button').forEach(function (b) {
+            b.classList.toggle('on', b.dataset.k === key);
+        });
+
+        detail.classList.add('hide');
+        list.classList.remove('hide');
+        urlBox.innerHTML = '请求地址：<b>' + api.url + '</b>';
+        stat.innerHTML = '<span>状态 <b>请求中…</b></span>';
+        raw.textContent = '（请求中）';
+        list.innerHTML = new Array(4).fill('<div class="skeleton"></div>').join('');
+
+        var t0 = performance.now();
+
+        fetch(api.url, { headers: { 'Accept': 'application/json' } })
+            .then(function (res) {
+                if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.statusText);
+                return res.json();
+            })
+            .then(function (data) {
+                var ms = Math.round(performance.now() - t0);
+                var arr = api.pick(data) || [];
+
+                list.innerHTML = arr.length
+                    ? renderList(api.kind, arr, key)
+                    : '<div class="empty">接口返回了空数据。</div>';
+
+                stat.innerHTML =
+                    '<span>状态 <b class="ok">200 OK</b></span>' +
+                    '<span>耗时 <b>' + ms + ' ms</b></span>' +
+                    '<span>条数 <b>' + arr.length + '</b></span>' +
+                    '<span>接口 <b>' + api.label + '</b></span>';
+
+                raw.innerHTML = highlight(JSON.stringify(data, null, 2));
+            })
+            .catch(function (err) {
+                list.innerHTML = '<div class="empty">' +
+                    '<b>请求失败：' + escapeHtml(err.message) + '</b><br>' +
+                    '可能是网络不通、接口限流，或这个接口当前不可用。<br>' +
+                    '<button id="retry">再试一次</button></div>';
+                document.getElementById('retry').addEventListener('click', function () { load(current); });
+                stat.innerHTML = '<span>状态 <b style="color:#b2404a">失败</b></span>';
+                raw.textContent = '（没有拿到数据）';
+            });
+    }
+
+    /* ---------- 加载详情 ---------- */
+    function openDetail(key, id) {
+        var api = SOURCES[key];
+        var url = api.detailUrl(id);
+
+        list.classList.add('hide');
+        detail.classList.remove('hide');
+        urlBox.innerHTML = '详情地址：<b>' + url + '</b>　<span style="color:#a0a6ad">（按 ID 单独请求，不是从列表里取的）</span>';
+        stat.innerHTML = '<span>状态 <b>请求中…</b></span>';
+        raw.textContent = '（请求中）';
+        detail.innerHTML = '<div class="skeleton" style="height:340px"></div>';
+
+        var t0 = performance.now();
+
+        fetch(url, { headers: { 'Accept': 'application/json' } })
+            .then(function (res) {
+                if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.statusText);
+                return res.json();
+            })
+            .then(function (p) {
+                var ms = Math.round(performance.now() - t0);
+                var imgs = (p.images && p.images.length) ? p.images : [p.image || p.thumbnail || ''];
+                var oldPrice = p.discountPercentage
+                    ? '$' + (p.price / (1 - p.discountPercentage / 100)).toFixed(2)
+                    : '';
+
+                var thumbs = imgs.slice(0, 4).map(function (s, i) {
+                    return '<img src="' + s + '" data-src="' + s + '" class="' + (i === 0 ? 'on' : '') + '" alt="">';
+                }).join('');
+
+                var specs = [];
+                if (p.brand) specs.push(['品牌', p.brand]);
+                if (p.category) specs.push(['分类', p.category]);
+                if (p.stock !== undefined) specs.push(['库存', p.stock + ' 件']);
+                if (p.sku) specs.push(['SKU', p.sku]);
+                if (p.warrantyInformation) specs.push(['保修', p.warrantyInformation]);
+                if (p.shippingInformation) specs.push(['配送', p.shippingInformation]);
+
+                detail.innerHTML =
+                    '<button class="back" id="back">← 返回列表</button>' +
+                    '<div class="dmain">' +
+                    '<div class="gallery">' +
+                    '<div class="big"><img id="bigimg" src="' + imgs[0] + '" alt=""></div>' +
+                    '<div class="thumbs" id="thumbs">' + thumbs + '</div>' +
+                    '</div>' +
+                    '<div class="info">' +
+                    '<h2>' + escapeHtml(p.title) + '</h2>' +
+                    '<div class="brandline">' + escapeHtml(p.brand || p.category || '') + '　·　商品 ID ' + p.id + '</div>' +
+                    '<div class="priceline">' +
+                    '<span class="p">$' + p.price + '</span>' +
+                    (oldPrice ? '<span class="old">' + oldPrice + '</span>' : '') +
+                    (p.discountPercentage ? '<span class="off">-' + p.discountPercentage.toFixed(1) + '%</span>' : '') +
+                    '<span style="color:#f5a623;font-size:13px">★ ' + (p.rating || '-') + '</span>' +
+                    '</div>' +
+                    '<p class="desc">' + escapeHtml(p.description || '') + '</p>' +
+                    '<div class="specs">' + specs.map(function (s) {
+                        return '<div class="spec"><div class="k">' + s[0] + '</div><div class="v">' + escapeHtml(s[1]) + '</div></div>';
+                    }).join('') + '</div>' +
+                    '</div></div>' +
+                    '<div class="src">本次详情请求：GET ' + url + '　·　' + ms + ' ms</div>';
+
+                document.getElementById('back').addEventListener('click', function () {
+                    detail.classList.add('hide');
+                    list.classList.remove('hide');
+                    urlBox.innerHTML = '请求地址：<b>' + SOURCES[current].url + '</b>';
+                });
+
+                document.getElementById('thumbs').addEventListener('click', function (ev) {
+                    var t = ev.target;
+                    if (t.tagName !== 'IMG') return;
+                    document.getElementById('bigimg').src = t.dataset.src;
+                    document.querySelectorAll('#thumbs img').forEach(function (x) { x.classList.remove('on'); });
+                    t.classList.add('on');
+                });
+
+                stat.innerHTML =
+                    '<span>状态 <b class="ok">200 OK</b></span>' +
+                    '<span>耗时 <b>' + ms + ' ms</b></span>' +
+                    '<span>来源 <b>' + SOURCES[key].label + ' · /' + id + '</b></span>';
+                raw.innerHTML = highlight(JSON.stringify(p, null, 2));
+            })
+            .catch(function (err) {
+                detail.innerHTML = '<div class="empty"><b>详情请求失败：' + escapeHtml(err.message) +
+                    '</b><br><button id="back2">返回列表</button></div>';
+                document.getElementById('back2').addEventListener('click', function () {
+                    detail.classList.add('hide');
+                    list.classList.remove('hide');
+                });
+            });
+    }
+
+    /* ---------- 事件 ---------- */
+    document.getElementById('switch').addEventListener('click', function (ev) {
+        var btn = ev.target.closest('button');
+        if (!btn || btn.dataset.k === current) return;
+        load(btn.dataset.k);
+    });
+
+    list.addEventListener('click', function (ev) {
+        var card = ev.target.closest('.item[data-id]');
+        if (!card) return;
+        openDetail(card.dataset.key, card.dataset.id);
+    });
+
+    load('dum');
+</script>
+</body>
+</html>

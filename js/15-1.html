@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15-1 一百个盒子 · 逢7规则</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <!--
+      作者：lyb
+      建立时间：2026-10-26
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：一百个盒子 —— 按“逢7规则”筛选并显示数字
+    -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            padding: 40px 24px 56px;
+            background: #f5f6f8;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #1f2329;
+        }
+
+        header {
+            max-width: 760px;
+            margin: 0 auto 26px;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 600;
+            letter-spacing: .5px;
+        }
+
+        .rule {
+            margin-top: 12px;
+            font-size: 14px;
+            line-height: 1.9;
+            color: #646a73;
+        }
+
+        .rule b {
+            color: #1f2329;
+            font-weight: 600;
+        }
+
+        .stat {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 7px 14px;
+            border-radius: 999px;
+            background: #e8f3ff;
+            color: #1d6fe0;
+            font-size: 13px;
+        }
+
+        .stat i {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #1d6fe0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(10, 64px);
+            gap: 10px;
+            justify-content: center;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .box {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* 不满足规则：空盒子 */
+        .box.miss {
+            background: #fff;
+            border: 1px solid #e5e6eb;
+            color: transparent;
+        }
+
+        /* 满足规则：显示数字 */
+        .box.hit {
+            background: #1d6fe0;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(29, 111, 224, .22);
+        }
+
+        /* 7 的倍数用另一种颜色，方便对照 */
+        .box.hit.multiple {
+            background: #12b886;
+            box-shadow: 0 4px 12px rgba(18, 184, 134, .22);
+        }
+
+        .legend {
+            max-width: 760px;
+            margin: 22px auto 0;
+            display: flex;
+            gap: 22px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            color: #646a73;
+        }
+
+        .legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .legend em {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+            font-style: normal;
+        }
+
+        .l-miss { background: #fff; border: 1px solid #e5e6eb; }
+        .l-hit { background: #1d6fe0; }
+        .l-mul { background: #12b886; }
+
+        @media (max-width: 720px) {
+            .grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            .box {
+                height: 56px;
+            }
+        }
+
+        .gh {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            padding: 6px 13px;
+            border-radius: 999px;
+            background: #1f2329;
+            color: #fff;
+            font-size: 12.5px;
+            text-decoration: none;
+            transition: background .18s, transform .18s;
+        }
+
+        .gh:hover { background: #000; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>一百个盒子 · 逢 7 规则</h1>
+        <p class="rule">
+            规则：<b>7 的倍数</b>、<b>个位数是 7</b>、<b>数字里含 7</b> 的盒子显示数字，其余盒子保持空白。
+        </p>
+        <div class="stat"><i></i><span id="stat">正在计算…</span></div>
+        <a class="gh" href="https://github.com/llu799529-lang/html-homework" target="_blank" rel="noopener">
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+            GitHub 仓库
+        </a>
+    </header>
+
+    <main class="grid" id="grid"></main>
+
+    <div class="legend">
+        <span><em class="l-mul"></em>7 的倍数</span>
+        <span><em class="l-hit"></em>含 7 的数</span>
+        <span><em class="l-miss"></em>不满足规则（空盒子）</span>
+    </div>
+
+    <script>
+        // 判断是否满足“逢 7 规则”：7 的倍数，或者数字里含有 7（含个位数是 7 的情况）
+        function isHit(n) {
+            return n % 7 === 0 || String(n).indexOf('7') !== -1;
+        }
+
+        var grid = document.getElementById('grid');
+        var hitCount = 0;
+        var html = '';
+
+        for (var n = 1; n <= 100; n++) {
+            var hit = isHit(n);
+            if (hit) hitCount++;
+
+            var cls = 'box ' + (hit ? 'hit' : 'miss');
+            if (hit && n % 7 === 0) cls += ' multiple';
+
+            // 不满足规则的盒子不写入数字，留空
+            html += '<div class="' + cls + '" data-n="' + n + '">' + (hit ? n : '') + '</div>';
+        }
+
+        grid.innerHTML = html;
+        document.getElementById('stat').textContent =
+            '1 到 100 共 100 个盒子，满足规则的有 ' + hitCount + ' 个';
+    </script>
+</body>
+</html>

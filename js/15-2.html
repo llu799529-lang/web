@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15-2 JavaScript 程序结构 · 条件 · 循环</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <!--
+      作者：lyb
+      建立时间：2026-10-26
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：JavaScript 程序结构演示（顺序 / 分支 / 循环 + 条件语句 + 循环语句，结果实时计算）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            padding: 40px 24px 56px;
+            background: #f5f6f8;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #1f2329;
+        }
+
+        .wrap { max-width: 1060px; margin: 0 auto; }
+
+        h1 { font-size: 26px; font-weight: 600; letter-spacing: .5px; }
+
+        .sub { margin-top: 10px; font-size: 14px; line-height: 1.9; color: #646a73; }
+
+        .top3 {
+            margin-top: 26px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .top3 article {
+            background: #fff;
+            border: 1px solid #e5e6eb;
+            border-radius: 12px;
+            padding: 16px 18px;
+        }
+
+        .top3 h3 { font-size: 14.5px; font-weight: 600; }
+
+        .top3 p { margin-top: 7px; font-size: 13px; line-height: 1.7; color: #646a73; }
+
+        h2.sec {
+            margin-top: 38px;
+            font-size: 17px;
+            font-weight: 600;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e5e6eb;
+        }
+
+        .grid {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #e5e6eb;
+            border-radius: 12px;
+            padding: 16px 18px 14px;
+        }
+
+        .card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tag {
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #eef1f6;
+            color: #3d4653;
+        }
+
+        pre {
+            margin-top: 12px;
+            padding: 11px 12px;
+            border-radius: 8px;
+            background: #f7f8fa;
+            border: 1px solid #eef0f3;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+            font-size: 12.5px;
+            line-height: 1.7;
+            white-space: pre;
+            color: #24292f;
+        }
+
+        .out {
+            margin-top: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #f2fbf7;
+            border: 1px solid #d8f3e6;
+            font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+            font-size: 12.5px;
+            line-height: 1.75;
+            color: #0b7285;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .out b { color: #12b886; }
+
+        @media (max-width: 820px) {
+            .top3, .grid { grid-template-columns: 1fr; }
+        }
+
+        .gh {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            padding: 6px 13px;
+            border-radius: 999px;
+            background: #1f2329;
+            color: #fff;
+            font-size: 12.5px;
+            text-decoration: none;
+            transition: background .18s, transform .18s;
+        }
+
+        .gh:hover { background: #000; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>JavaScript 程序结构 · 条件 · 循环</h1>
+    <p class="sub">
+        程序只有三种基本结构：<b>顺序</b>、<b>分支</b>、<b>循环</b>。下面每个例子的绿色框，
+        都是页面加载时真的跑了一遍这段代码算出来的结果，不是手写的文字。
+    </p>
+    <a class="gh" href="https://github.com/llu799529-lang/html-homework" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub 仓库
+    </a>
+
+    <div class="top3">
+        <article>
+            <h3>顺序结构</h3>
+            <p>代码从上往下一行行执行，前一步的输出就是后一步的输入，最基础的结构。</p>
+        </article>
+        <article>
+            <h3>分支结构</h3>
+            <p>根据条件决定走哪条路：if / else if / else、三元运算符、switch 都属于这一类。</p>
+        </article>
+        <article>
+            <h3>循环结构</h3>
+            <p>条件成立就重复执行：for、while、do...while、for...of，配合 break / continue 控制。</p>
+        </article>
+    </div>
+
+    <h2 class="sec">一、条件（分支结构）</h2>
+    <div class="grid">
+        <div class="card">
+            <h4>if / else if / else <span class="tag">成绩评级</span></h4>
+            <pre><code>function grade(score) {
+  if (score &gt;= 90) return 'A';
+  else if (score &gt;= 80) return 'B';
+  else if (score &gt;= 60) return 'C';
+  else return 'D';
+}</code></pre>
+            <div class="out" id="out-if"></div>
+        </div>
+
+        <div class="card">
+            <h4>三元运算符 <span class="tag">一句话判断</span></h4>
+            <pre><code>let n = 7;
+let type = n % 2 === 0 ? '偶数' : '奇数';</code></pre>
+            <div class="out" id="out-ternary"></div>
+        </div>
+
+        <div class="card">
+            <h4>switch <span class="tag">多分支匹配</span></h4>
+            <pre><code>switch (day) {
+  case 6:
+  case 0:  text = '周末'; break;
+  default: text = '工作日';
+}</code></pre>
+            <div class="out" id="out-switch"></div>
+        </div>
+
+        <div class="card">
+            <h4>顺序结构 <span class="tag">从上到下</span></h4>
+            <pre><code>let price = 39.9;
+let count = 3;
+let total = price * count;   // 先算小计
+if (total &gt; 100) total *= 0.9;  // 再判断是否打折</code></pre>
+            <div class="out" id="out-seq"></div>
+        </div>
+    </div>
+
+    <h2 class="sec">二、循环（循环结构）</h2>
+    <div class="grid">
+        <div class="card">
+            <h4>for <span class="tag">1 到 10 累加</span></h4>
+            <pre><code>let sum = 0;
+for (let i = 1; i &lt;= 10; i++) {
+  sum += i;
+}</code></pre>
+            <div class="out" id="out-for"></div>
+        </div>
+
+        <div class="card">
+            <h4>while <span class="tag">不知道次数时</span></h4>
+            <pre><code>let n = 100, steps = 0;
+while (n &gt; 1) {          // 偶数除 2，奇数乘 3 加 1
+  n = n % 2 === 0 ? n / 2 : n * 3 + 1;
+  steps++;
+}</code></pre>
+            <div class="out" id="out-while"></div>
+        </div>
+
+        <div class="card">
+            <h4>do...while <span class="tag">至少执行一次</span></h4>
+            <pre><code>let i = 10;
+do {
+  log.push(i);
+  i++;
+} while (i &lt; 3);</code></pre>
+            <div class="out" id="out-do"></div>
+        </div>
+
+        <div class="card">
+            <h4>for...of + break <span class="tag">遍历数组</span></h4>
+            <pre><code>for (const n of [3, 8, 15, 22]) {
+  if (n &gt; 10) break;   // 超过 10 就停
+  picked.push(n);
+}</code></pre>
+            <div class="out" id="out-forof"></div>
+        </div>
+    </div>
+
+    <h2 class="sec">三、嵌套：九九乘法表前 3 行</h2>
+    <div class="card">
+        <pre><code>for (let i = 1; i &lt;= 3; i++) {
+  let line = '';
+  for (let j = 1; j &lt;= i; j++) line += `${j}×${i}=${i * j}  `;
+  table.push(line);
+}</code></pre>
+        <div class="out" id="out-table"></div>
+    </div>
+</div>
+
+<script>
+    /* ---------- 条件 ---------- */
+    function grade(score) {
+        if (score >= 90) return 'A';
+        else if (score >= 80) return 'B';
+        else if (score >= 60) return 'C';
+        else return 'D';
+    }
+    document.getElementById('out-if').innerHTML =
+        [95, 82, 61, 45].map(s => `${s} 分 → <b>${grade(s)}</b>`).join('　');
+
+    let n2 = 7;
+    document.getElementById('out-ternary').innerHTML =
+        `n = 7 → <b>${n2 % 2 === 0 ? '偶数' : '奇数'}</b>`;
+
+    let dayText = [];
+    [1, 6, 0].forEach(function (day) {
+        let text;
+        switch (day) {
+            case 6:
+            case 0:
+                text = '周末';
+                break;
+            default:
+                text = '工作日';
+        }
+        dayText.push(`第 ${day} 天 → <b>${text}</b>`);
+    });
+    document.getElementById('out-switch').innerHTML = dayText.join('　');
+
+    let price = 39.9, count = 3;
+    let total = price * count;
+    let note = '未打折';
+    if (total > 100) { total *= 0.9; note = '打 9 折'; }
+    document.getElementById('out-seq').innerHTML =
+        `小计 ${(price * count).toFixed(1)} 元，${note}，实付 <b>${total.toFixed(2)} 元</b>`;
+
+    /* ---------- 循环 ---------- */
+    let sum = 0;
+    for (let i = 1; i <= 10; i++) sum += i;
+    document.getElementById('out-for').innerHTML =
+        `1 + 2 + … + 10 = <b>${sum}</b>`;
+
+    let n = 100, steps = 0, seq = [100];
+    while (n > 1) {
+        n = n % 2 === 0 ? n / 2 : n * 3 + 1;
+        steps++;
+        if (seq.length < 8) seq.push(n);
+    }
+    document.getElementById('out-while').innerHTML =
+        `${seq.join(' → ')} … 共 <b>${steps}</b> 步到 1`;
+
+    let i = 10, log = [];
+    do {
+        log.push(i);
+        i++;
+    } while (i < 3);
+    document.getElementById('out-do').innerHTML =
+        `循环体执行结果：[${log.join(', ')}]，虽然条件一开始就不成立，仍执行了 <b>${log.length}</b> 次`;
+
+    let picked = [];
+    for (const v of [3, 8, 15, 22]) {
+        if (v > 10) break;
+        picked.push(v);
+    }
+    document.getElementById('out-forof').innerHTML =
+        `取到 [${picked.join(', ')}]，遇到 15 &gt; 10 就 break 了`;
+
+    /* ---------- 嵌套 ---------- */
+    let table = [];
+    for (let a = 1; a <= 3; a++) {
+        let line = '';
+        for (let b = 1; b <= a; b++) line += `${b}×${a}=${a * b}  `;
+        table.push(line);
+    }
+    document.getElementById('out-table').innerHTML = table.join('<br>');
+</script>
+</body>
+</html>

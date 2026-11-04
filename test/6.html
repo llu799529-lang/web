@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课堂测试 6 · 股票涨跌幅榜</title>
+    <!--
+      作者：lyb
+      建立时间：2026-10-29
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：股票涨跌幅榜（沪涨 / 沪跌 / 深涨 / 深跌 四个标签，表格列出价格与涨跌）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            padding: 24px;
+            background: #fff;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            color: #333;
+        }
+
+        .box { width: 460px; border: 1px solid #eee; }
+
+        .tabs { display: flex; background: #f4f4f4; }
+
+        .tab {
+            flex: 1;
+            height: 42px;
+            line-height: 42px;
+            text-align: center;
+            font-size: 15px;
+            color: #333;
+            cursor: pointer;
+            border-right: 1px solid #e4e4e4;
+            transition: all .15s;
+        }
+
+        .tab:last-child { border-right: none; }
+
+        .tab:hover { background: #eaeaea; }
+
+        .tab.on {
+            background: #fff;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 11px 12px;
+            border-top: 1px solid #f0f0f0;
+            white-space: nowrap;
+        }
+
+        td:first-child { width: 40%; cursor: pointer; }
+
+        td:first-child:hover { color: #d0021b; }
+
+        td.up { color: #d0021b; font-family: Arial, sans-serif; }
+        td.down { color: #0a8a45; font-family: Arial, sans-serif; }
+
+        .panel { display: none; }
+        .panel.on { display: block; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <div class="tabs">
+        <div class="tab on" data-i="0">沪涨</div>
+        <div class="tab" data-i="1">沪跌</div>
+        <div class="tab" data-i="2">深涨</div>
+        <div class="tab" data-i="3">深跌</div>
+    </div>
+
+    <div class="panel on" data-i="0">
+        <table>
+            <tr><td>1. 浙能电力</td><td>8.88</td><td class="up">+3.35</td><td class="up">60.58%</td></tr>
+            <tr><td>2. 天津松江</td><td>8.16</td><td class="up">+0.65</td><td class="up">8.66%</td></tr>
+            <tr><td>3. 金瑞科技</td><td>8.79</td><td class="up">+0.42</td><td class="up">5.02%</td></tr>
+            <tr><td>4. 宏发股份</td><td>17.22</td><td class="up">+0.82</td><td class="up">5.00%</td></tr>
+            <tr><td>5. 杭齿前进</td><td>7.23</td><td class="up">+0.34</td><td class="up">4.93%</td></tr>
+        </table>
+    </div>
+
+    <div class="panel" data-i="1">
+        <table>
+            <tr><td>1. 东方明珠</td><td>12.44</td><td class="down">-0.86</td><td class="down">-6.47%</td></tr>
+            <tr><td>2. 上海医药</td><td>19.30</td><td class="down">-1.12</td><td class="down">-5.48%</td></tr>
+            <tr><td>3. 光明乳业</td><td>8.02</td><td class="down">-0.41</td><td class="down">-4.86%</td></tr>
+            <tr><td>4. 上港集团</td><td>6.15</td><td class="down">-0.27</td><td class="down">-4.21%</td></tr>
+            <tr><td>5. 申能股份</td><td>7.68</td><td class="down">-0.31</td><td class="down">-3.88%</td></tr>
+        </table>
+    </div>
+
+    <div class="panel" data-i="2">
+        <table>
+            <tr><td>1. 万科A</td><td>9.34</td><td class="up">+0.62</td><td class="up">7.11%</td></tr>
+            <tr><td>2. 中集集团</td><td>14.28</td><td class="up">+0.88</td><td class="up">6.57%</td></tr>
+            <tr><td>3. 深高速</td><td>11.05</td><td class="up">+0.61</td><td class="up">5.84%</td></tr>
+            <tr><td>4. 华侨城A</td><td>6.72</td><td class="up">+0.34</td><td class="up">5.33%</td></tr>
+            <tr><td>5. 中兴通讯</td><td>31.60</td><td class="up">+1.42</td><td class="up">4.70%</td></tr>
+        </table>
+    </div>
+
+    <div class="panel" data-i="3">
+        <table>
+            <tr><td>1. 平安银行</td><td>10.18</td><td class="down">-0.74</td><td class="down">-6.78%</td></tr>
+            <tr><td>2. 格力电器</td><td>36.55</td><td class="down">-2.31</td><td class="down">-5.94%</td></tr>
+            <tr><td>3. 美的集团</td><td>52.40</td><td class="down">-2.86</td><td class="down">-5.17%</td></tr>
+            <tr><td>4. 比亚迪</td><td>188.20</td><td class="down">-9.40</td><td class="down">-4.76%</td></tr>
+            <tr><td>5. 五粮液</td><td>142.30</td><td class="down">-6.50</td><td class="down">-4.37%</td></tr>
+        </table>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var tabs = document.querySelectorAll('.tab');
+        var panels = document.querySelectorAll('.panel');
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                var i = Number(tab.dataset.i);
+                tabs.forEach(function (t) { t.classList.remove('on'); });
+                panels.forEach(function (p) {
+                    p.classList.toggle('on', Number(p.dataset.i) === i);
+                });
+                tab.classList.add('on');
+            });
+        });
+    })();
+</script>
+</body>
+</html>

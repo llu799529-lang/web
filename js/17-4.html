@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17-4 接口测试</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <!--
+      作者：lyb
+      建立时间：2026-11-02
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：远程接口测试工具（GET / POST / PUT / PATCH / DELETE，显示状态码、耗时、响应头、响应体与错误提示）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            padding: 40px 24px 56px;
+            background: #f5f6f8;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #1f2329;
+        }
+
+        .wrap { max-width: 1000px; margin: 0 auto; }
+
+        h1 { font-size: 26px; font-weight: 600; letter-spacing: .5px; }
+
+        .sub { margin-top: 10px; font-size: 14px; line-height: 1.9; color: #646a73; }
+
+        .sub code { font-family: Consolas, monospace; font-size: 12.5px; background: #eceef2; padding: 1px 5px; border-radius: 4px; }
+
+        .gh {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            padding: 6px 13px;
+            border-radius: 999px;
+            background: #1f2329;
+            color: #fff;
+            font-size: 12.5px;
+            text-decoration: none;
+            transition: background .18s, transform .18s;
+        }
+
+        .gh:hover { background: #000; transform: translateY(-1px); }
+
+        .panel {
+            margin-top: 22px;
+            background: #fff;
+            border: 1px solid #e5e6eb;
+            border-radius: 12px;
+            padding: 16px 18px;
+        }
+
+        /* ---------- 请求行 ---------- */
+        .reqline { display: flex; gap: 8px; }
+
+        select#method {
+            flex: 0 0 106px;
+            height: 42px;
+            padding: 0 10px;
+            border: 1px solid #e0e3e8;
+            border-radius: 9px;
+            background: #fbfcfd;
+            font-family: Consolas, monospace;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #1f2329;
+            cursor: pointer;
+            outline: none;
+        }
+
+        select#method:focus { border-color: #1d6fe0; }
+
+        input#url {
+            flex: 1;
+            min-width: 0;
+            height: 42px;
+            padding: 0 14px;
+            border: 1px solid #e0e3e8;
+            border-radius: 9px;
+            background: #fbfcfd;
+            font-family: Consolas, monospace;
+            font-size: 13px;
+            color: #1f2329;
+            outline: none;
+            transition: border-color .15s;
+        }
+
+        input#url:focus { border-color: #1d6fe0; background: #fff; }
+
+        #send {
+            flex: 0 0 auto;
+            padding: 0 22px;
+            height: 42px;
+            border: none;
+            border-radius: 9px;
+            background: #1d6fe0;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .16s;
+        }
+
+        #send:hover { background: #1559c0; }
+        #send:disabled { background: #b9c6d8; cursor: not-allowed; }
+
+        /* ---------- 快捷 ---------- */
+        .quick { margin-top: 11px; display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
+
+        .quick span { font-size: 12px; color: #a0a6ad; }
+
+        .quick button {
+            padding: 5px 11px;
+            border: 1px solid #e5e6eb;
+            border-radius: 7px;
+            background: #fff;
+            font-size: 12px;
+            color: #3d4653;
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+        .quick button:hover { border-color: #1d6fe0; color: #1d6fe0; }
+
+        /* ---------- 请求体 ---------- */
+        .bodybox { margin-top: 14px; }
+
+        .label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12.5px;
+            color: #646a73;
+            margin-bottom: 7px;
+        }
+
+        .label b { color: #3d4653; font-weight: 600; }
+
+        .label em {
+            font-style: normal;
+            font-size: 11px;
+            padding: 1px 7px;
+            border-radius: 999px;
+            background: #eef1f6;
+            color: #8a9099;
+        }
+
+        textarea {
+            width: 100%;
+            height: 118px;
+            padding: 12px 14px;
+            border: 1px solid #e0e3e8;
+            border-radius: 9px;
+            background: #fbfcfd;
+            font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+            font-size: 12.5px;
+            line-height: 1.75;
+            color: #24292f;
+            resize: vertical;
+            outline: none;
+            transition: border-color .15s;
+        }
+
+        textarea:focus { border-color: #1d6fe0; background: #fff; }
+
+        textarea:disabled { background: #f5f6f8; color: #b0b6bd; cursor: not-allowed; }
+
+        /* ---------- 响应 ---------- */
+        .res { margin-top: 18px; }
+
+        .resbar {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            padding: 11px 14px;
+            background: #fff;
+            border: 1px solid #e5e6eb;
+            border-radius: 10px;
+            font-family: Consolas, monospace;
+            font-size: 12.5px;
+            color: #8a9099;
+        }
+
+        .resbar b { color: #3d4653; }
+
+        .badge {
+            padding: 2px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .badge.ok { background: #e7f8f0; color: #0b8a5c; }
+        .badge.warn { background: #fff4e0; color: #9a6100; }
+        .badge.err { background: #fdf0f0; color: #b2404a; }
+        .badge.wait { background: #eef1f6; color: #646a73; }
+
+        .tabs { margin-left: auto; display: flex; gap: 4px; }
+
+        .tabs button {
+            padding: 4px 11px;
+            border: 1px solid #e5e6eb;
+            border-radius: 7px;
+            background: #fff;
+            font-size: 12px;
+            color: #646a73;
+            cursor: pointer;
+        }
+
+        .tabs button.on { background: #1f2329; border-color: #1f2329; color: #fff; }
+
+        pre.out {
+            margin-top: 10px;
+            min-height: 180px;
+            max-height: 420px;
+            overflow: auto;
+            padding: 14px 16px;
+            background: #fff;
+            border: 1px solid #e5e6eb;
+            border-radius: 10px;
+        }
+
+        pre.out code {
+            font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+            font-size: 12.5px;
+            line-height: 1.8;
+            white-space: pre;
+            color: #24292f;
+        }
+
+        .hint { color: #b0b6bd; font-size: 13px; }
+
+        /* 错误条 */
+        .alert {
+            margin-top: 12px;
+            padding: 13px 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .alert.err { background: #fdf2f2; border: 1px solid #f8d7da; color: #b2404a; }
+        .alert.warn { background: #fff8e6; border: 1px solid #ffe1a6; color: #8a6100; }
+
+        .alert b { display: block; margin-bottom: 3px; font-size: 13.5px; }
+
+        .alert code { font-family: Consolas, monospace; font-size: 12px; }
+
+        /* 语法着色 */
+        .j-key { color: #1d6fe0; }
+        .j-str { color: #0a8a45; }
+        .j-num { color: #e8720c; }
+        .j-bool, .j-null { color: #a626a4; }
+
+        /* 历史 */
+        .hist { margin-top: 16px; }
+
+        .hist h3 { font-size: 13.5px; font-weight: 600; margin-bottom: 9px; }
+
+        .hist .row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            color: #646a73;
+            cursor: pointer;
+        }
+
+        .hist .row:hover { background: #f5f7fa; }
+
+        .hist .m {
+            flex: 0 0 48px;
+            font-weight: 600;
+            color: #1d6fe0;
+        }
+
+        .hist .m.post { color: #0b8a5c; }
+        .hist .m.del { color: #b2404a; }
+
+        .hist .u { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .hist .s { flex: 0 0 auto; color: #8a9099; }
+
+        @media (max-width: 720px) {
+            .reqline { flex-wrap: wrap; }
+            select#method { flex: 1 0 100%; }
+            #send { flex: 1 0 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>接口测试</h1>
+    <p class="sub">
+        选方法、填地址、点发送：页面用 <b>fetch</b> 把请求发出去，下面显示状态码、耗时、响应头和响应体。
+        POST 时可以改请求体，默认发的是 <code>https://jsonplaceholder.typicode.com/posts</code>（它接受 POST 并返回 201）。
+        状态码不是 2xx、网络不通、返回的不是 JSON，这三种情况都会给出对应的提示。
+    </p>
+    <a class="gh" href="https://github.com/llu799529-lang/html-homework" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub 仓库
+    </a>
+
+    <div class="panel">
+        <div class="reqline">
+            <select id="method">
+                <option>GET</option>
+                <option>POST</option>
+                <option>PUT</option>
+                <option>PATCH</option>
+                <option>DELETE</option>
+            </select>
+            <input id="url" type="text" value="https://jsonplaceholder.typicode.com/posts" spellcheck="false">
+            <button id="send">发送</button>
+        </div>
+
+        <div class="quick">
+            <span>快捷：</span>
+            <button data-m="GET" data-u="https://jsonplaceholder.typicode.com/posts?_limit=3">GET 文章列表</button>
+            <button data-m="GET" data-u="https://jsonplaceholder.typicode.com/posts/1">GET 单篇</button>
+            <button data-m="POST" data-u="https://jsonplaceholder.typicode.com/posts">POST 新增</button>
+            <button data-m="PUT" data-u="https://jsonplaceholder.typicode.com/posts/1">PUT 修改</button>
+            <button data-m="DELETE" data-u="https://jsonplaceholder.typicode.com/posts/1">DELETE 删除</button>
+            <button data-m="GET" data-u="https://jsonplaceholder.typicode.com/posts/99999">404 示例</button>
+            <button data-m="GET" data-u="https://no-such-host-abc123.com/api">网络错误示例</button>
+        </div>
+
+        <div class="bodybox">
+            <div class="label"><b>请求头</b><em>Content-Type 只在有请求体时需要</em></div>
+            <textarea id="headers" spellcheck="false" style="height:82px">{
+  "Content-Type": "application/json"
+}</textarea>
+
+            <div class="label" style="margin-top:14px"><b>请求体</b><em id="bodyHint">GET / DELETE 不带请求体</em></div>
+            <textarea id="body" spellcheck="false" disabled>{
+  "title": "我的测试文章",
+  "body": "这是用 fetch 发出去的 POST 数据",
+  "userId": 1
+}</textarea>
+        </div>
+    </div>
+
+    <div class="res">
+        <div class="resbar">
+            <span>状态</span>
+            <span class="badge wait" id="statusBadge">未发送</span>
+            <span>耗时 <b id="cost">—</b></span>
+            <span>大小 <b id="size">—</b></span>
+            <div class="tabs">
+                <button class="on" data-t="body">响应体</button>
+                <button data-t="header">响应头</button>
+            </div>
+        </div>
+
+        <div id="alertBox"></div>
+
+        <pre class="out"><code id="out"><span class="hint">点「发送」看结果。左边选 POST 可以试提交数据，返回里会带上你提交的内容和一个新 id。</span></code></pre>
+    </div>
+
+    <div class="hist">
+        <h3>最近请求</h3>
+        <div id="histList"><span class="hint" style="font-size:12.5px">还没有记录。</span></div>
+    </div>
+</div>
+
+<script>
+    var $ = function (id) { return document.getElementById(id); };
+    var methodSel = $('method');
+    var urlInput = $('url');
+    var headersBox = $('headers');
+    var bodyBox = $('body');
+    var sendBtn = $('send');
+    var out = $('out');
+    var statusBadge = $('statusBadge');
+    var costEl = $('cost');
+    var sizeEl = $('size');
+    var alertBox = $('alertBox');
+
+    var lastData = { body: '', header: '' };
+    var tab = 'body';
+    var reqHistory = [];   /* 不能叫 history，那是 window 自带的只读对象 */
+
+    function escapeHtml(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function highlight(json) {
+        return escapeHtml(json).replace(
+            /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|\bnull\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+            function (m) {
+                var cls = 'j-num';
+                if (/^"/.test(m)) cls = /:$/.test(m) ? 'j-key' : 'j-str';
+                else if (/true|false/.test(m)) cls = 'j-bool';
+                else if (/null/.test(m)) cls = 'j-null';
+                return '<span class="' + cls + '">' + m + '</span>';
+            }
+        );
+    }
+
+    /* 带上请求体的方法才启用请求体输入框 */
+    function syncBodyState() {
+        var m = methodSel.value;
+        var needBody = (m === 'POST' || m === 'PUT' || m === 'PATCH');
+        bodyBox.disabled = !needBody;
+        $('bodyHint').textContent = needBody ? '会作为 body 发出去' : 'GET / DELETE 不带请求体';
+    }
+
+    methodSel.addEventListener('change', syncBodyState);
+    syncBodyState();
+
+    function setStatus(cls, text) {
+        statusBadge.className = 'badge ' + cls;
+        statusBadge.textContent = text;
+    }
+
+    function showAlert(kind, title, detail) {
+        alertBox.innerHTML = '<div class="alert ' + kind + '"><b>' + escapeHtml(title) + '</b>' + detail + '</div>';
+    }
+
+    function renderTab() {
+        if (tab === 'body') {
+            out.innerHTML = lastData.body;
+        } else {
+            out.innerHTML = lastData.header || '<span class="hint">响应头只在请求成功后才有。</span>';
+        }
+    }
+
+    document.querySelector('.tabs').addEventListener('click', function (ev) {
+        var b = ev.target.closest('button');
+        if (!b) return;
+        tab = b.dataset.t;
+        document.querySelectorAll('.tabs button').forEach(function (x) {
+            x.classList.toggle('on', x === b);
+        });
+        renderTab();
+    });
+
+    function pushHistory(method, url, status) {
+        reqHistory.unshift({ method: method, url: url, status: status, time: new Date() });
+        reqHistory = reqHistory.slice(0, 6);
+        $('histList').innerHTML = reqHistory.map(function (h) {
+            var cls = h.method === 'POST' ? 'post' : (h.method === 'DELETE' ? 'del' : '');
+            return '<div class="row" data-m="' + h.method + '" data-u="' + escapeHtml(h.url) + '">' +
+                '<span class="m ' + cls + '">' + h.method + '</span>' +
+                '<span class="u">' + escapeHtml(h.url) + '</span>' +
+                '<span class="s">' + h.status + '</span></div>';
+        }).join('');
+    }
+
+    $('histList').addEventListener('click', function (ev) {
+        var row = ev.target.closest('.row');
+        if (!row) return;
+        methodSel.value = row.dataset.m;
+        urlInput.value = row.dataset.u;
+        syncBodyState();
+    });
+
+    function send() {
+        var method = methodSel.value;
+        var url = urlInput.value.trim();
+
+        alertBox.innerHTML = '';
+
+        if (!url) {
+            showAlert('err', '地址是空的', '先在输入框里填一个请求地址，比如 <code>https://jsonplaceholder.typicode.com/posts</code>。');
+            return;
+        }
+        if (!/^https?:\/\//i.test(url)) {
+            showAlert('err', '地址格式不对', 'fetch 只认完整地址，要带上 <code>http://</code> 或 <code>https://</code>。');
+            return;
+        }
+
+        var opts = { method: method, headers: {} };
+
+        try {
+            var hs = headersBox.value.trim();
+            if (hs) opts.headers = JSON.parse(hs);
+        } catch (e) {
+            showAlert('err', '请求头不是合法 JSON', '按 <code>{ "Content-Type": "application/json" }</code> 的格式写。');
+            return;
+        }
+
+        if (bodyBox.disabled === false) {
+            var bd = bodyBox.value.trim();
+            if (bd) {
+                if (opts.headers['Content-Type'] && opts.headers['Content-Type'].indexOf('json') > -1) {
+                    try {
+                        JSON.parse(bd);
+                    } catch (e) {
+                        showAlert('err', '请求体不是合法 JSON', 'Content-Type 是 application/json 时，body 必须能被 JSON.parse 解析。');
+                        return;
+                    }
+                }
+                opts.body = bd;
+            }
+        }
+
+        sendBtn.disabled = true;
+        sendBtn.textContent = '发送中…';
+        setStatus('wait', '请求中');
+        costEl.textContent = '—';
+        sizeEl.textContent = '—';
+        lastData.body = '<span class="hint">请求进行中…</span>';
+        lastData.header = '';
+        renderTab();
+
+        var t0 = performance.now();
+
+        fetch(url, opts)
+            .then(function (res) {
+                var ms = Math.round(performance.now() - t0);
+
+                var headText = '';
+                res.headers.forEach(function (v, k) { headText += k + ': ' + v + '\n'; });
+                lastData.header = '<span class="hint">// ' + res.status + ' ' + res.statusText + '\n\n</span>' + escapeHtml(headText);
+
+                var ok = res.ok;
+                setStatus(ok ? 'ok' : 'err', res.status + ' ' + res.statusText);
+                costEl.textContent = ms + ' ms';
+
+                if (!ok) {
+                    showAlert('err', 'HTTP 状态码不是 2xx',
+                        '接口返回了 <code>' + res.status + ' ' + escapeHtml(res.statusText) + '</code>。' +
+                        (res.status === 404 ? '这个地址在服务器上不存在。' : '') +
+                        (res.status === 403 ? '可能是没权限或触发了限流。' : '') +
+                        (res.status >= 500 ? '服务器自己出错了，跟请求内容关系不大。' : ''));
+                }
+
+                return res.text().then(function (text) {
+                    var bytes = new Blob([text]).size;
+                    sizeEl.textContent = bytes > 1024 ? (bytes / 1024).toFixed(1) + ' KB' : bytes + ' B';
+
+                    try {
+                        var data = JSON.parse(text);
+                        lastData.body = '<span class="hint">// ' + res.status + ' ' + res.statusText + ' · ' + ms + ' ms · ' + bytes + ' B\n\n</span>' +
+                            highlight(JSON.stringify(data, null, 2));
+                    } catch (e) {
+                        lastData.body = '<span class="hint">// 返回的不是 JSON，按纯文本显示\n\n</span>' + escapeHtml(text || '（响应体是空的）');
+                    }
+
+                    renderTab();
+                    pushHistory(method, url, res.status);
+                });
+            })
+            .catch(function (err) {
+                var ms = Math.round(performance.now() - t0);
+                setStatus('err', '请求失败');
+                costEl.textContent = ms + ' ms';
+                lastData.body = '<span class="hint">// 请求没有到达服务器，没有响应体\n\n</span>' +
+                    escapeHtml(err.name + ': ' + err.message);
+
+                var detail = '常见原因：<br>' +
+                    '· 地址写错或域名不存在 → <code>TypeError: Failed to fetch</code><br>' +
+                    '· 对方没有开跨域（CORS）→ 浏览器控制台会有 CORS 报错<br>' +
+                    '· 网络断开、被墙、被安全软件拦了';
+                showAlert('err', '请求失败：' + err.name, detail);
+                renderTab();
+                pushHistory(method, url, 'ERR');
+            })
+            .finally(function () {
+                sendBtn.disabled = false;
+                sendBtn.textContent = '发送';
+            });
+    }
+
+    sendBtn.addEventListener('click', send);
+    urlInput.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter') send();
+    });
+
+    document.querySelector('.quick').addEventListener('click', function (ev) {
+        var b = ev.target.closest('button');
+        if (!b) return;
+        methodSel.value = b.dataset.m;
+        urlInput.value = b.dataset.u;
+        syncBodyState();
+        send();
+    });
+</script>
+</body>
+</html>

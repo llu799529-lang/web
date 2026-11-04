@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课堂测试 1 · 点击排行</title>
+    <!--
+      作者：lyb
+      建立时间：2026-10-29
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：点击排行 / 评论排行（两个标签，带序号与计数）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            padding: 24px;
+            background: #fff;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            color: #333;
+        }
+
+        .box { width: 480px; }
+
+        .tabs { display: flex; }
+
+        .tab {
+            flex: 1;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            font-size: 15px;
+            color: #333;
+            background: #dce7f7;
+            cursor: pointer;
+            border-top: 2px solid transparent;
+            transition: background .15s;
+        }
+
+        .tab:hover { background: #cddcf3; }
+
+        .tab.on {
+            background: #fff;
+            border-top-color: #1a5fb4;
+            font-weight: 600;
+        }
+
+        ul { margin-top: 12px; }
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 35px;
+            list-style: none;
+            font-size: 14px;
+            border-bottom: 1px dashed #e4e4e4;
+            cursor: pointer;
+            transition: color .15s;
+        }
+
+        li:hover .t { color: #1a5fb4; }
+
+        .no {
+            flex: 0 0 14px;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            font-style: normal;
+            color: #3b7ad9;
+            text-align: right;
+        }
+
+        .t {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .n {
+            font-family: Arial, sans-serif;
+            font-size: 12.5px;
+            color: #999;
+            white-space: nowrap;
+        }
+
+        li.hot .n { color: #d0021b; }
+
+        .panel { display: none; }
+        .panel.on { display: block; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <div class="tabs">
+        <div class="tab on" data-i="0">点击排行</div>
+        <div class="tab" data-i="1">评论排行</div>
+    </div>
+
+    <ul class="panel on" data-i="0">
+        <li class="hot"><i class="no">1</i><span class="t">中国各城市房子还要卖多少年(详细数据)</span><span class="n">187706</span></li>
+        <li class="hot"><i class="no">2</i><span class="t">任志强：60多年来 我不知道国企给了我们</span><span class="n">171180</span></li>
+        <li class="hot"><i class="no">3</i><span class="t">三精制药跳楼老总被查因华润商贿案 省食</span><span class="n">127631</span></li>
+        <li class="hot"><i class="no">4</i><span class="t">内地17省铺开不动产统一登记职责整合工作</span><span class="n">113865</span></li>
+        <li class="hot"><i class="no">5</i><span class="t">山西煤老板抛售整栋99套二手房 8年投资翻</span><span class="n">72770</span></li>
+        <li><i class="no">6</i><span class="t">北京城南楼市“沦陷” 变相降价措施加码</span><span class="n">62971</span></li>
+        <li><i class="no">7</i><span class="t">中国3D打印技术取得重大突破 近1200人连</span><span class="n">27456</span></li>
+        <li><i class="no">8</i><span class="t">重磅利空突至致全球暴跌 A股或黑周五无悬</span><span class="n">25322</span></li>
+        <li><i class="no">9</i><span class="t">七匹狼早盘上演奇葩一幕：单笔4手卖单刷</span><span class="n">20912</span></li>
+        <li><i class="no">10</i><span class="t">长油小股东主导股东大会 当场爆料董事长</span><span class="n">11667</span></li>
+    </ul>
+
+    <ul class="panel" data-i="1">
+        <li class="hot"><i class="no">1</i><span class="t">房价到底了吗？网友吵了三千楼</span><span class="n">98213</span></li>
+        <li class="hot"><i class="no">2</i><span class="t">月薪八千在北京怎么活？评论区太真实</span><span class="n">87540</span></li>
+        <li class="hot"><i class="no">3</i><span class="t">为什么现在的年轻人越来越不愿意加班</span><span class="n">73126</span></li>
+        <li class="hot"><i class="no">4</i><span class="t">存款利率下调，钱放在哪里才不亏</span><span class="n">61988</span></li>
+        <li class="hot"><i class="no">5</i><span class="t">一个县城公务员的真实收入，看完沉默了</span><span class="n">52310</span></li>
+        <li><i class="no">6</i><span class="t">买了学区房之后，我后悔了</span><span class="n">41277</span></li>
+        <li><i class="no">7</i><span class="t">35岁被裁员，投了200份简历石沉大海</span><span class="n">35604</span></li>
+        <li><i class="no">8</i><span class="t">父母那一代的节俭，我们学不会也看不懂</span><span class="n">28451</span></li>
+        <li><i class="no">9</i><span class="t">为什么说2026年不适合裸辞</span><span class="n">19380</span></li>
+        <li><i class="no">10</i><span class="t">关于“内卷”，我想说点不中听的</span><span class="n">12045</span></li>
+    </ul>
+</div>
+
+<script>
+    (function () {
+        var tabs = document.querySelectorAll('.tab');
+        var panels = document.querySelectorAll('.panel');
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                var i = Number(tab.dataset.i);
+                tabs.forEach(function (t) { t.classList.remove('on'); });
+                panels.forEach(function (p) {
+                    p.classList.toggle('on', Number(p.dataset.i) === i);
+                });
+                tab.classList.add('on');
+            });
+        });
+    })();
+</script>
+</body>
+</html>

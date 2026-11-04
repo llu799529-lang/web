@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课堂测试 4 · 文学社科书城</title>
+    <!--
+      作者：lyb
+      建立时间：2026-10-29
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：文学社科书城（三栏布局：主编推荐 / 分类书墙 / 订购榜，书墙可按分类切换）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            padding: 24px;
+            background: #fff;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            color: #333;
+        }
+
+        .box { width: 980px; }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 400;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #8fc63d;
+        }
+
+        .cols {
+            display: grid;
+            grid-template-columns: 210px 1fr 250px;
+            gap: 22px;
+            padding-top: 16px;
+        }
+
+        /* ---------- 左栏 ---------- */
+        .left .ttl {
+            padding: 8px 0;
+            text-align: center;
+            font-size: 15px;
+            color: #1a5fb4;
+            border-top: 1px solid #e5e5e5;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .cover {
+            position: relative;
+            width: 178px;
+            margin: 16px auto 0;
+        }
+
+        .cover img {
+            display: block;
+            width: 100%;
+            border: 1px solid #e0e0e0;
+        }
+
+        .flag {
+            position: absolute;
+            left: 0;
+            top: 0;
+            padding: 2px 8px;
+            background: #8fc63d;
+            color: #fff;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        .bname {
+            margin-top: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.5;
+        }
+
+        .intro {
+            margin-top: 10px;
+            font-size: 12px;
+            line-height: 1.9;
+            color: #888;
+        }
+
+        .rel { margin-top: 14px; }
+
+        .rel a {
+            display: block;
+            padding: 5px 0 5px 12px;
+            position: relative;
+            font-size: 12px;
+            color: #555;
+            text-decoration: none;
+            border-top: 1px dashed #ececec;
+        }
+
+        .rel a::before {
+            content: "";
+            position: absolute;
+            left: 3px;
+            top: 12px;
+            width: 3px;
+            height: 3px;
+            background: #bbb;
+        }
+
+        .rel a:hover { color: #8fc63d; }
+
+        /* ---------- 中栏 ---------- */
+        .tabs {
+            display: flex;
+            gap: 26px;
+            border-bottom: 1px solid #e5e5e5;
+            padding-bottom: 8px;
+        }
+
+        .tab {
+            font-size: 14.5px;
+            color: #444;
+            cursor: pointer;
+            padding-bottom: 8px;
+            margin-bottom: -9px;
+            border-bottom: 2px solid transparent;
+            transition: all .15s;
+        }
+
+        .tab:hover { color: #8fc63d; }
+
+        .tab.on {
+            color: #000;
+            font-weight: 700;
+            border-bottom-color: #8fc63d;
+        }
+
+        .books {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px 14px;
+            margin-top: 18px;
+        }
+
+        .bk { cursor: pointer; }
+
+        .bk img {
+            display: block;
+            width: 100%;
+            height: 132px;
+            object-fit: cover;
+            border: 1px solid #ececec;
+            transition: box-shadow .18s, transform .18s;
+        }
+
+        .bk:hover img {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, .13);
+            transform: translateY(-2px);
+        }
+
+        .bk .n {
+            margin-top: 8px;
+            font-size: 12px;
+            line-height: 1.5;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .bk:hover .n { color: #8fc63d; }
+
+        .bk .p {
+            margin-top: 3px;
+            font-size: 12.5px;
+            color: #e8720c;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        /* ---------- 右栏 ---------- */
+        .rank h3 {
+            font-size: 14px;
+            font-weight: 700;
+            padding-bottom: 9px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .rank ol { margin-top: 6px; }
+
+        .rank li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 0;
+            list-style: none;
+            font-size: 12.5px;
+            cursor: pointer;
+        }
+
+        .rank .no {
+            flex: 0 0 16px;
+            height: 16px;
+            line-height: 14px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            font-size: 10.5px;
+            font-style: normal;
+            color: #999;
+            border: 1px solid #ccc;
+        }
+
+        .rank li.top .no { color: #e8720c; border-color: #e8720c; }
+
+        .rank .t {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .rank li:hover .t { color: #8fc63d; }
+
+        .panel { display: none; }
+        .panel.on { display: grid; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <h1>文学社科</h1>
+
+    <div class="cols">
+        <!-- 左 -->
+        <div class="left">
+            <div class="ttl">主编推荐</div>
+            <div class="cover">
+                <img src="img/rui.jpg" alt="虚实之间">
+                <span class="flag">★ 力荐</span>
+            </div>
+            <div class="bname">芮成钢：《虚实之间》</div>
+            <p class="intro">有十年记者生涯对东西方文化的洞悉，又有与奥巴马等政要零距离接触…</p>
+            <div class="rel">
+                <a href="#">兄弟我在义乌的发财史</a>
+                <a href="#">读佛即是拜佛：唐僧传</a>
+                <a href="#">二战苏联陆军单兵装备</a>
+            </div>
+        </div>
+
+        <!-- 中 -->
+        <div class="mid">
+            <div class="tabs">
+                <div class="tab on" data-i="0">流行小说</div>
+                <div class="tab" data-i="1">社科历史</div>
+                <div class="tab" data-i="2">文学艺术</div>
+            </div>
+
+            <div class="books panel on" data-i="0">
+                <div class="bk"><img src="img/a1.jpg" alt=""><div class="n">省长的女婿</div><div class="p">¥ 5.98</div></div>
+                <div class="bk"><img src="img/a2.jpg" alt=""><div class="n">辛夷坞：致青春</div><div class="p">¥ 5.00</div></div>
+                <div class="bk"><img src="img/a3.jpg" alt=""><div class="n">越位</div><div class="p">¥ 2.99</div></div>
+                <div class="bk"><img src="img/a4.jpg" alt=""><div class="n">扫黑</div><div class="p">¥ 6.40</div></div>
+                <div class="bk"><img src="img/a5.jpg" alt=""><div class="n">我的帝王生涯</div><div class="p">¥ 4.00</div></div>
+                <div class="bk"><img src="img/a6.jpg" alt=""><div class="n">南水北调书记</div><div class="p">¥ 5.98</div></div>
+                <div class="bk"><img src="img/a7.jpg" alt=""><div class="n">1/14第一季</div><div class="p">¥ 4.00</div></div>
+                <div class="bk"><img src="img/a8.jpg" alt=""><div class="n">辛夷坞：原来</div><div class="p">¥ 4.50</div></div>
+            </div>
+
+            <div class="books panel" data-i="1">
+                <div class="bk"><img src="img/a1.jpg" alt=""><div class="n">万历十五年</div><div class="p">¥ 6.00</div></div>
+                <div class="bk"><img src="img/a2.jpg" alt=""><div class="n">中国历代政治得失</div><div class="p">¥ 4.50</div></div>
+                <div class="bk"><img src="img/a3.jpg" alt=""><div class="n">枪炮、病菌与钢铁</div><div class="p">¥ 8.80</div></div>
+                <div class="bk"><img src="img/a4.jpg" alt=""><div class="n">人类简史</div><div class="p">¥ 9.90</div></div>
+                <div class="bk"><img src="img/a5.jpg" alt=""><div class="n">故宫六百年</div><div class="p">¥ 7.20</div></div>
+                <div class="bk"><img src="img/a6.jpg" alt=""><div class="n">丝绸之路</div><div class="p">¥ 8.50</div></div>
+                <div class="bk"><img src="img/a7.jpg" alt=""><div class="n">大国的兴衰</div><div class="p">¥ 6.80</div></div>
+                <div class="bk"><img src="img/a8.jpg" alt=""><div class="n">叫魂</div><div class="p">¥ 5.60</div></div>
+            </div>
+
+            <div class="books panel" data-i="2">
+                <div class="bk"><img src="img/a1.jpg" alt=""><div class="n">活着</div><div class="p">¥ 4.20</div></div>
+                <div class="bk"><img src="img/a2.jpg" alt=""><div class="n">平凡的世界</div><div class="p">¥ 6.90</div></div>
+                <div class="bk"><img src="img/a3.jpg" alt=""><div class="n">边城</div><div class="p">¥ 3.20</div></div>
+                <div class="bk"><img src="img/a4.jpg" alt=""><div class="n">围城</div><div class="p">¥ 4.80</div></div>
+                <div class="bk"><img src="img/a5.jpg" alt=""><div class="n">白鹿原</div><div class="p">¥ 5.50</div></div>
+                <div class="bk"><img src="img/a6.jpg" alt=""><div class="n">呐喊</div><div class="p">¥ 2.80</div></div>
+                <div class="bk"><img src="img/a7.jpg" alt=""><div class="n">受戒</div><div class="p">¥ 3.60</div></div>
+                <div class="bk"><img src="img/a8.jpg" alt=""><div class="n">红高粱</div><div class="p">¥ 4.40</div></div>
+            </div>
+        </div>
+
+        <!-- 右 -->
+        <div class="rank">
+            <h3>流行小说订购榜</h3>
+            <ol>
+                <li class="top"><i class="no">1</i><span class="t">山西煤老板（全文）</span></li>
+                <li class="top"><i class="no">2</i><span class="t">你不可不知的人性（全二</span></li>
+                <li class="top"><i class="no">3</i><span class="t">到爱的距离</span></li>
+                <li><i class="no">4</i><span class="t">梅雨的季节（全文）</span></li>
+                <li><i class="no">5</i><span class="t">大清相国（全文）</span></li>
+                <li><i class="no">6</i><span class="t">借势（全文）</span></li>
+                <li><i class="no">7</i><span class="t">省委班子2（全文）</span></li>
+                <li><i class="no">8</i><span class="t">静水流深（全文）</span></li>
+                <li><i class="no">9</i><span class="t">生死疲劳（全文）</span></li>
+                <li><i class="no">10</i><span class="t">金瓶梅（全文）</span></li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var tabs = document.querySelectorAll('.tab');
+        var panels = document.querySelectorAll('.books');
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                var i = Number(tab.dataset.i);
+                tabs.forEach(function (t) { t.classList.remove('on'); });
+                panels.forEach(function (p) {
+                    p.classList.toggle('on', Number(p.dataset.i) === i);
+                });
+                tab.classList.add('on');
+            });
+        });
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课堂测试 3 · 最新上市</title>
+    <!--
+      作者：lyb
+      建立时间：2026-10-29
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：新车上市表（最新上市 / 即将上市 两个标签，表格展示时间、车型、售价）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            padding: 24px;
+            background: #fff;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            color: #333;
+        }
+
+        .box { width: 460px; }
+
+        .tabs { display: flex; border-bottom: 1px solid #cdd8e8; }
+
+        .tab {
+            flex: 0 0 130px;
+            height: 38px;
+            line-height: 38px;
+            text-align: center;
+            font-size: 15px;
+            color: #333;
+            background: #eaf0f8;
+            cursor: pointer;
+            border-top: 2px solid transparent;
+            transition: all .15s;
+        }
+
+        .tab:hover { background: #dfe9f6; }
+
+        .tab.on {
+            background: #fff;
+            color: #1a5fb4;
+            font-weight: 600;
+            border-top-color: #1a5fb4;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            padding: 9px 8px;
+            text-align: left;
+            font-weight: 600;
+            color: #1a5fb4;
+            background: #eef3fa;
+            border-bottom: 1px solid #cdd8e8;
+        }
+
+        th:last-child, td:last-child { text-align: left; }
+
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+
+        td.model, td.price { color: #1a5fb4; cursor: pointer; }
+
+        td.model:hover, td.price:hover { text-decoration: underline; }
+
+        tbody tr:hover { background: #f7fbff; }
+
+        .panel { display: none; }
+        .panel.on { display: block; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <div class="tabs">
+        <div class="tab on" data-i="0">最新上市</div>
+        <div class="tab" data-i="1">即将上市</div>
+    </div>
+
+    <div class="panel on" data-i="0">
+        <table>
+            <thead>
+                <tr><th>上市时间</th><th>品牌/车型</th><th>售价（万元）</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>12月13日</td><td class="model">沃尔沃S60L</td><td class="price">26.99-38.49</td></tr>
+                <tr><td>12月12日</td><td class="model">Jeep牧马人龙腾典藏</td><td class="price">47.99-59.99</td></tr>
+                <tr><td>12月10日</td><td class="model">一汽大众高尔夫7</td><td class="price">11.89-18.29</td></tr>
+                <tr><td>12月6日</td><td class="model">2014款古思特</td><td class="price">419.0-666.0</td></tr>
+                <tr><td>12月5日</td><td class="model">起亚新款K5</td><td class="price">15.98-25.18</td></tr>
+                <tr><td>12月5日</td><td class="model">2014款奥德赛</td><td class="price">22.98-28.68</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="panel" data-i="1">
+        <table>
+            <thead>
+                <tr><th>上市时间</th><th>品牌/车型</th><th>预计售价（万元）</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>2027年1月</td><td class="model">全新一代雅阁</td><td class="price">18.00-26.00</td></tr>
+                <tr><td>2027年1月</td><td class="model">比亚迪秦L</td><td class="price">9.98-13.98</td></tr>
+                <tr><td>2027年2月</td><td class="model">特斯拉Model Y改款</td><td class="price">26.00-36.00</td></tr>
+                <tr><td>2027年3月</td><td class="model">宝马新一代5系</td><td class="price">43.00-58.00</td></tr>
+                <tr><td>2027年3月</td><td class="model">丰田bZ4X</td><td class="price">19.00-28.00</td></tr>
+                <tr><td>2027年4月</td><td class="model">理想L6</td><td class="price">25.00-30.00</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var tabs = document.querySelectorAll('.tab');
+        var panels = document.querySelectorAll('.panel');
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                var i = Number(tab.dataset.i);
+                tabs.forEach(function (t) { t.classList.remove('on'); });
+                panels.forEach(function (p) {
+                    p.classList.toggle('on', Number(p.dataset.i) === i);
+                });
+                tab.classList.add('on');
+            });
+        });
+    })();
+</script>
+</body>
+</html>

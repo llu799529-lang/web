@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS动画变色盒子</title>
+    <style>
+        .box{
+            width:300px;
+            height:300px;
+            /* 动画：名称 时长 无限循环 匀速 */
+            animation: changeColor 8s infinite linear;
+        }
+        /* 4种颜色关键帧 */
+        @keyframes changeColor {
+            0% { background-color: #ff4444; }
+            25% { background-color: #44bb44; }
+            50% { background-color: #3388ff; }
+            75% { background-color: #ffdd22; }
+            100% { background-color: #ff4444; }
+        }
+    </style>
+</head>
+<body>
+    <div class="box"></div>
+</body>
+</html>

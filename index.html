@@ -8,8 +8,9 @@
     <!--
       作者：lyb
       建立时间：2026-10-26
+      最后更新：2026-11-04
       使用的大模型：DeepSeek-V4.1-Flash
-      功能名称：课堂练习总入口（把 web 目录下的页面汇总成导航首页）
+      功能名称：课堂练习总入口（web 目录下 25 个作品按讲次分组汇总，另附 3 个非作品文件）
     -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -22,18 +23,33 @@
             color: #1f2329;
         }
 
-        .wrap { max-width: 1040px; margin: 0 auto; }
+        .wrap { max-width: 1080px; margin: 0 auto; }
 
         h1 { font-size: 28px; font-weight: 600; letter-spacing: .5px; }
 
-        .sub { margin-top: 10px; font-size: 14px; color: #646a73; }
+        .sub { margin-top: 10px; font-size: 14px; line-height: 1.9; color: #646a73; }
+
+        .meta {
+            margin-top: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 12.5px;
+            color: #8a9099;
+        }
+
+        .meta span {
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #eef1f6;
+        }
 
         .gh {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            margin-top: 16px;
-            padding: 6px 13px;
+            padding: 5px 12px;
             border-radius: 999px;
             background: #1f2329;
             color: #fff;
@@ -44,26 +60,47 @@
 
         .gh:hover { background: #000; transform: translateY(-1px); }
 
-        .group { margin-top: 34px; }
+        /* ---------- 分组 ---------- */
+        .group { margin-top: 36px; }
 
         .group h2 {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
             font-size: 15px;
             font-weight: 600;
-            color: #646a73;
+            color: #3d4653;
             padding-bottom: 10px;
             border-bottom: 1px solid #e5e6eb;
+        }
+
+        .group h2 em {
+            font-style: normal;
+            font-size: 12px;
+            font-weight: 400;
+            color: #a0a6ad;
+        }
+
+        .group h2 .cnt {
+            margin-left: auto;
+            font-family: Consolas, monospace;
+            font-size: 11.5px;
+            color: #b0b6bd;
+            font-weight: 400;
         }
 
         .list {
             margin-top: 16px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
             gap: 12px;
         }
 
         .item {
-            display: block;
-            padding: 15px 16px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding: 15px 16px 14px;
             background: #fff;
             border: 1px solid #e5e6eb;
             border-radius: 12px;
@@ -78,71 +115,152 @@
             transform: translateY(-2px);
         }
 
-        .item b { display: block; font-size: 14.5px; font-weight: 600; }
+        .item .no {
+            display: inline-block;
+            align-self: flex-start;   /* 不写这句，flex 会把它拉成整条横条 */
+            margin-bottom: 8px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: #e8f3ff;
+            color: #1d6fe0;
+            font-family: Consolas, monospace;
+            font-size: 11px;
+            font-weight: 600;
+        }
 
-        .item span { display: block; margin-top: 6px; font-size: 12.5px; color: #8a9099; }
+        .item.dark .no { background: #1f2329; color: #fff; }
+
+        .item b { display: block; font-size: 14.5px; font-weight: 600; line-height: 1.5; }
+
+        .item span.d { display: block; margin-top: 6px; font-size: 12.5px; line-height: 1.65; color: #8a9099; }
+
+        .item span.path {
+            display: block;
+            margin-top: auto;
+            padding-top: 9px;
+            border-top: 1px dashed #f0f1f3;
+            font-family: Consolas, monospace;
+            font-size: 11px;
+            color: #c3c8cf;
+            word-break: break-all;
+        }
+
+        /* ---------- 其他文件 ---------- */
+        .other .item {
+            background: #fafbfc;
+            border-style: dashed;
+        }
+
+        .other .item .no { background: #eef1f6; color: #8a9099; }
 
         footer {
-            margin-top: 46px;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e6eb;
             font-size: 12.5px;
             color: #a0a6ad;
+        }
+
+        @media (max-width: 620px) {
+            .list { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 <div class="wrap">
     <h1>高级网页设计 · 课堂练习</h1>
-    <p class="sub">按讲次整理的 HTML / CSS / JavaScript 练习页面，点卡片直接打开。</p>
-    <a class="gh" href="https://github.com/llu799529-lang/web" target="_blank" rel="noopener">
-        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
-        在 GitHub 上查看
-    </a>
+    <p class="sub">
+        web 文件夹里的全部页面，按讲次顺序排在这里。点任意一张卡片直接打开对应作品，
+        卡片最下面那行小字是它在文件夹里的路径。
+    </p>
+    <div class="meta">
+        <a class="gh" href="https://github.com/llu799529-lang/web" target="_blank" rel="noopener">
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+            在 GitHub 上查看
+        </a>
+        <span>25 个作品</span>
+        <span>6 个专题</span>
+        <span>最后整理 2026-11-04</span>
+    </div>
 
+    <!-- ============ 一 ============ -->
     <section class="group">
-        <h2>基础与表单</h2>
+        <h2>一、基础与表单 <em>第 2 - 4 讲</em><span class="cnt">6 个</span></h2>
         <div class="list">
-            <a class="item" href="2.html"><b>2 · 基础页面</b><span>HTML 基本结构</span></a>
-            <a class="item" href="2-2.html"><b>2-2 · 页面练习</b><span>409</span></a>
-            <a class="item" href="3.html"><b>3 · 表单示例</b><span>表单控件</span></a>
-            <a class="item" href="3-1.html"><b>3-1 · 层叠样式表</b><span>CSS 选择器与颜色</span></a>
-            <a class="item" href="4.html"><b>4 · 页面练习</b><span>盒模型</span></a>
-            <a class="item" href="盒子.html"><b>盒子模型</b><span>border / padding / margin</span></a>
+            <a class="item" href="2.html"><span class="no">2</span><b>基础页面</b><span class="d">HTML 文档结构、标题、段落、图片、链接</span><span class="path">2.html</span></a>
+            <a class="item" href="2-2.html"><span class="no">2-2</span><b>页面练习</b><span class="d">按效果图写的静态页面</span><span class="path">2-2.html</span></a>
+            <a class="item" href="3.html"><span class="no">3</span><b>表单示例</b><span class="d">文本框、密码、单选、复选、下拉、日期、文件上传</span><span class="path">3.html</span></a>
+            <a class="item" href="3-1.html"><span class="no">3-1</span><b>层叠样式表</b><span class="d">三种引入方式的对比</span><span class="path">3-1.html</span></a>
+            <a class="item" href="4.html"><span class="no">4</span><b>页面练习</b><span class="d">选择器、背景、边框、文字排版综合练习</span><span class="path">4.html</span></a>
+            <a class="item" href="盒子.html"><span class="no">4</span><b>盒子模型</b><span class="d">content / padding / border / margin 四层关系</span><span class="path">盒子.html</span></a>
         </div>
     </section>
 
+    <!-- ============ 二 ============ -->
     <section class="group">
-        <h2>布局与动画</h2>
+        <h2>二、层叠与布局 <em>第 5 - 8 讲</em><span class="cnt">3 个</span></h2>
         <div class="list">
-            <a class="item" href="5.html/5.html"><b>5 · 层叠与继承</b><span>CSS 层叠、继承优先级</span></a>
-            <a class="item" href="7.html"><b>7 · Flex 布局</b><span>四组示例</span></a>
-            <a class="item" href="8.html"><b>8 · Flex 布局进阶</b><span>四组示例 + 三个长方形框</span></a>
-            <a class="item" href="9.html"><b>9 · transition 过渡</b><span>卡片放大效果</span></a>
-            <a class="item" href="10.html"><b>10 · CSS 动画</b><span>变色盒子</span></a>
-            <a class="item" href="10/8/1.html"><b>10-8 · 变色盒子</b><span>@keyframes 练习</span></a>
+            <a class="item" href="5.html/5.html"><span class="no">5</span><b>层叠与继承</b><span class="d">优先级计算、继承规则、同一元素多规则冲突</span><span class="path">5.html/5.html</span></a>
+            <a class="item" href="7.html"><span class="no">7</span><b>Flex 布局</b><span class="d">四组对齐方式示例</span><span class="path">7.html</span></a>
+            <a class="item" href="8.html"><span class="no">8</span><b>Flex 布局进阶</b><span class="d">四组示例 + 三个长方形框带文字</span><span class="path">8.html</span></a>
         </div>
     </section>
 
+    <!-- ============ 三 ============ -->
     <section class="group">
-        <h2>图像解决方案（图标）</h2>
+        <h2>三、过渡与动画 <em>第 9 - 11 讲 · 含 10 月 8 日课堂任务</em><span class="cnt">8 个</span></h2>
         <div class="list">
-            <a class="item" href="10/19/13-1.html"><b>13-1 · Font Awesome</b><span>字体图标</span></a>
-            <a class="item" href="10/19/13-2.html"><b>13-2 · Lucide</b><span>SVG 图标</span></a>
-            <a class="item" href="10/19/13-3.html"><b>13-3 · iconfont 下导航</b><span>字体图标实现底部导航</span></a>
-            <a class="item" href="10/19/13-4.html"><b>13-4 · iconfont SVG 下导航</b><span>SVG 实现底部导航</span></a>
-            <a class="item" href="10/22/font.html"><b>我的 · 字体图标方案</b><span>音乐 App「我的」页 · icon font</span></a>
-            <a class="item" href="10/22/svg.html"><b>我的 · SVG 方案</b><span>同一页面的内联 SVG 实现</span></a>
+            <a class="item" href="9.html"><span class="no">9</span><b>transition 过渡</b><span class="d">卡片 hover 放大、阴影、圆角过渡</span><span class="path">9.html</span></a>
+            <a class="item" href="10.html"><span class="no">10</span><b>CSS 动画 · 变色盒子</b><span class="d">@keyframes 让背景色循环变化</span><span class="path">10.html</span></a>
+            <a class="item" href="10/8/1.html"><span class="no">10-1</span><b>变色盒子</b><span class="d">10 月 8 日课堂任务一</span><span class="path">10/8/1.html</span></a>
+            <a class="item" href="10/8/2.html"><span class="no">10-2</span><b>幻灯片</b><span class="d">图片轮播切换效果</span><span class="path">10/8/2.html</span></a>
+            <a class="item" href="10/8/3.html"><span class="no">10-3</span><b>媒体查询 · rem 全屏盒子</b><span class="d">rem 单位铺满整屏，随视口缩放</span><span class="path">10/8/3.html</span></a>
+            <a class="item" href="10/8/4.html"><span class="no">10-4</span><b>媒体查询 · 8 盒子响应式</b><span class="d">八个方块随屏幕宽度重新排列</span><span class="path">10/8/4.html</span></a>
+            <a class="item" href="10/8/11-1.html"><span class="no">11-1</span><b>CSS 长度单位</b><span class="d">px / em / rem / vw / vh / % / cm / mm / pt 九种单位对照</span><span class="path">10/8/11-1.html</span></a>
+            <a class="item" href="10/8/11-2.html"><span class="no">11-2</span><b>CSS3 3D 动画</b><span class="d">旋转立方体、3D 魔方、跳跃球</span><span class="path">10/8/11-2.html</span></a>
         </div>
     </section>
 
+    <!-- ============ 四 ============ -->
     <section class="group">
-        <h2>综合页面</h2>
+        <h2>四、图标专题 <em>10 月 15 日 / 10 月 19 日</em><span class="cnt">5 个</span></h2>
         <div class="list">
-            <a class="item" href="zy.html"><b>亚博 · 课堂实践</b><span>综合练习页</span></a>
-            <a class="item" href="10/15/index.html"><b>CSS Icon · luoyabo</b><span>图标综合页</span></a>
+            <a class="item" href="10/15/index.html"><span class="no">图标</span><b>CSS Icon · luoyabo</b><span class="d">纯 CSS 绘制图标综合页</span><span class="path">10/15/index.html</span></a>
+            <a class="item" href="10/19/13-1.html"><span class="no">13-1</span><b>Font Awesome</b><span class="d">第三方字体图标的引入与使用</span><span class="path">10/19/13-1.html</span></a>
+            <a class="item" href="10/19/13-2.html"><span class="no">13-2</span><b>Lucide</b><span class="d">SVG 图标库，改 currentColor 换色</span><span class="path">10/19/13-2.html</span></a>
+            <a class="item" href="10/19/13-3.html"><span class="no">13-3</span><b>iconfont 字体图标下导航</b><span class="d">用字体图标做底部导航栏</span><span class="path">10/19/13-3.html</span></a>
+            <a class="item" href="10/19/13-4.html"><span class="no">13-4</span><b>iconfont SVG 下导航</b><span class="d">同样式改用内联 SVG 实现</span><span class="path">10/19/13-4.html</span></a>
         </div>
     </section>
 
-    <footer>罗亚博 · 24001010409 · 计算机24004</footer>
+    <!-- ============ 五 ============ -->
+    <section class="group">
+        <h2>五、图像解决方案 <em>10 月 22 日 · 实验报告对应作品</em><span class="cnt">2 个</span></h2>
+        <div class="list">
+            <a class="item" href="10/22/font.html"><span class="no">方案一</span><b>我的 · 字体图标方案</b><span class="d">音乐 App「我的」页面，22 个图标全部用 icon font</span><span class="path">10/22/font.html</span></a>
+            <a class="item" href="10/22/svg.html"><span class="no">方案二</span><b>我的 · SVG 方案</b><span class="d">同一页面的内联 SVG 实现，可无限缩放</span><span class="path">10/22/svg.html</span></a>
+        </div>
+    </section>
+
+    <!-- ============ 六 ============ -->
+    <section class="group">
+        <h2>六、综合页面 <em>课程总结</em><span class="cnt">1 个</span></h2>
+        <div class="list">
+            <a class="item" href="zy.html"><span class="no">综合</span><b>亚博 · 课堂实践</b><span class="d">把课程各阶段练习串起来的综合页</span><span class="path">zy.html</span></a>
+        </div>
+    </section>
+
+    <!-- ============ 其他 ============ -->
+    <section class="group other">
+        <h2>附：非作品文件 <em>备份、第三方 demo、工具页，平时不用点</em><span class="cnt">3 个</span></h2>
+        <div class="list">
+            <a class="item" href="10%20-%20副本.html"><span class="no">副本</span><b>10.html 的副本</b><span class="d">与 10.html 内容完全相同，之前误存的备份</span><span class="path">10 - 副本.html</span></a>
+            <a class="item" href="font_5244698_svw4fsnowx8/demo_index.html"><span class="no">demo</span><b>iconfont 官方 Demo</b><span class="d">下载图标包时自带的演示页，不是自己写的</span><span class="path">font_5244698_svw4fsnowx8/demo_index.html</span></a>
+            <a class="item" href="_crops/cal.html"><span class="no">工具</span><b>日历裁剪工具</b><span class="d">做报告配图时临时用的截图裁剪页</span><span class="path">_crops/cal.html</span></a>
+        </div>
+    </section>
+
+    <footer>罗亚博 · 24001010409 · 计算机24004 · 页面共 25 个作品</footer>
 </div>
 </body>
 </html>

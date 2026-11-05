@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>18-3 基于知识库的智能客服系统架构图（SVG）</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <!--
+      作者：lyb
+      建立时间：2026-11-05
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：基于知识库的智能客服系统架构图（纯 SVG 绘制，分层展示在线问答链路、离线知识库建设与模型运维）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            padding: 36px 24px 56px;
+            background: #eef1f6;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #1f2329;
+        }
+
+        .wrap { max-width: 1280px; margin: 0 auto; }
+
+        .head { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+
+        h1 { font-size: 24px; font-weight: 600; letter-spacing: .4px; }
+
+        .sub { flex: 1; min-width: 300px; font-size: 13px; line-height: 1.8; color: #6b7484; }
+
+        .acts { display: flex; gap: 8px; }
+
+        .acts button {
+            padding: 8px 16px;
+            border: 1px solid #d8dee8;
+            border-radius: 9px;
+            background: #fff;
+            font-size: 12.5px;
+            color: #3d4653;
+            cursor: pointer;
+            transition: all .16s;
+        }
+
+        .acts button:hover { border-color: #0891b2; color: #0891b2; }
+
+        .acts button.primary { background: #1f2329; border-color: #1f2329; color: #fff; }
+        .acts button.primary:hover { background: #000; color: #fff; }
+
+        .board {
+            margin-top: 18px;
+            background: #fff;
+            border: 1px solid #dfe4ec;
+            border-radius: 14px;
+            padding: 10px;
+            box-shadow: 0 6px 24px rgba(31, 35, 41, .05);
+        }
+
+        svg#arch { display: block; width: 100%; height: auto; border-radius: 8px; }
+
+        /* SVG 内部文字 */
+        .layer-name { font-size: 12.5px; font-weight: 600; }
+        .layer-no { font-size: 10.5px; font-family: Consolas, monospace; opacity: .55; }
+        .node-title { font-size: 13px; font-weight: 600; fill: #2b3341; }
+        .node-title-s { font-size: 12.5px; font-weight: 600; fill: #2b3341; }
+        .node-sub { font-size: 10.5px; fill: #8290a3; }
+        .proto { font-size: 10.5px; font-family: Consolas, monospace; fill: #8b9bb0; }
+        .flow-label { font-size: 11px; font-weight: 600; }
+        .caption { font-size: 11.5px; fill: #94a3b8; }
+
+        .node { cursor: default; transition: transform .16s ease; transform-box: fill-box; transform-origin: center; }
+        .node:hover { transform: scale(1.035); }
+        .node:hover .box { stroke: var(--c); stroke-width: 2; }
+
+        .legend { margin-top: 14px; display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; color: #6b7484; }
+        .legend span { display: inline-flex; align-items: center; gap: 7px; }
+        .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+        footer { margin-top: 20px; font-size: 12px; color: #9aa3b2; }
+        footer a { color: #5b7fb4; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="head">
+        <h1>基于知识库的智能客服系统 · 架构图</h1>
+        <p class="sub">
+            整张图是 <b>SVG</b>：源码里就是 <code>&lt;rect&gt;</code> / <code>&lt;path&gt;</code> / <code>&lt;text&gt;</code> 这些标签，
+            可以任意缩放不失真。左侧是在线问答主链路，右侧是离线知识库建设与模型运维，鼠标悬停任意方块能看它的职责。
+        </p>
+        <div class="acts">
+            <button id="btnSvg">下载 SVG</button>
+            <button class="primary" id="btnPng">导出 PNG</button>
+        </div>
+    </div>
+
+    <div class="board">
+<svg id="arch" viewBox="0 0 1240 920" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="基于知识库的智能客服系统架构图">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#8b9bb0"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#0891b2"/>
+    </marker>
+    <marker id="arrowPurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#a855f7"/>
+    </marker>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M28 0 L0 0 0 28" fill="none" stroke="#7c8ea8" stroke-opacity="0.07" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1240" height="920" fill="#f8fafc"/>
+  <rect width="1240" height="920" fill="url(#grid)"/>
+  <g class="layer">
+    <rect x="32" y="44" width="742" height="100" rx="14" fill="#1d6fe0" fill-opacity="0.045" stroke="#1d6fe0" stroke-opacity="0.3" stroke-width="1.2" stroke-dasharray="7 5"/>
+    <text class="layer-name" x="48" y="64" fill="#1d6fe0">用户接入</text>
+    <text class="layer-no" x="758" y="64" fill="#1d6fe0" text-anchor="end">01</text>
+  </g>
+  <g class="node" style="--c:#1d6fe0">
+    <title>Web 客服窗口：网站右下角的悬浮客服窗口，通过 WebSocket 保持长连接</title>
+    <rect class="box" x="60.0" y="78" width="162" height="52" rx="9" fill="#ffffff" stroke="#d8e0ea" stroke-width="1"/>
+    <clipPath id="cp1"><rect x="60.0" y="78" width="162" height="52" rx="9"/></clipPath>
+    <rect x="60.0" y="78" width="4" height="52" fill="#1d6fe0" fill-opacity="0.9" clip-path="url(#cp1)"/>
+    <text class="node-title" x="144.0" y="100" text-anchor="middle">Web 客服窗口</text>
+    <text class="node-sub" x="144.0" y="117" text-anchor="middle">网页嵌入 / H5</text>
+  </g>
+  <g class="node" style="--c:#1d6fe0">
+    <title>移动 App：App 内置客服页，支持推送与工单跟踪</title>
+    <rect class="box" x="238.0" y="78" width="162" height="52" rx="9" fill="#ffffff" stroke="#d8e0ea" stroke-width="1"/>
+    <clipPath id="cp2"><rect x="238.0" y="78" width="162" height="52" rx="9"/></clipPath>
+    <rect x="238.0" y="78" width="4" height="52" fill="#1d6fe0" fill-opacity="0.9" clip-path="url(#cp2)"/>
+    <text class="node-title" x="322.0" y="100" text-anchor="middle">移动 App</text>
+    <text class="node-sub" x="322.0" y="117" text-anchor="middle">iOS / Android</text>
+  </g>
+  <g class="node" style="--c:#1d6fe0">
+    <title>微信公众号：微信生态入口，消息经公众号服务器转发到本系统</title>
+    <rect class="box" x="416.0" y="78" width="162" height="52" rx="9" fill="#ffffff" stroke="#d8e0ea" stroke-width="1"/>
+    <clipPath id="cp3"><rect x="416.0" y="78" width="162" height="52" rx="9"/></clipPath>
+    <rect x="416.0" y="78" width="4" height="52" fill="#1d6fe0" fill-opacity="0.9" clip-path="url(#cp3)"/>
+    <text class="node-title" x="500.0" y="100" text-anchor="middle">微信公众号</text>
+    <text class="node-sub" x="500.0" y="117" text-anchor="middle">公众号 / 小程序</text>
+  </g>
+  <g class="node" style="--c:#1d6fe0">
+    <title>电话客服：电话语音经语音识别转文字后进入同一条对话链路</title>
+    <rect class="box" x="594.0" y="78" width="162" height="52" rx="9" fill="#ffffff" stroke="#d8e0ea" stroke-width="1"/>
+    <clipPath id="cp4"><rect x="594.0" y="78" width="162" height="52" rx="9"/></clipPath>
+    <rect x="594.0" y="78" width="4" height="52" fill="#1d6fe0" fill-opacity="0.9" clip-path="url(#cp4)"/>
+    <text class="node-title" x="678.0" y="100" text-anchor="middle">电话客服</text>
+    <text class="node-sub" x="678.0" y="117" text-anchor="middle">IVR / ASR</text>
+  </g>
+  <g class="layer">
+    <rect x="32" y="186" width="742" height="100" rx="14" fill="#7c5cff" fill-opacity="0.045" stroke="#7c5cff" stroke-opacity="0.3" stroke-width="1.2" stroke-dasharray="7 5"/>
+    <text class="layer-name" x="48" y="206" fill="#7c5cff">接入与会话</text>
+    <text class="layer-no" x="758" y="206" fill="#7c5cff" text-anchor="end">02</text>
+  </g>
+  <g class="node" style="--c:#7c5cff">
+    <title>API 网关：统一入口，做身份校验、流量控制与灰度分流</title>
+    <rect class="box" x="60.0" y="220" width="220" height="52" rx="9" fill="#ffffff" stroke="#d8e0ea" stroke-width="1"/>
+    <clipPath id="cp5"><rect x="60.0" y="220" width="220" height="52" rx="9"/></clipPath>
+    <rect x="60.0" y="220" width="4" height="52" fill="#7c5cff" fill-opacity="0.9" clip-path="url(#cp5)"/>
+    <text class="node-title" x="173.0" y="242" text-anchor="middle">API 网关</text>
+    <text class="node-sub" x="173.0" y="259" text-anchor="middle">鉴权 · 限流 · 路由</text>
+  </g>
+  <g class="node" style="--c:#7c5cff">
+    <title>会话管理：维护每个用户的会话状态与多轮对话上下文</title>
+    <rect class="box" x="298.0" y="220" width="220" height="52" rx="9" fill="#ffffff" stroke="#d8e0ea" stroke-width="1"/>
+    <clipPath id="cp6"><rect x="298.0" y="220" width="220" height="52" rx="9"/></clipPath>
+    <rect x="298.0" y="220" width="4" height="52" fill="#7c5cff" fill-opacity="0.9" clip-path="url(#cp6)"/>
+    <text class="node-title" x="411.0" y="242" text-anchor="middle">会话管理</text>
+    <text class="node-sub" x="411.0" y="259" text-anchor="middle">Session · 上下文</text>
+  </g>
+  <g class="node" style="--c:#7c5cff">
+    <title>渠道适配：把各渠道的消息格式统一成内部标准结构</title>
+    <rect class="box" x="536.0" y="220" width="220" height="52" rx="9" fill="#ffffff" stroke="#d8e0ea" stroke-width="1"/>
+    <clipPath id="cp7"><rect x="536.0" y="220" width="220" height="52" rx="9"/></clipPath>
+    <rect x="536.0" y="220" width="4" height="52" fill="#7c5cff" fill-opacity="0.9" clip-path="url(#cp7)"/>
+    <text class="node-title" x="649.0" y="242" text-anchor="middle">渠道适配</text>
+    <text class="node-sub" x="649.0" y="259" text-anchor="middle">消息协议转换</text>
+  </g>
+  <g class="layer">
+    <rect x="32" y="328" width="742" height="100" rx="14" fill="#0b8a5c" fill-opacity="0.045" stroke="#0b8a5c" stroke-opacity="0.3" stroke-width="1.2" stroke-dasharray="7 5"/>
+    <text class="layer-name" x="48" y="348" fill="#0b8a5c">对话理解</text>
+    <text class="layer-no" x="758" y="348" fill="#0b8a5c" text-anchor="end">03</text>
+  </g>
+  <g class="node" style="--c:#0b8a5c">
+    <title>意图识别：判断用户这句话属于哪类诉求：咨询、投诉、查询订单等</title>
+    <rect class="box" x="60.0" y="362" width="220" height="52" rx="9" fill="#ffffff" stroke="#d8e0ea" stroke-width="1"/>
+    <clipPath id="cp8"><rect x="60.0" y="362" width="220" height="52" rx="9"/></clipPath>
+    <rect x="60.0" y="362" width="4" height="52" fill="#0b8a5c" fill-opacity="0.9" clip-path="url(#cp8)"/>
+    <text class="node-title" x="173.0" y="384" text-anchor="middle">意图识别</text>
+    <text class="node-sub" x="173.0" y="401" text-anchor="middle">BERT 文本分类</text>
+  </g>
+  <g class="node" style="--c:#0b8a5c">
+    <title>实体抽取：从问句里抽出关键信息：订单号、商品名、时间、地点</title>
+    <rect class="box" x="298.0" y="362" width="220" height="52" rx="9" fill="#ffffff" stroke="#d8e0ea" stroke-width="1"/>
+    <clipPath id="cp9"><rect x="298.0" y="362" width="220" height="52" rx="9"/></clipPath>
+    <rect x="298.0" y="362" width="4" height="52" fill="#0b8a5c" fill-opacity="0.9" clip-path="url(#cp9)"/>
+    <text class="node-title" x="411.0" y="384" text-anchor="middle">实体抽取</text>
+    <text class="node-sub" x="411.0" y="401" text-anchor="middle">NER 序列标注</text>
+  </g>
+  <g class="node" style="--c:#0b8a5c">
+    <title>多轮上下文：结合历史轮次补全指代与省略，避免答非所问</title>
+    <rect class="box" x="536.0" y="362" width="220" height="52" rx="9" fill="#ffffff" stroke="#d8e0ea" stroke-width="1"/>
+    <clipPath id="cp10"><rect x="536.0" y="362" width="220" height="52" rx="9"/></clipPath>
+    <rect x="536.0" y="362" width="4" height="52" fill="#0b8a5c" fill-opacity="0.9" clip-path="url(#cp10)"/>
+    <text class="node-title" x="649.0" y="384" text-anchor="middle">多轮上下文</text>
+    <text class="node-sub" x="649.0" y="401" text-anchor="middle">对话状态跟踪 DST</text>
+  </g>
+  <g class="layer">
+    <rect x="32" y="470" width="742" height="100" rx="14" fill="#0891b2" fill-opacity="0.045" stroke="#0891b2" stroke-opacity="0.3" stroke-width="1.2" stroke-dasharray="7 5"/>
+    <text class="layer-name" x="48" y="490" fill="#0891b2">知识检索</text>
+    <text class="layer-no" x="758" y="490" fill="#0891b2" text-anchor="end">04</text>
+  </g>
+  <g class="node" style="--c:#0891b2">
+    <title>向量检索：把问句编码成向量，在向量库里做近似最近邻召回</title>
+    <rect class="box" x="60.0" y="504" width="162" height="52" rx="9" fill="#ffffff" stroke="#d8e0ea" stroke-width="1"/>
+    <clipPath id="cp11"><rect x="60.0" y="504" width="162" height="52" rx="9"/></clipPath>
+    <rect x="60.0" y="504" width="4" height="52" fill="#0891b2" fill-opacity="0.9" clip-path="url(#cp11)"/>
+    <text class="node-title" x="144.0" y="526" text-anchor="middle">向量检索</text>
+    <text class="node-sub" x="144.0" y="543" text-anchor="middle">Bi-Encoder + 向量库</text>
+  </g>
+  <g class="node" style="--c:#0891b2">
+    <title>全文检索：关键词精确匹配，弥补向量检索对专有名词不敏感的短板</title>
+    <rect class="box" x="238.0" y="504" width="162" height="52" rx="9" fill="#ffffff" stroke="#d8e0ea" stroke-width="1"/>
+    <clipPath id="cp12"><rect x="238.0" y="504" width="162" height="52" rx="9"/></clipPath>
+    <rect x="238.0" y="504" width="4" height="52" fill="#0891b2" fill-opacity="0.9" clip-path="url(#cp12)"/>
+    <text class="node-title" x="322.0" y="526" text-anchor="middle">全文检索</text>
+    <text class="node-sub" x="322.0" y="543" text-anchor="middle">BM25 / Elasticsearch</text>
+  </g>
+  <g class="node" style="--c:#0891b2">
+    <title>图谱查询：沿实体关系查询结构化知识，适合多跳推理类问题</title>
+    <rect class="box" x="416.0" y="504" width="162" height="52" rx="9" fill="#ffffff" stroke="#d8e0ea" stroke-width="1"/>
+    <clipPath id="cp13"><rect x="416.0" y="504" width="162" height="52" rx="9"/></clipPath>
+    <rect x="416.0" y="504" width="4" height="52" fill="#0891b2" fill-opacity="0.9" clip-path="url(#cp13)"/>
+    <text class="node-title" x="500.0" y="526" text-anchor="middle">图谱查询</text>
+    <text class="node-sub" x="500.0" y="543" text-anchor="middle">知识图谱 · Cypher</text>
+  </g>
+  <g class="node" style="--c:#0891b2">
+    <title>重排序：对召回的候选片段重新打分排序，取 Top-K 送进生成模型</title>
+    <rect class="box" x="594.0" y="504" width="162" height="52" rx="9" fill="#ffffff" stroke="#d8e0ea" stroke-width="1"/>
+    <clipPath id="cp14"><rect x="594.0" y="504" width="162" height="52" rx="9"/></clipPath>
+    <rect x="594.0" y="504" width="4" height="52" fill="#0891b2" fill-opacity="0.9" clip-path="url(#cp14)"/>
+    <text class="node-title" x="678.0" y="526" text-anchor="middle">重排序</text>
+    <text class="node-sub" x="678.0" y="543" text-anchor="middle">Cross-Encoder</text>
+  </g>
+  <g class="layer">
+    <rect x="32" y="612" width="742" height="100" rx="14" fill="#e8720c" fill-opacity="0.045" stroke="#e8720c" stroke-opacity="0.3" stroke-width="1.2" stroke-dasharray="7 5"/>
+    <text class="layer-name" x="48" y="632" fill="#e8720c">答案生成</text>
+    <text class="layer-no" x="758" y="632" fill="#e8720c" text-anchor="end">05</text>
+  </g>
+  <g class="node" style="--c:#e8720c">
+    <title>Prompt 编排：把用户问题、检索片段、系统指令组装成最终提示词</title>
+    <rect class="box" x="60.0" y="646" width="220" height="52" rx="9" fill="#ffffff" stroke="#d8e0ea" stroke-width="1"/>
+    <clipPath id="cp15"><rect x="60.0" y="646" width="220" height="52" rx="9"/></clipPath>
+    <rect x="60.0" y="646" width="4" height="52" fill="#e8720c" fill-opacity="0.9" clip-path="url(#cp15)"/>
+    <text class="node-title" x="173.0" y="668" text-anchor="middle">Prompt 编排</text>
+    <text class="node-sub" x="173.0" y="685" text-anchor="middle">模板 · 上下文拼装</text>
+  </g>
+  <g class="node" style="--c:#e8720c">
+    <title>大模型生成：基于检索到的知识生成回答，并标注引用来源</title>
+    <rect class="box" x="298.0" y="646" width="220" height="52" rx="9" fill="#ffffff" stroke="#d8e0ea" stroke-width="1"/>
+    <clipPath id="cp16"><rect x="298.0" y="646" width="220" height="52" rx="9"/></clipPath>
+    <rect x="298.0" y="646" width="4" height="52" fill="#e8720c" fill-opacity="0.9" clip-path="url(#cp16)"/>
+    <text class="node-title" x="411.0" y="668" text-anchor="middle">大模型生成</text>
+    <text class="node-sub" x="411.0" y="685" text-anchor="middle">LLM 推理</text>
+  </g>
+  <g class="node" style="--c:#e8720c">
+    <title>兜底与转人工：置信度低或触及敏感话题时转人工坐席，并记录上下文</title>
+    <rect class="box" x="536.0" y="646" width="220" height="52" rx="9" fill="#ffffff" stroke="#d8e0ea" stroke-width="1"/>
+    <clipPath id="cp17"><rect x="536.0" y="646" width="220" height="52" rx="9"/></clipPath>
+    <rect x="536.0" y="646" width="4" height="52" fill="#e8720c" fill-opacity="0.9" clip-path="url(#cp17)"/>
+    <text class="node-title" x="649.0" y="668" text-anchor="middle">兜底与转人工</text>
+    <text class="node-sub" x="649.0" y="685" text-anchor="middle">置信度阈值</text>
+  </g>
+  <g class="layer">
+    <rect x="32" y="754" width="742" height="100" rx="14" fill="#64748b" fill-opacity="0.045" stroke="#64748b" stroke-opacity="0.3" stroke-width="1.2" stroke-dasharray="7 5"/>
+    <text class="layer-name" x="48" y="774" fill="#64748b">回复输出</text>
+    <text class="layer-no" x="758" y="774" fill="#64748b" text-anchor="end">06</text>
+  </g>
+  <g class="node" style="--c:#64748b">
+    <title>回复返回用户：生成的答案以流式方式返回，支持图文卡片与快捷按钮</title>
+    <rect class="box" x="248.0" y="788" width="320" height="52" rx="9" fill="#ffffff" stroke="#d8e0ea" stroke-width="1"/>
+    <clipPath id="cp18"><rect x="248.0" y="788" width="320" height="52" rx="9"/></clipPath>
+    <rect x="248.0" y="788" width="4" height="52" fill="#64748b" fill-opacity="0.9" clip-path="url(#cp18)"/>
+    <text class="node-title" x="411.0" y="810" text-anchor="middle">回复返回用户</text>
+    <text class="node-sub" x="411.0" y="827" text-anchor="middle">流式输出 · 富文本</text>
+  </g>
+  <line x1="210.07999999999998" y1="147" x2="210.07999999999998" y2="182" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arrow)" stroke-opacity="0.75"/>
+  <line x1="403.0" y1="147" x2="403.0" y2="182" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arrow)" stroke-opacity="0.75"/>
+  <line x1="595.92" y1="147" x2="595.92" y2="182" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arrow)" stroke-opacity="0.75"/>
+  <rect x="407.0" y="155.5" width="116.4" height="18" rx="5" fill="#ffffff" fill-opacity="0.95" stroke="#dde4ee"/>
+  <text class="proto" x="414.0" y="168.0">WebSocket / HTTP</text>
+  <line x1="210.07999999999998" y1="289" x2="210.07999999999998" y2="324" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arrow)" stroke-opacity="0.75"/>
+  <line x1="403.0" y1="289" x2="403.0" y2="324" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arrow)" stroke-opacity="0.75"/>
+  <line x1="595.92" y1="289" x2="595.92" y2="324" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arrow)" stroke-opacity="0.75"/>
+  <rect x="407.0" y="297.5" width="52.400000000000006" height="18" rx="5" fill="#ffffff" fill-opacity="0.95" stroke="#dde4ee"/>
+  <text class="proto" x="414.0" y="310.0">内部 RPC</text>
+  <line x1="210.07999999999998" y1="431" x2="210.07999999999998" y2="466" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arrow)" stroke-opacity="0.75"/>
+  <line x1="403.0" y1="431" x2="403.0" y2="466" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arrow)" stroke-opacity="0.75"/>
+  <line x1="595.92" y1="431" x2="595.92" y2="466" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arrow)" stroke-opacity="0.75"/>
+  <rect x="407.0" y="439.5" width="52.400000000000006" height="18" rx="5" fill="#ffffff" fill-opacity="0.95" stroke="#dde4ee"/>
+  <text class="proto" x="414.0" y="452.0">候选片段召回</text>
+  <line x1="210.07999999999998" y1="573" x2="210.07999999999998" y2="608" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arrow)" stroke-opacity="0.75"/>
+  <line x1="403.0" y1="573" x2="403.0" y2="608" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arrow)" stroke-opacity="0.75"/>
+  <line x1="595.92" y1="573" x2="595.92" y2="608" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arrow)" stroke-opacity="0.75"/>
+  <rect x="407.0" y="581.5" width="65.2" height="18" rx="5" fill="#ffffff" fill-opacity="0.95" stroke="#dde4ee"/>
+  <text class="proto" x="414.0" y="594.0">Top-K 片段</text>
+  <line x1="210.07999999999998" y1="715" x2="210.07999999999998" y2="750" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arrow)" stroke-opacity="0.75"/>
+  <line x1="403.0" y1="715" x2="403.0" y2="750" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arrow)" stroke-opacity="0.75"/>
+  <line x1="595.92" y1="715" x2="595.92" y2="750" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arrow)" stroke-opacity="0.75"/>
+  <rect x="407.0" y="723.5" width="39.6" height="18" rx="5" fill="#ffffff" fill-opacity="0.95" stroke="#dde4ee"/>
+  <text class="proto" x="414.0" y="736.0">流式返回</text>
+  <g class="layer">
+    <rect x="806" y="44" width="390" height="440" rx="14" fill="#a855f7" fill-opacity="0.045" stroke="#a855f7" stroke-opacity="0.3" stroke-width="1.2" stroke-dasharray="7 5"/>
+    <text class="layer-name" x="822" y="64" fill="#a855f7">知识库建设（离线流水线）</text>
+  </g>
+  <g class="node" style="--c:#a855f7">
+    <title>① 文档采集：把产品手册、历史工单、FAQ 等原始资料收集起来</title>
+    <rect class="box" x="830" y="82" width="342" height="46" rx="8" fill="#ffffff" stroke="#d8e0ea"/>
+    <rect x="830" y="82" width="3" height="46" rx="1.5" fill="#a855f7" fill-opacity="0.85"/>
+    <text class="node-title-s" x="844" y="102">① 文档采集</text>
+    <text class="node-sub" x="844" y="118">PDF · Word · 网页 · FAQ</text>
+  </g>
+  <line x1="1001.0" y1="129" x2="1001.0" y2="140" stroke="#c9b3e6" stroke-width="1.3" marker-end="url(#arrowPurple)"/>
+  <g class="node" style="--c:#a855f7">
+    <title>② 清洗与结构化：去掉页眉页脚与乱码，按章节切成语义完整的段落</title>
+    <rect class="box" x="830" y="144" width="342" height="46" rx="8" fill="#ffffff" stroke="#d8e0ea"/>
+    <rect x="830" y="144" width="3" height="46" rx="1.5" fill="#a855f7" fill-opacity="0.85"/>
+    <text class="node-title-s" x="844" y="164">② 清洗与结构化</text>
+    <text class="node-sub" x="844" y="180">去噪 · 分段 · 打标签</text>
+  </g>
+  <line x1="1001.0" y1="191" x2="1001.0" y2="202" stroke="#c9b3e6" stroke-width="1.3" marker-end="url(#arrowPurple)"/>
+  <g class="node" style="--c:#a855f7">
+    <title>③ 文本切分：按固定长度切块并保留重叠，避免答案被切在边界上</title>
+    <rect class="box" x="830" y="206" width="342" height="46" rx="8" fill="#ffffff" stroke="#d8e0ea"/>
+    <rect x="830" y="206" width="3" height="46" rx="1.5" fill="#a855f7" fill-opacity="0.85"/>
+    <text class="node-title-s" x="844" y="226">③ 文本切分</text>
+    <text class="node-sub" x="844" y="242">Chunk 512 · Overlap 64</text>
+  </g>
+  <line x1="1001.0" y1="253" x2="1001.0" y2="264" stroke="#c9b3e6" stroke-width="1.3" marker-end="url(#arrowPurple)"/>
+  <g class="node" style="--c:#a855f7">
+    <title>④ 向量化：把每个文本块编码成向量，语义相近的块在空间里也相近</title>
+    <rect class="box" x="830" y="268" width="342" height="46" rx="8" fill="#ffffff" stroke="#d8e0ea"/>
+    <rect x="830" y="268" width="3" height="46" rx="1.5" fill="#a855f7" fill-opacity="0.85"/>
+    <text class="node-title-s" x="844" y="288">④ 向量化</text>
+    <text class="node-sub" x="844" y="304">Embedding 模型编码</text>
+  </g>
+  <line x1="1001.0" y1="315" x2="1001.0" y2="326" stroke="#c9b3e6" stroke-width="1.3" marker-end="url(#arrowPurple)"/>
+  <g class="node" style="--c:#a855f7">
+    <title>⑤ 入库：向量写入 FAISS / Milvus，实体关系写入图数据库</title>
+    <rect class="box" x="830" y="330" width="342" height="46" rx="8" fill="#ffffff" stroke="#d8e0ea"/>
+    <rect x="830" y="330" width="3" height="46" rx="1.5" fill="#a855f7" fill-opacity="0.85"/>
+    <text class="node-title-s" x="844" y="350">⑤ 入库</text>
+    <text class="node-sub" x="844" y="366">向量库 + 知识图谱</text>
+  </g>
+  <g class="layer">
+    <rect x="806" y="560" width="390" height="294" rx="14" fill="#c0392b" fill-opacity="0.04" stroke="#c0392b" stroke-opacity="0.28" stroke-width="1.2" stroke-dasharray="7 5"/>
+    <text class="layer-name" x="822" y="580" fill="#c0392b">模型服务与运维</text>
+  </g>
+  <g class="node" style="--c:#c0392b">
+    <title>大模型服务：生成回答的核心，支持流式输出与温度、长度等参数调节</title>
+    <rect class="box" x="830" y="600" width="165" height="88" rx="9" fill="#ffffff" stroke="#d8e0ea"/>
+    <rect x="830" y="600" width="3" height="88" rx="1.5" fill="#c0392b" fill-opacity="0.85"/>
+    <text class="node-title-s" x="844" y="626">大模型服务</text>
+    <text class="node-sub" x="844" y="644">LLM 推理 / API</text>
+    <text class="node-sub" x="844" y="668" fill="#9aa7b8">用于检索与生成</text>
+  </g>
+  <g class="node" style="--c:#c0392b">
+    <title>Embedding 服务：把问句与文本块编码到同一向量空间，是检索效果的关键</title>
+    <rect class="box" x="1007" y="600" width="165" height="88" rx="9" fill="#ffffff" stroke="#d8e0ea"/>
+    <rect x="1007" y="600" width="3" height="88" rx="1.5" fill="#c0392b" fill-opacity="0.85"/>
+    <text class="node-title-s" x="1021" y="626">Embedding 服务</text>
+    <text class="node-sub" x="1021" y="644">编码模型</text>
+    <text class="node-sub" x="1021" y="668" fill="#9aa7b8">用于检索与生成</text>
+  </g>
+  <g class="node" style="--c:#c0392b">
+    <title>向量数据库：存储百万级向量并支持毫秒级近似最近邻检索</title>
+    <rect class="box" x="830" y="702" width="165" height="88" rx="9" fill="#ffffff" stroke="#d8e0ea"/>
+    <rect x="830" y="702" width="3" height="88" rx="1.5" fill="#c0392b" fill-opacity="0.85"/>
+    <text class="node-title-s" x="844" y="728">向量数据库</text>
+    <text class="node-sub" x="844" y="746">FAISS · Milvus</text>
+    <text class="node-sub" x="844" y="770" fill="#9aa7b8">用于检索与生成</text>
+  </g>
+  <g class="node" style="--c:#c0392b">
+    <title>评测与监控：离线评测集 + 线上 A/B，持续跟踪回答质量与用户反馈</title>
+    <rect class="box" x="1007" y="702" width="165" height="88" rx="9" fill="#ffffff" stroke="#d8e0ea"/>
+    <rect x="1007" y="702" width="3" height="88" rx="1.5" fill="#c0392b" fill-opacity="0.85"/>
+    <text class="node-title-s" x="1021" y="728">评测与监控</text>
+    <text class="node-sub" x="1021" y="746">召回率 · 满意度</text>
+    <text class="node-sub" x="1021" y="770" fill="#9aa7b8">用于检索与生成</text>
+  </g>
+  <path d="M806,264 L790,264 L790,520 L778,520" fill="none" stroke="#0891b2" stroke-width="1.6" stroke-opacity="0.85" marker-end="url(#arrowBlue)"/>
+  <text class="flow-label" x="782" y="512" text-anchor="end" fill="#0891b2">知识注入</text>
+  <path d="M806,662 L790,662 L790,662 L778,662" fill="none" stroke="#c0392b" stroke-width="1.6" stroke-opacity="0.8" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+  <text class="flow-label" x="782" y="654" text-anchor="end" fill="#c0392b">模型调用</text>
+  <text class="caption" x="32" y="884">图 1　基于知识库的智能客服系统总体架构：左侧为在线问答主链路，右侧为离线知识库建设与模型/运维支撑</text>
+  <text class="caption" x="32" y="904">虚线框表示逻辑分层，实线箭头为调用方向，虚线箭头为跨层依赖；各节点悬停可查看职责说明</text>
+</svg>
+    </div>
+
+    <div class="legend">
+        <span><i style="background:#1d6fe0"></i>用户接入</span>
+        <span><i style="background:#7c5cff"></i>接入与会话</span>
+        <span><i style="background:#0b8a5c"></i>对话理解</span>
+        <span><i style="background:#0891b2"></i>知识检索</span>
+        <span><i style="background:#e8720c"></i>答案生成</span>
+        <span><i style="background:#64748b"></i>回复输出</span>
+        <span><i style="background:#a855f7"></i>知识库建设</span>
+        <span><i style="background:#c0392b"></i>模型与运维</span>
+    </div>
+
+    <footer>
+        lyb · 计算机24004 · 2026-11-05 ·
+        <a href="https://github.com/llu799529-lang/html-homework" target="_blank" rel="noopener">GitHub 仓库</a>
+    </footer>
+</div>
+
+<script>
+    (function () {
+        var svg = document.getElementById('arch');
+
+        /* 下载当前这张 SVG 源文件 */
+        document.getElementById('btnSvg').addEventListener('click', function () {
+            var src = new XMLSerializer().serializeToString(svg);
+            if (src.indexOf('xmlns') === -1) {
+                src = src.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+            }
+            var head = '<?xml version="1.0" encoding="UTF-8"?>\n';
+            /* 把样式内联进去，单独打开 .svg 也能正常显示 */
+            var style = '<style>' +
+                '.layer-name{font-size:12.5px;font-weight:600;font-family:sans-serif}' +
+                '.layer-no{font-size:10.5px;font-family:monospace;opacity:.55}' +
+                '.node-title{font-size:13px;font-weight:600;fill:#2b3341;font-family:sans-serif}' +
+                '.node-title-s{font-size:12.5px;font-weight:600;fill:#2b3341;font-family:sans-serif}' +
+                '.node-sub{font-size:10.5px;fill:#8290a3;font-family:sans-serif}' +
+                '.proto{font-size:10.5px;font-family:monospace;fill:#8b9bb0}' +
+                '.flow-label{font-size:11px;font-weight:600;font-family:sans-serif}' +
+                '.caption{font-size:11.5px;fill:#94a3b8;font-family:sans-serif}' +
+                '</style>';
+            src = src.replace('</defs>', '</defs>' + style);
+
+            var blob = new Blob([head + src], { type: 'image/svg+xml;charset=utf-8' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = '基于知识库的智能客服系统架构图.svg';
+            a.click();
+            setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+        });
+
+        /* 导出 2 倍分辨率的 PNG，方便直接贴进报告 */
+        document.getElementById('btnPng').addEventListener('click', function () {
+            var src = new XMLSerializer().serializeToString(svg);
+            src = src.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+            var style = '<style>' +
+                '.layer-name{font-size:12.5px;font-weight:600;font-family:sans-serif}' +
+                '.layer-no{font-size:10.5px;font-family:monospace;opacity:.55}' +
+                '.node-title{font-size:13px;font-weight:600;fill:#2b3341;font-family:sans-serif}' +
+                '.node-title-s{font-size:12.5px;font-weight:600;fill:#2b3341;font-family:sans-serif}' +
+                '.node-sub{font-size:10.5px;fill:#8290a3;font-family:sans-serif}' +
+                '.proto{font-size:10.5px;font-family:monospace;fill:#8b9bb0}' +
+                '.flow-label{font-size:11px;font-weight:600;font-family:sans-serif}' +
+                '.caption{font-size:11.5px;fill:#94a3b8;font-family:sans-serif}' +
+                '</style>';
+            src = src.replace('</defs>', '</defs>' + style);
+
+            var img = new Image();
+            var url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(src);
+            img.onload = function () {
+                var scale = 2;
+                var c = document.createElement('canvas');
+                c.width = 1240 * scale;
+                c.height = 920 * scale;
+                var ctx = c.getContext('2d');
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(0, 0, c.width, c.height);
+                ctx.drawImage(img, 0, 0, c.width, c.height);
+                c.toBlob(function (blob) {
+                    var a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = '基于知识库的智能客服系统架构图.png';
+                    a.click();
+                    setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+                }, 'image/png');
+            };
+            img.src = url;
+        });
+    })();
+</script>
+</body>
+</html>

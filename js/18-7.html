@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>18-7 Three.js 3D 图表（柱状图 + 饼图）</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <!--
+      作者：lyb
+      建立时间：2026-11-05
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：基于 Three.js 的 3D 图表（立方体柱状图 + 圆柱扇形饼图，可拖拽旋转、自动旋转）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            padding: 36px 24px 56px;
+            background: #f5f6f8;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #1f2329;
+        }
+
+        .wrap { max-width: 1120px; margin: 0 auto; }
+
+        .head { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+
+        h1 { font-size: 24px; font-weight: 600; letter-spacing: .4px; }
+
+        .sub {
+            flex: 1;
+            min-width: 300px;
+            font-size: 13px;
+            line-height: 1.85;
+            color: #6b7484;
+        }
+
+        .sub code {
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            background: #e7ebf2;
+            padding: 1px 5px;
+            border-radius: 4px;
+        }
+
+        /* ---------- 卡片 ---------- */
+        .card {
+            margin-top: 18px;
+            background: #fff;
+            border: 1px solid #e2e6ee;
+            border-radius: 14px;
+            padding: 18px 20px 16px;
+            box-shadow: 0 6px 24px rgba(31, 35, 41, .05);
+        }
+
+        .card-hd { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+        .card h2 {
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .card h2 em {
+            font-style: normal;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #e8f3ff;
+            color: #1d6fe0;
+            font-family: Consolas, monospace;
+        }
+
+        .card h2 em.green { background: #e7f8f0; color: #0b8a5c; }
+
+        .card .desc {
+            margin-top: 8px;
+            font-size: 12.5px;
+            line-height: 1.8;
+            color: #8a9099;
+        }
+
+        .spacer { flex: 1; }
+
+        .toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 6px 13px;
+            border: 1px solid #e2e6ee;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #6b7484;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle input { width: 14px; height: 14px; cursor: pointer; accent-color: #1d6fe0; }
+
+        .toggle.on { border-color: #b9d2fb; background: #f2f8ff; color: #1d6fe0; }
+
+        /* ---------- 3D 画布 ---------- */
+        .board {
+            position: relative;
+            margin-top: 14px;
+            height: 460px;
+            border-radius: 11px;
+            overflow: hidden;
+            background:
+                radial-gradient(120% 100% at 50% 0%, #ffffff 0%, #f2f6fc 55%, #e8eff8 100%);
+            border: 1px solid #eef1f6;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        .board:active { cursor: grabbing; }
+
+        .board canvas { display: block; width: 100%; height: 100%; }
+
+        .tip {
+            position: absolute;
+            left: 14px;
+            bottom: 12px;
+            font-size: 11.5px;
+            color: #a0aab8;
+            pointer-events: none;
+        }
+
+        .legend {
+            margin-top: 12px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 12px;
+            color: #6b7484;
+        }
+
+        .legend span { display: inline-flex; align-items: center; gap: 7px; }
+        .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+        /* ---------- 说明 ---------- */
+        .note {
+            margin-top: 16px;
+            padding: 14px 16px;
+            background: #fff;
+            border: 1px solid #e2e6ee;
+            border-radius: 12px;
+            font-size: 12.5px;
+            line-height: 1.95;
+            color: #6b7484;
+        }
+
+        .note b { color: #3d4653; }
+        .note code { font-family: Consolas, monospace; font-size: 11.5px; color: #c7254e; }
+
+        .err {
+            display: none;
+            margin-top: 18px;
+            padding: 28px;
+            background: #fff;
+            border: 1px dashed #e8c4c4;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 13px;
+            line-height: 1.9;
+            color: #b2404a;
+        }
+
+        footer { margin-top: 20px; font-size: 12px; color: #9aa3b2; }
+        footer a { color: #5b7fb4; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+
+        @media (max-width: 700px) {
+            .board { height: 360px; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="head">
+        <h1>Three.js 3D 图表</h1>
+        <p class="sub">
+            两张图都是 Three.js 在页面里用 <code>BoxGeometry</code> 和 <code>CylinderGeometry</code> 一个个搭出来的，
+            有真实的光照、阴影和透视。鼠标按住拖动可以换角度看，松开还能自动转。
+        </p>
+    </div>
+
+    <!-- ============ 柱状图 ============ -->
+    <div class="card">
+        <div class="card-hd">
+            <h2>一、3D 柱状图 <em>BoxGeometry</em></h2>
+            <div class="spacer"></div>
+            <label class="toggle on" id="tgBar"><input type="checkbox" checked>自动旋转</label>
+        </div>
+        <p class="desc">上半年每月咨询量，柱高按数值等比缩放，柱顶和地面各挂了一个 canvas 纹理做的文字标签。</p>
+        <div class="board" id="barBoard">
+            <canvas id="barCanvas"></canvas>
+            <div class="tip">按住拖动可旋转视角</div>
+        </div>
+    </div>
+
+    <!-- ============ 饼图 ============ -->
+    <div class="card">
+        <div class="card-hd">
+            <h2>二、3D 饼图 <em class="green">CylinderGeometry</em></h2>
+            <div class="spacer"></div>
+            <label class="toggle on" id="tgPie"><input type="checkbox" checked>自动旋转</label>
+        </div>
+        <p class="desc">
+            用圆柱体的起始角 <code>thetaStart</code> 和扫过的角度 <code>thetaLength</code> 切出五个扇形，
+            再让每块沿中心方向挪一点点，就成了爆炸效果。
+        </p>
+        <div class="board" id="pieBoard">
+            <canvas id="pieCanvas"></canvas>
+            <div class="tip">按住拖动可旋转视角</div>
+        </div>
+        <div class="legend" id="pieLegend"></div>
+    </div>
+
+    <div class="note">
+        <b>几个关键点：</b>
+        ① 圆柱（<code>CylinderGeometry</code>）默认是竖着的，所以画饼图不用旋转，它天然平躺在 XZ 平面上；
+        ② 每个扇形都是完整圆柱的一段，<code>thetaStart</code> 从上一个扇形的结束角接着算，累加 2π 刚好一圈；
+        ③ 文字标签用的是 <code>CanvasTexture + Sprite</code>——把文字画在 canvas 上当贴图，Sprite 会始终正对镜头，不会被转歪；
+        ④ 页面里开了 <code>shadowMap</code>，柱子和扇形都能在地面投下影子。
+    </div>
+
+    <div class="err" id="err">
+        3D 库没能加载。<br>
+        如果是双击本地文件打开的，浏览器会以 CORS 为由拦掉本地模块；请改用线上地址，或在本目录起一个静态服务（例如 <code>python -m http.server</code>）。
+    </div>
+
+    <footer>
+        lyb · 计算机24004 · 2026-11-05 ·
+        <a href="https://github.com/llu799529-lang/html-homework" target="_blank" rel="noopener">GitHub 仓库</a>
+    </footer>
+</div>
+
+<script type="module">
+/* ============ 加载 Three.js（本地优先，失败回退 CDN） ============ */
+let THREE;
+try {
+    THREE = await import('./cdn/three/three.module.min.js');
+} catch (e1) {
+    try {
+        THREE = await import('https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.min.js');
+    } catch (e2) {
+        document.getElementById('err').style.display = 'block';
+        document.getElementById('barBoard').style.display = 'none';
+        document.getElementById('pieBoard').style.display = 'none';
+        throw e2;
+    }
+}
+
+/* ============ 公共工具 ============ */
+const srgb = THREE.SRGBColorSpace;
+
+/* 把文字画到 canvas 上做成 Sprite，永远正对镜头 */
+function makeLabel(text, color, opts) {
+    const o = Object.assign({ size: 64, weight: 'bold', padding: 24 }, opts || {});
+    const c = document.createElement('canvas');
+    const ctx = c.getContext('2d');
+    const font = `${o.weight} ${o.size}px -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif`;
+
+    ctx.font = font;
+    const w = Math.ceil(ctx.measureText(text).width) + o.padding * 2;
+    const h = o.size + o.padding * 1.2;
+    c.width = w;
+    c.height = h;
+
+    ctx.font = font;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = color;
+    ctx.fillText(text, w / 2, h / 2);
+
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = srgb;
+    tex.anisotropy = 4;
+
+    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false });
+    const sp = new THREE.Sprite(mat);
+    const scale = 0.011;
+    sp.scale.set(w * scale, h * scale, 1);
+    return sp;
+}
+
+/* 一组通用的拖拽旋转控制 */
+function attachOrbit(dom, state) {
+    let dragging = false, px = 0, py = 0;
+
+    dom.addEventListener('pointerdown', function (e) {
+        dragging = true;
+        px = e.clientX;
+        py = e.clientY;
+        dom.setPointerCapture(e.pointerId);
+    });
+
+    dom.addEventListener('pointermove', function (e) {
+        if (!dragging) return;
+        state.rotY += (e.clientX - px) * 0.008;
+        state.rotX += (e.clientY - py) * 0.005;
+        state.rotX = Math.max(state.minX, Math.min(state.maxX, state.rotX));
+        px = e.clientX;
+        py = e.clientY;
+    });
+
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (ev) {
+        dom.addEventListener(ev, function () { dragging = false; });
+    });
+}
+
+/* ============ 一、3D 柱状图 ============ */
+function buildBar() {
+    const canvas = document.getElementById('barCanvas');
+    const board = document.getElementById('barBoard');
+
+    const data = [
+        { label: '1月', value: 120 },
+        { label: '2月', value: 200 },
+        { label: '3月', value: 150 },
+        { label: '4月', value: 280 },
+        { label: '5月', value: 220 },
+        { label: '6月', value: 340 }
+    ];
+    const MAX_H = 4.2;
+    const maxVal = Math.max.apply(null, data.map(d => d.value));
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 200);
+
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.outputColorSpace = srgb;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    /* 光照 */
+    scene.add(new THREE.AmbientLight(0xffffff, 1.1));
+
+    const key = new THREE.DirectionalLight(0xffffff, 2.6);
+    key.position.set(7, 13, 8);
+    key.castShadow = true;
+    key.shadow.mapSize.set(1024, 1024);
+    key.shadow.camera.left = -9;
+    key.shadow.camera.right = 9;
+    key.shadow.camera.top = 9;
+    key.shadow.camera.bottom = -9;
+    key.shadow.camera.near = 1;
+    key.shadow.camera.far = 40;
+    key.shadow.bias = -0.0008;
+    scene.add(key);
+
+    const fill = new THREE.DirectionalLight(0x9dc4ff, 0.9);
+    fill.position.set(-8, 6, -7);
+    scene.add(fill);
+
+    /* 地面 + 网格 */
+    const ground = new THREE.Mesh(
+        new THREE.PlaneGeometry(20, 20),
+        new THREE.MeshStandardMaterial({ color: 0xf3f7fd, roughness: 0.96, metalness: 0 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    const grid = new THREE.GridHelper(20, 20, 0xc9d6e6, 0xe2e9f2);
+    grid.position.y = 0.008;
+    grid.material.transparent = true;
+    grid.material.opacity = 0.75;
+    scene.add(grid);
+
+    /* 柱子 */
+    const group = new THREE.Group();
+    const barW = 0.84;
+    const gap = 1.52;
+
+    data.forEach(function (d, i) {
+        const h = d.value / maxVal * MAX_H;
+
+        const geo = new THREE.BoxGeometry(barW, h, barW);
+        const color = new THREE.Color().setHSL(0.585 - i * 0.028, 0.72, 0.55);
+        const mat = new THREE.MeshStandardMaterial({
+            color: color,
+            roughness: 0.34,
+            metalness: 0.18
+        });
+
+        const bar = new THREE.Mesh(geo, mat);
+        bar.position.set((i - (data.length - 1) / 2) * gap, h / 2, 0);
+        bar.castShadow = true;
+        bar.receiveShadow = true;
+        group.add(bar);
+
+        /* 柱顶数值 */
+        const num = makeLabel(String(d.value), '#1f2329', { size: 52 });
+        num.position.set(bar.position.x, h + 0.44, 0);
+        group.add(num);
+
+        /* 地面月份 */
+        const mon = makeLabel(d.label, '#8b98ab', { size: 50 });
+        mon.position.set(bar.position.x, 0.56, 1.12);
+        group.add(mon);
+    });
+
+    scene.add(group);
+
+    /* 旋转状态 */
+    const state = { rotY: 0.62, rotX: 0.34, minX: 0.08, maxX: 0.78 };
+    attachOrbit(board, state);
+
+    const auto = { on: true };
+    document.getElementById('tgBar').addEventListener('click', function (e) {
+        if (e.target.tagName !== 'INPUT') return;
+        auto.on = e.target.checked;
+        this.classList.toggle('on', auto.on);
+    });
+
+    /* 尺寸 */
+    function resize() {
+        const w = board.clientWidth;
+        const h = board.clientHeight;
+        if (!w || !h) return;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+    }
+    new ResizeObserver(resize).observe(board);
+    resize();
+
+    return {
+        update: function (dt) {
+            if (auto.on) state.rotY += dt * 0.00022;
+            const R = 12.6;
+            camera.position.set(
+                Math.sin(state.rotY) * R * Math.cos(state.rotX),
+                2.1 + Math.sin(state.rotX) * R,
+                Math.cos(state.rotY) * R * Math.cos(state.rotX)
+            );
+            camera.lookAt(0, 1.7, 0);
+        },
+        render: function () { renderer.render(scene, camera); }
+    };
+}
+
+/* ============ 二、3D 饼图 ============ */
+function buildPie() {
+    const canvas = document.getElementById('pieCanvas');
+    const board = document.getElementById('pieBoard');
+
+    const slices = [
+        { label: '售前咨询', value: 35, color: 0x1d6fe0 },
+        { label: '订单查询', value: 25, color: 0x0b8a5c },
+        { label: '售后报修', value: 20, color: 0xe8720c },
+        { label: '投诉建议', value: 12, color: 0x7c5cff },
+        { label: '其他', value: 8, color: 0x0891b2 }
+    ];
+    const total = slices.reduce(function (s, d) { return s + d.value; }, 0);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 200);
+
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.outputColorSpace = srgb;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    scene.add(new THREE.AmbientLight(0xffffff, 1.15));
+
+    const key = new THREE.DirectionalLight(0xffffff, 2.4);
+    key.position.set(5, 12, 7);
+    key.castShadow = true;
+    key.shadow.mapSize.set(1024, 1024);
+    key.shadow.camera.left = -8;
+    key.shadow.camera.right = 8;
+    key.shadow.camera.top = 8;
+    key.shadow.camera.bottom = -8;
+    key.shadow.camera.near = 1;
+    key.shadow.camera.far = 40;
+    scene.add(key);
+
+    const fill = new THREE.DirectionalLight(0xa8c8ff, 0.8);
+    fill.position.set(-7, 5, -6);
+    scene.add(fill);
+
+    /* 地面 */
+    const ground = new THREE.Mesh(
+        new THREE.PlaneGeometry(22, 22),
+        new THREE.MeshStandardMaterial({ color: 0xf3f7fd, roughness: 0.96 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -0.02;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    /* 饼图本体 */
+    const group = new THREE.Group();
+    const R = 2.55;
+    const H = 0.72;
+    const EXPLODE = 0.23;
+
+    let start = Math.PI / 2;   /* 从 12 点方向开始 */
+
+    slices.forEach(function (s, si) {
+        const angle = s.value / total * Math.PI * 2;
+        const geo = new THREE.CylinderGeometry(R, R, H, 80, 1, false, start, angle - 0.014);
+        const mat = new THREE.MeshStandardMaterial({
+            color: s.color,
+            roughness: 0.36,
+            metalness: 0.12
+        });
+
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+
+        /* 沿扇形中线向外挪一点，做出爆炸分离 */
+        const mid = start + angle / 2;
+        mesh.position.x = Math.cos(mid) * EXPLODE;
+        mesh.position.z = Math.sin(mid) * EXPLODE;
+        group.add(mesh);
+
+        /* 外侧标签 */
+        const lbl = makeLabel(s.value + '%', '#4a5568', { size: 46 });
+        /* 相邻标签一内一外交错，避免投影后挤在一起 */
+        const rr = R + 0.92 + (si % 2) * 0.52;
+        lbl.position.set(
+            Math.cos(mid) * rr,
+            0.92 + (si % 2) * 0.12,
+            Math.sin(mid) * rr
+        );
+        group.add(lbl);
+
+        start += angle;
+    });
+
+    /* 中心总量 */
+    const centerLbl = makeLabel('总量 ' + total, '#1f2329', { size: 48 });
+    centerLbl.position.set(0, 1.06, 0);
+    group.add(centerLbl);
+
+    scene.add(group);
+
+    /* 图例 */
+    document.getElementById('pieLegend').innerHTML = slices.map(function (s) {
+        return '<span><i style="background:#' + s.color.toString(16).padStart(6, '0') + '"></i>' +
+            s.label + '　' + s.value + '%</span>';
+    }).join('');
+
+    /* 旋转 */
+    const state = { rotY: 0.5, rotX: 0.74, minX: 0.3, maxX: 1.2 };
+    attachOrbit(board, state);
+
+    const auto = { on: true };
+    document.getElementById('tgPie').addEventListener('click', function (e) {
+        if (e.target.tagName !== 'INPUT') return;
+        auto.on = e.target.checked;
+        this.classList.toggle('on', auto.on);
+    });
+
+    function resize() {
+        const w = board.clientWidth;
+        const h = board.clientHeight;
+        if (!w || !h) return;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+    }
+    new ResizeObserver(resize).observe(board);
+    resize();
+
+    return {
+        update: function (dt) {
+            if (auto.on) state.rotY += dt * 0.0003;
+            const R2 = 10.6;
+            camera.position.set(
+                Math.sin(state.rotY) * R2 * Math.cos(state.rotX),
+                0.4 + Math.sin(state.rotX) * R2,
+                Math.cos(state.rotY) * R2 * Math.cos(state.rotX)
+            );
+            camera.lookAt(0, 0.45, 0);
+        },
+        render: function () { renderer.render(scene, camera); }
+    };
+}
+
+/* ============ 启动 ============ */
+const bar = buildBar();
+const pie = buildPie();
+
+let last = 0;
+function loop(t) {
+    const dt = last ? Math.min(t - last, 60) : 16;
+    last = t;
+    bar.update(dt);
+    bar.render();
+    pie.update(dt);
+    pie.render();
+    requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

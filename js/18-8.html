@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>18-8 客服运营数据大屏</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <!--
+      作者：lyb
+      建立时间：2026-11-05
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：智能客服运营数据大屏（1920x1080 等比缩放，ECharts 多图联动，数据实时滚动刷新）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background: #04080f;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #cfe4f5;
+        }
+
+        /* 1920x1080 画布，按窗口等比缩放并居中 */
+        .screen {
+            position: absolute;
+            width: 1920px;
+            height: 1080px;
+            transform-origin: 0 0;
+            background:
+                radial-gradient(1200px 600px at 50% 0%, rgba(0, 120, 200, .16), transparent 70%),
+                radial-gradient(900px 500px at 15% 100%, rgba(90, 60, 220, .14), transparent 70%),
+                radial-gradient(900px 500px at 85% 100%, rgba(0, 190, 170, .10), transparent 70%),
+                #04080f;
+        }
+
+        /* 网格背景 */
+        .screen::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(70, 150, 220, .05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(70, 150, 220, .05) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+        }
+
+        /* ---------- 头部 ---------- */
+        header {
+            position: relative;
+            height: 92px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(0, 200, 255, .18);
+        }
+
+        header h1 {
+            font-size: 34px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            background: linear-gradient(180deg, #ffffff 20%, #4fd6ff 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 30px rgba(0, 200, 255, .35);
+        }
+
+        header .sub {
+            position: absolute;
+            left: 40px;
+            top: 34px;
+            font-size: 13px;
+            color: #4a7a9e;
+            letter-spacing: 1px;
+        }
+
+        header .clock {
+            position: absolute;
+            right: 40px;
+            top: 28px;
+            text-align: right;
+        }
+
+        header .clock b {
+            display: block;
+            font-family: Consolas, monospace;
+            font-size: 22px;
+            font-weight: 600;
+            color: #4fd6ff;
+            letter-spacing: 2px;
+        }
+
+        header .clock span { font-size: 12px; color: #3f6685; }
+
+        /* ---------- 布局 ---------- */
+        .grid {
+            display: grid;
+            grid-template-columns: 440px 1fr 440px;
+            gap: 16px;
+            padding: 16px 20px 20px;
+            height: calc(1080px - 92px);
+        }
+
+        .col { display: flex; flex-direction: column; gap: 16px; }
+
+        /* ---------- 面板 ---------- */
+        .panel {
+            position: relative;
+            flex: 1;
+            background: linear-gradient(180deg, rgba(12, 34, 58, .72), rgba(8, 22, 40, .58));
+            border: 1px solid rgba(0, 180, 255, .18);
+            border-radius: 4px;
+            padding: 10px 12px 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 四角装饰 */
+        .panel::before, .panel::after {
+            content: "";
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #2ec8ff;
+            opacity: .7;
+        }
+
+        .panel::before { left: -1px; top: -1px; border-right: 0; border-bottom: 0; }
+        .panel::after { right: -1px; bottom: -1px; border-left: 0; border-top: 0; }
+
+        .panel h2 {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            color: #a8d8f0;
+            padding-left: 10px;
+            position: relative;
+            flex: 0 0 auto;
+        }
+
+        .panel h2::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 13px;
+            background: linear-gradient(180deg, #2ec8ff, #0a6fa8);
+            box-shadow: 0 0 8px rgba(46, 200, 255, .8);
+        }
+
+        .chart { flex: 1; min-height: 0; }
+
+        /* ---------- KPI ---------- */
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            flex: 0 0 auto;
+        }
+
+        .kpi {
+            padding: 12px 14px;
+            background: linear-gradient(180deg, rgba(14, 42, 70, .8), rgba(8, 22, 40, .6));
+            border: 1px solid rgba(0, 180, 255, .16);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi .label { font-size: 12px; color: #4f7a9c; letter-spacing: .5px; }
+
+        .kpi .num {
+            margin-top: 6px;
+            font-family: Consolas, monospace;
+            font-size: 30px;
+            font-weight: 700;
+            color: #4fd6ff;
+            text-shadow: 0 0 18px rgba(79, 214, 255, .45);
+            line-height: 1.1;
+        }
+
+        .kpi .num small { font-size: 13px; color: #3f6685; margin-left: 3px; }
+
+        .kpi .trend { margin-top: 5px; font-size: 11.5px; color: #2ee6a8; }
+        .kpi .trend.down { color: #ff7a45; }
+
+        /* ---------- 实时会话列表 ---------- */
+        .feed { flex: 1; overflow: hidden; position: relative; }
+
+        .feed .row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 4px;
+            font-size: 12px;
+            border-bottom: 1px dashed rgba(0, 150, 220, .12);
+            animation: slideIn .35s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-14px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .feed .t {
+            font-family: Consolas, monospace;
+            font-size: 11px;
+            color: #3f6685;
+            flex: 0 0 46px;
+        }
+
+        .feed .ch {
+            flex: 0 0 52px;
+            font-size: 10.5px;
+            text-align: center;
+            padding: 1px 0;
+            border-radius: 2px;
+            border: 1px solid rgba(0, 180, 255, .3);
+            color: #4fd6ff;
+        }
+
+        .feed .ch.app { color: #7c9cff; border-color: rgba(124, 156, 255, .35); }
+        .feed .ch.mp { color: #2ee6a8; border-color: rgba(46, 230, 168, .35); }
+        .feed .ch.tel { color: #ffa94d; border-color: rgba(255, 169, 77, .35); }
+
+        .feed .txt {
+            flex: 1;
+            color: #8fb4cc;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .feed .ok { flex: 0 0 auto; font-size: 11px; color: #2ee6a8; }
+        .feed .ok.warn { color: #ffa94d; }
+
+        footer {
+            position: absolute;
+            right: 20px;
+            bottom: 4px;
+            font-size: 11px;
+            color: #2c4a63;
+        }
+
+        footer a { color: #3f6f92; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="screen" id="screen">
+    <header>
+        <div class="sub">智能客服 · 实时运营监控</div>
+        <h1>客服数据大屏</h1>
+        <div class="clock">
+            <b id="clock">00:00:00</b>
+            <span id="date">2026-11-05 星期四</span>
+        </div>
+    </header>
+
+    <div class="grid">
+        <!-- ================= 左列 ================= -->
+        <div class="col">
+            <div class="panel">
+                <h2>各渠道咨询量</h2>
+                <div class="chart" id="c_channel"></div>
+            </div>
+            <div class="panel">
+                <h2>24 小时咨询趋势</h2>
+                <div class="chart" id="c_hour"></div>
+            </div>
+            <div class="panel">
+                <h2>满意度评分</h2>
+                <div class="chart" id="c_gauge"></div>
+            </div>
+        </div>
+
+        <!-- ================= 中列 ================= -->
+        <div class="col">
+            <div class="kpis">
+                <div class="kpi">
+                    <div class="label">今日咨询总量</div>
+                    <div class="num" id="k1">18,642</div>
+                    <div class="trend">↑ 12.4% 较昨日</div>
+                </div>
+                <div class="kpi">
+                    <div class="label">机器人解决率</div>
+                    <div class="num" id="k2">86.3<small>%</small></div>
+                    <div class="trend">↑ 2.1% 较昨日</div>
+                </div>
+                <div class="kpi">
+                    <div class="label">平均响应时长</div>
+                    <div class="num" id="k3">0.8<small>s</small></div>
+                    <div class="trend down">↓ 0.2s 较昨日</div>
+                </div>
+                <div class="kpi">
+                    <div class="label">转人工工单</div>
+                    <div class="num" id="k4">326</div>
+                    <div class="trend down">↑ 18 单待处理</div>
+                </div>
+            </div>
+
+            <div class="panel" style="flex:1.35">
+                <h2>咨询量与解决率（近 30 天）</h2>
+                <div class="chart" id="c_main"></div>
+            </div>
+
+            <div class="panel">
+                <h2>实时会话流</h2>
+                <div class="feed" id="feed"></div>
+            </div>
+        </div>
+
+        <!-- ================= 右列 ================= -->
+        <div class="col">
+            <div class="panel">
+                <h2>用户意图分布</h2>
+                <div class="chart" id="c_intent"></div>
+            </div>
+            <div class="panel">
+                <h2>高频问题 TOP 5</h2>
+                <div class="chart" id="c_top"></div>
+            </div>
+            <div class="panel">
+                <h2>知识库命中率</h2>
+                <div class="chart" id="c_kb"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>lyb · 计算机24004 · 2026-11-05 · <a href="https://github.com/llu799529-lang/html-homework" target="_blank" rel="noopener">GitHub</a></footer>
+</div>
+
+<script src="cdn/echarts/echarts.min.js"></script>
+<script>
+(function () {
+    /* ================= 自适应缩放 ================= */
+    var screen = document.getElementById('screen');
+    function fit() {
+        var s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+        screen.style.transform = 'scale(' + s + ')';
+        screen.style.left = Math.max(0, (window.innerWidth - 1920 * s) / 2) + 'px';
+        screen.style.top = Math.max(0, (window.innerHeight - 1080 * s) / 2) + 'px';
+    }
+    fit();
+    window.addEventListener('resize', function () {
+        fit();
+        charts.forEach(function (c) { c.resize(); });
+    });
+
+    /* ================= 时钟 ================= */
+    var WEEK = ['日', '一', '二', '三', '四', '五', '六'];
+    function tickClock() {
+        var d = new Date();
+        var p = function (n) { return n < 10 ? '0' + n : n; };
+        document.getElementById('clock').textContent = p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+        document.getElementById('date').textContent = d.getFullYear() + '-' +
+            p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' 星期' + WEEK[d.getDay()];
+    }
+    tickClock();
+    setInterval(tickClock, 1000);
+
+    /* ================= 公共样式 ================= */
+    var AXIS_LINE = { lineStyle: { color: 'rgba(80, 150, 210, .35)' } };
+    var AXIS_LABEL = { color: '#4f7a9c', fontSize: 11 };
+    var SPLIT_LINE = { lineStyle: { color: 'rgba(70, 130, 180, .12)', type: 'dashed' } };
+    var TIP = {
+        trigger: 'axis',
+        backgroundColor: 'rgba(6, 24, 42, .92)',
+        borderColor: 'rgba(0, 180, 255, .35)',
+        borderWidth: 1,
+        textStyle: { color: '#cfe4f5', fontSize: 12 },
+        axisPointer: { lineStyle: { color: 'rgba(0, 200, 255, .45)' } }
+    };
+
+    var charts = [];
+    function init(id, option) {
+        var c = echarts.init(document.getElementById(id), null, { renderer: 'canvas' });
+        c.setOption(option);
+        charts.push(c);
+        return c;
+    }
+
+    /* ================= 1. 各渠道咨询量（堆叠柱） ================= */
+    var CHANNELS = ['Web', 'App', '公众号', '电话'];
+    var CH_COLORS = ['#2ec8ff', '#7c9cff', '#2ee6a8', '#ffa94d'];
+    var days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+
+    init('c_channel', {
+        color: CH_COLORS,
+        grid: { left: 8, right: 14, top: 30, bottom: 6, containLabel: true },
+        tooltip: Object.assign({}, TIP),
+        legend: {
+            top: 0,
+            right: 0,
+            itemWidth: 9,
+            itemHeight: 9,
+            textStyle: { color: '#7fa6c0', fontSize: 11 }
+        },
+        xAxis: {
+            type: 'category',
+            data: days,
+            axisLine: AXIS_LINE,
+            axisTick: { show: false },
+            axisLabel: AXIS_LABEL
+        },
+        yAxis: {
+            type: 'value',
+            axisLine: { show: false },
+            axisTick: { show: false },
+            axisLabel: AXIS_LABEL,
+            splitLine: SPLIT_LINE
+        },
+        series: [
+            { name: 'Web', type: 'bar', stack: 'a', barWidth: 15, data: [620, 700, 660, 780, 840, 700, 620], itemStyle: { borderRadius: [0, 0, 0, 0] } },
+            { name: 'App', type: 'bar', stack: 'a', data: [880, 940, 900, 1010, 1120, 980, 860] },
+            { name: '公众号', type: 'bar', stack: 'a', data: [520, 560, 540, 610, 660, 600, 540] },
+            { name: '电话', type: 'bar', stack: 'a', data: [180, 200, 190, 210, 230, 200, 180], itemStyle: { borderRadius: [3, 3, 0, 0] } }
+        ]
+    });
+
+    /* ================= 2. 24 小时趋势 ================= */
+    var hours = [];
+    for (var h = 0; h < 24; h++) hours.push(h + ':00');
+    var hourBase = [120, 80, 60, 50, 55, 90, 210, 420, 680, 820, 900, 860,
+        720, 800, 880, 920, 960, 880, 740, 620, 480, 340, 240, 170];
+
+    init('c_hour', {
+        grid: { left: 8, right: 14, top: 20, bottom: 6, containLabel: true },
+        tooltip: Object.assign({}, TIP),
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: hours,
+            axisLine: AXIS_LINE,
+            axisTick: { show: false },
+            axisLabel: Object.assign({}, AXIS_LABEL, { interval: 3 })
+        },
+        yAxis: {
+            type: 'value',
+            axisLine: { show: false },
+            axisTick: { show: false },
+            axisLabel: AXIS_LABEL,
+            splitLine: SPLIT_LINE
+        },
+        series: [{
+            type: 'line',
+            smooth: true,
+            symbol: 'none',
+            lineStyle: { width: 2.2, color: '#2ec8ff', shadowColor: 'rgba(46, 200, 255, .55)', shadowBlur: 12 },
+            areaStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    { offset: 0, color: 'rgba(46, 200, 255, .42)' },
+                    { offset: 1, color: 'rgba(46, 200, 255, 0)' }
+                ])
+            },
+            data: hourBase
+        }]
+    });
+
+    /* ================= 3. 满意度仪表盘 ================= */
+    init('c_gauge', {
+        series: [{
+            type: 'gauge',
+            startAngle: 210,
+            endAngle: -30,
+            radius: '92%',
+            center: ['50%', '58%'],
+            min: 0,
+            max: 100,
+            progress: {
+                show: true,
+                width: 12,
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                        { offset: 0, color: '#0a6fa8' },
+                        { offset: 1, color: '#2ee6a8' }
+                    ])
+                }
+            },
+            axisLine: { lineStyle: { width: 12, color: [[1, 'rgba(70, 130, 180, .18)']] } },
+            axisTick: { show: false },
+            splitLine: { length: 8, lineStyle: { color: 'rgba(80, 150, 210, .3)', width: 1 } },
+            axisLabel: { color: '#4f7a9c', fontSize: 10, distance: 14 },
+            pointer: { show: false },
+            anchor: { show: false },
+            title: { offsetCenter: [0, '34%'], color: '#4f7a9c', fontSize: 11 },
+            detail: {
+                offsetCenter: [0, '0%'],
+                formatter: '{value}',
+                color: '#4fd6ff',
+                fontSize: 30,
+                fontFamily: 'Consolas',
+                fontWeight: 700
+            },
+            data: [{ value: 92.6, name: '满意率 %' }]
+        }]
+    });
+
+    /* ================= 4. 用户意图分布（环形） ================= */
+    var INTENTS = [
+        { name: '售前咨询', value: 35 },
+        { name: '订单查询', value: 25 },
+        { name: '售后报修', value: 20 },
+        { name: '投诉建议', value: 12 },
+        { name: '其他', value: 8 }
+    ];
+
+    init('c_intent', {
+        color: ['#2ec8ff', '#2ee6a8', '#ffa94d', '#7c9cff', '#5f7f9c'],
+        tooltip: {
+            trigger: 'item',
+            backgroundColor: 'rgba(6, 24, 42, .92)',
+            borderColor: 'rgba(0, 180, 255, .35)',
+            borderWidth: 1,
+            textStyle: { color: '#cfe4f5', fontSize: 12 },
+            formatter: '{b}<br/>{c}%'
+        },
+        legend: {
+            orient: 'vertical',
+            right: 0,
+            top: 'center',
+            itemWidth: 9,
+            itemHeight: 9,
+            itemGap: 15,
+            textStyle: { color: '#7fa6c0', fontSize: 11.5 }
+        },
+        series: [{
+            type: 'pie',
+            radius: ['48%', '70%'],
+            center: ['36%', '52%'],
+            avoidLabelOverlap: true,
+            itemStyle: { borderColor: '#08182b', borderWidth: 2 },
+            label: { show: false },
+            emphasis: { scale: true, scaleSize: 6, label: { show: false } },
+            data: INTENTS
+        }]
+    });
+
+    /* ================= 5. TOP5 高频问题 ================= */
+    var TOPS = ['退款怎么申请', '订单到哪了', '发票怎么开', '怎么改收货地址', '优惠券用不了'];
+    var TOPV = [1284, 1017, 856, 620, 413];
+
+    init('c_top', {
+        grid: { left: 8, right: 40, top: 10, bottom: 6, containLabel: true },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'shadow' },
+            backgroundColor: 'rgba(6, 24, 42, .92)',
+            borderColor: 'rgba(0, 180, 255, .35)',
+            borderWidth: 1,
+            textStyle: { color: '#cfe4f5', fontSize: 12 }
+        },
+        xAxis: { type: 'value', show: false, max: 1500 },
+        yAxis: {
+            type: 'category',
+            inverse: true,
+            data: TOPS,
+            axisLine: { show: false },
+            axisTick: { show: false },
+            axisLabel: { color: '#8fb4cc', fontSize: 11.5 }
+        },
+        series: [{
+            type: 'bar',
+            barWidth: 11,
+            itemStyle: {
+                borderRadius: [0, 6, 6, 0],
+                color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                    { offset: 0, color: 'rgba(46, 200, 255, .25)' },
+                    { offset: 1, color: '#2ec8ff' }
+                ])
+            },
+            label: {
+                show: true,
+                position: 'right',
+                color: '#4fd6ff',
+                fontFamily: 'Consolas',
+                fontSize: 11
+            },
+            data: TOPV
+        }]
+    });
+
+    /* ================= 6. 知识库命中率（雷达/柱） ================= */
+    init('c_kb', {
+        grid: { left: 8, right: 14, top: 26, bottom: 6, containLabel: true },
+        tooltip: Object.assign({}, TIP),
+        xAxis: {
+            type: 'category',
+            data: ['向量召回', '全文检索', '图谱查询', '重排序后'],
+            axisLine: AXIS_LINE,
+            axisTick: { show: false },
+            axisLabel: Object.assign({}, AXIS_LABEL, { fontSize: 10.5 })
+        },
+        yAxis: {
+            type: 'value',
+            max: 100,
+            axisLine: { show: false },
+            axisTick: { show: false },
+            axisLabel: Object.assign({}, AXIS_LABEL, { formatter: '{value}%' }),
+            splitLine: SPLIT_LINE
+        },
+        series: [{
+            type: 'bar',
+            barWidth: 22,
+            itemStyle: {
+                borderRadius: [4, 4, 0, 0],
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    { offset: 0, color: '#2ee6a8' },
+                    { offset: 1, color: 'rgba(46, 230, 168, .18)' }
+                ])
+            },
+            label: {
+                show: true,
+                position: 'top',
+                color: '#2ee6a8',
+                fontFamily: 'Consolas',
+                fontSize: 11,
+                formatter: '{c}%'
+            },
+            data: [78, 62, 55, 91]
+        }]
+    });
+
+    /* ================= 7. 中列主图（双轴） ================= */
+    var d30 = [], vol30 = [], rate30 = [];
+    for (var i = 1; i <= 30; i++) {
+        d30.push(i + '日');
+        vol30.push(14000 + Math.round(Math.random() * 6000));
+        rate30.push(80 + Math.round(Math.random() * 12));
+    }
+
+    init('c_main', {
+        grid: { left: 10, right: 16, top: 34, bottom: 6, containLabel: true },
+        tooltip: Object.assign({}, TIP),
+        legend: {
+            top: 0,
+            right: 0,
+            itemWidth: 10,
+            itemHeight: 8,
+            textStyle: { color: '#7fa6c0', fontSize: 11 }
+        },
+        xAxis: {
+            type: 'category',
+            data: d30,
+            axisLine: AXIS_LINE,
+            axisTick: { show: false },
+            axisLabel: Object.assign({}, AXIS_LABEL, { interval: 4 })
+        },
+        yAxis: [
+            {
+                type: 'value',
+                axisLine: { show: false },
+                axisTick: { show: false },
+                axisLabel: AXIS_LABEL,
+                splitLine: SPLIT_LINE
+            },
+            {
+                type: 'value',
+                max: 100,
+                axisLine: { show: false },
+                axisTick: { show: false },
+                axisLabel: Object.assign({}, AXIS_LABEL, { formatter: '{value}%' }),
+                splitLine: { show: false }
+            }
+        ],
+        series: [
+            {
+                name: '咨询量',
+                type: 'bar',
+                barWidth: '46%',
+                itemStyle: {
+                    borderRadius: [3, 3, 0, 0],
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: 'rgba(46, 200, 255, .95)' },
+                        { offset: 1, color: 'rgba(46, 200, 255, .08)' }
+                    ])
+                },
+                data: vol30
+            },
+            {
+                name: '解决率',
+                type: 'line',
+                yAxisIndex: 1,
+                smooth: true,
+                symbol: 'none',
+                lineStyle: { width: 2.4, color: '#ffa94d', shadowColor: 'rgba(255, 169, 77, .5)', shadowBlur: 10 },
+                data: rate30
+            }
+        ]
+    });
+
+    /* ================= 8. 实时会话流 ================= */
+    var FEED_DATA = [
+        { ch: 'Web', cls: '', txt: '退款申请提交后多久到账？', ok: '已解决' },
+        { ch: 'App', cls: 'app', txt: '我的订单显示已签收但没收到', ok: '转人工' },
+        { ch: '公众号', cls: 'mp', txt: '优惠券为什么用不了', ok: '已解决' },
+        { ch: '电话', cls: 'tel', txt: '要开发票，公司抬头怎么填', ok: '已解决' },
+        { ch: 'Web', cls: '', txt: '能改收货地址吗，还没发货', ok: '已解决' },
+        { ch: 'App', cls: 'app', txt: '这个型号有货吗', ok: '已解决' },
+        { ch: '公众号', cls: 'mp', txt: '投诉物流太慢，三天没动', ok: '转人工' },
+        { ch: 'Web', cls: '', txt: '会员积分怎么兑换', ok: '已解决' }
+    ];
+
+    var feed = document.getElementById('feed');
+    var fi = 0;
+
+    function pushFeed() {
+        var d = FEED_DATA[fi % FEED_DATA.length];
+        fi++;
+        var now = new Date();
+        var p = function (n) { return n < 10 ? '0' + n : n; };
+        var row = document.createElement('div');
+        row.className = 'row';
+        row.innerHTML =
+            '<span class="t">' + p(now.getHours()) + ':' + p(now.getMinutes()) + ':' + p(now.getSeconds()) + '</span>' +
+            '<span class="ch ' + d.cls + '">' + d.ch + '</span>' +
+            '<span class="txt">' + d.txt + '</span>' +
+            '<span class="ok' + (d.ok === '转人工' ? ' warn' : '') + '">' + d.ok + '</span>';
+        feed.insertBefore(row, feed.firstChild);
+        while (feed.children.length > 8) feed.removeChild(feed.lastChild);
+    }
+
+    for (var k = 0; k < 6; k++) pushFeed();
+    setInterval(pushFeed, 2200);
+
+    /* ================= 9. 数字与图表实时刷新 ================= */
+    var K1 = 18642, K2 = 86.3, K3 = 0.8, K4 = 326;
+
+    setInterval(function () {
+        K1 += Math.round(Math.random() * 18);
+        K2 = Math.min(99, +(K2 + (Math.random() - 0.45) * 0.3).toFixed(1));
+        K3 = +(0.6 + Math.random() * 0.5).toFixed(1);
+        K4 += Math.random() > 0.6 ? 1 : 0;
+
+        document.getElementById('k1').textContent = K1.toLocaleString();
+        document.getElementById('k2').innerHTML = K2 + '<small>%</small>';
+        document.getElementById('k3').innerHTML = K3 + '<small>s</small>';
+        document.getElementById('k4').textContent = K4;
+    }, 3000);
+
+    /* 主图滚动：每 4 秒推进一格 */
+    setInterval(function () {
+        vol30.shift();
+        rate30.shift();
+        vol30.push(14000 + Math.round(Math.random() * 6000));
+        rate30.push(80 + Math.round(Math.random() * 12));
+        charts[6].setOption({ series: [{ data: vol30 }, { data: rate30 }] });
+    }, 4000);
+
+    /* 雷达/柱状的小幅波动 */
+    setInterval(function () {
+        var base = [78, 62, 55, 91];
+        charts[5].setOption({
+            series: [{
+                data: base.map(function (v) {
+                    return Math.max(40, Math.min(99, v + Math.round((Math.random() - 0.5) * 6)));
+                })
+            }]
+        });
+    }, 5000);
+})();
+</script>
+</body>
+</html>

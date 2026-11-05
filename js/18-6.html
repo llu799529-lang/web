@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>18-6 Mermaid 智能客服系统流程图与 ER 图</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <!--
+      作者：lyb
+      建立时间：2026-11-05
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：基于 Mermaid 的智能客服系统图（业务流程图 flowchart + 数据模型 erDiagram，支持深浅色与导出 SVG）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            padding: 36px 24px 56px;
+            background: #f5f6f8;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #1f2329;
+            transition: background .2s, color .2s;
+        }
+
+        .wrap { max-width: 1120px; margin: 0 auto; }
+
+        .head { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+
+        h1 { font-size: 24px; font-weight: 600; letter-spacing: .4px; }
+
+        .sub {
+            flex: 1;
+            min-width: 300px;
+            font-size: 13px;
+            line-height: 1.85;
+            color: #6b7484;
+        }
+
+        .sub code {
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            background: #e7ebf2;
+            padding: 1px 5px;
+            border-radius: 4px;
+        }
+
+        .acts { display: flex; gap: 8px; }
+
+        .acts button {
+            padding: 8px 16px;
+            border: 1px solid #d8dee8;
+            border-radius: 9px;
+            background: #fff;
+            font-size: 12.5px;
+            color: #3d4653;
+            cursor: pointer;
+            transition: all .16s;
+        }
+
+        .acts button:hover { border-color: #1d6fe0; color: #1d6fe0; }
+
+        .acts button.primary { background: #1f2329; border-color: #1f2329; color: #fff; }
+        .acts button.primary:hover { background: #000; color: #fff; }
+
+        /* ---------- 卡片 ---------- */
+        .card {
+            margin-top: 18px;
+            background: #fff;
+            border: 1px solid #e2e6ee;
+            border-radius: 14px;
+            padding: 18px 20px 16px;
+            box-shadow: 0 6px 24px rgba(31, 35, 41, .05);
+            transition: background .2s, border-color .2s;
+        }
+
+        .card-hd {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .card h2 {
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .card h2 em {
+            font-style: normal;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #e8f3ff;
+            color: #1d6fe0;
+            font-family: Consolas, monospace;
+        }
+
+        .card h2 em.green { background: #e7f8f0; color: #0b8a5c; }
+
+        .card .desc {
+            margin-top: 8px;
+            font-size: 12.5px;
+            line-height: 1.8;
+            color: #8a9099;
+        }
+
+        .card-hd .spacer { flex: 1; }
+
+        .mini {
+            padding: 5px 12px;
+            border: 1px solid #e2e6ee;
+            border-radius: 7px;
+            background: #fff;
+            font-size: 11.5px;
+            color: #6b7484;
+            cursor: pointer;
+            transition: all .16s;
+        }
+
+        .mini:hover { border-color: #1d6fe0; color: #1d6fe0; }
+
+        /* ---------- 画布 ---------- */
+        .board {
+            margin-top: 14px;
+            padding: 18px 14px;
+            background: #fbfcfe;
+            border: 1px solid #eef1f6;
+            border-radius: 11px;
+            overflow-x: auto;
+            transition: background .2s, border-color .2s;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            min-height: 60px;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif !important;
+        }
+
+        .mermaid svg { max-width: 100%; height: auto; }
+
+        /* ---------- 源码 ---------- */
+        details {
+            margin-top: 12px;
+            border-top: 1px dashed #eef1f6;
+            padding-top: 10px;
+        }
+
+        summary {
+            font-size: 12px;
+            color: #8a9099;
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+        }
+
+        summary::-webkit-details-marker { display: none; }
+        summary::before { content: "▸ "; color: #1d6fe0; }
+        details[open] summary::before { content: "▾ "; }
+
+        details pre {
+            margin-top: 10px;
+            padding: 14px 16px;
+            border-radius: 9px;
+            background: #f7f8fa;
+            border: 1px solid #eef0f3;
+            overflow-x: auto;
+        }
+
+        details code {
+            font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            white-space: pre;
+            color: #3d4653;
+        }
+
+        /* ---------- 提示 ---------- */
+        .note {
+            margin-top: 16px;
+            padding: 14px 16px;
+            background: #fff;
+            border: 1px solid #e2e6ee;
+            border-radius: 12px;
+            font-size: 12.5px;
+            line-height: 1.95;
+            color: #6b7484;
+            transition: background .2s, border-color .2s;
+        }
+
+        .note b { color: #3d4653; }
+        .note code { font-family: Consolas, monospace; font-size: 11.5px; color: #c7254e; }
+
+        .err {
+            display: none;
+            margin-top: 18px;
+            padding: 28px;
+            background: #fff;
+            border: 1px dashed #e8c4c4;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 13px;
+            line-height: 1.9;
+            color: #b2404a;
+        }
+
+        footer { margin-top: 20px; font-size: 12px; color: #9aa3b2; }
+        footer a { color: #5b7fb4; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+
+        /* ---------- 深色 ---------- */
+        body.dark { background: #0e1420; color: #e8edf5; }
+        body.dark .sub, body.dark .card .desc, body.dark .note, body.dark summary { color: #8b98ab; }
+        body.dark .sub code, body.dark .note code { background: #1c2534; }
+        body.dark .card, body.dark .note { background: #161d2b; border-color: #26303f; }
+        body.dark .board { background: #111825; border-color: #222b39; }
+        body.dark .acts button, body.dark .mini { background: #1b2536; border-color: #2c3646; color: #a6b3c6; }
+        body.dark .acts button.primary { background: #2f6fd0; border-color: #2f6fd0; color: #fff; }
+        body.dark details { border-top-color: #222b39; }
+        body.dark details pre { background: #111825; border-color: #222b39; }
+        body.dark details code { color: #a6b3c6; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="head">
+        <h1>智能客服系统 · 流程图与 ER 图</h1>
+        <p class="sub">
+            两张图都用 <b>Mermaid</b> 写出来的 —— 页面上看到的图形，全部来自页面里那几段纯文本（
+            <code>flowchart</code> 和 <code>erDiagram</code> 语法），改文本就能改图，不用画图工具。
+        </p>
+        <div class="acts">
+            <button id="btnTheme">切到深色</button>
+            <button class="primary" id="btnReplay">重新渲染</button>
+        </div>
+    </div>
+
+    <!-- ============ 流程图 ============ -->
+    <div class="card">
+        <div class="card-hd">
+            <h2>一、业务处理流程 <em>flowchart</em></h2>
+            <div class="spacer"></div>
+            <button class="mini" data-save="flow">导出 SVG</button>
+        </div>
+        <p class="desc">
+            从用户发起咨询，到意图识别、知识检索、大模型生成，最后置信度不足时转人工，是一条完整的闭环。
+        </p>
+        <div class="board">
+            <div class="mermaid" id="flow"></div>
+        </div>
+        <details>
+            <summary>查看 Mermaid 源码</summary>
+            <pre><code id="flow-code"></code></pre>
+        </details>
+    </div>
+
+    <!-- ============ ER 图 ============ -->
+    <div class="card">
+        <div class="card-hd">
+            <h2>二、数据模型 <em class="green">erDiagram</em></h2>
+            <div class="spacer"></div>
+            <button class="mini" data-save="er">导出 SVG</button>
+        </div>
+        <p class="desc">
+            左半部分是会话业务表（用户、会话、消息、工单），右半部分是知识库表（文档、切片、向量），
+            中间的 RETRIEVAL 记录每次问答命中了哪些切片，是后续做效果分析的关键。
+        </p>
+        <div class="board">
+            <div class="mermaid" id="er"></div>
+        </div>
+        <details>
+            <summary>查看 Mermaid 源码</summary>
+            <pre><code id="er-code"></code></pre>
+        </details>
+    </div>
+
+    <div class="note">
+        <b>画图的两个小技巧：</b>
+        ① 流程图里 <code>{...}</code> 是菱形判断、<code>(...)</code> 是圆角起止、<code>[[...]]</code> 是子流程，
+        不加括号就是普通矩形；箭头上的文字写在 <code>--&gt;|是|</code> 的竖线里。
+        ② ER 图里一行就是一张表，<code>PK</code> / <code>FK</code> 放在字段名后面表示主外键，
+        引号里那句是字段注释；关系写成 <code>A ||--o{ B</code> 表示「A 一个对 B 多个」。
+    </div>
+
+    <div class="err" id="err">Mermaid 没能加载成功，请检查 <code>cdn/mermaid/mermaid.min.js</code> 是否存在，或者联网后再打开。</div>
+
+    <footer>
+        lyb · 计算机24004 · 2026-11-05 ·
+        <a href="https://github.com/llu799529-lang/html-homework" target="_blank" rel="noopener">GitHub 仓库</a>
+    </footer>
+</div>
+
+<script src="cdn/mermaid/mermaid.min.js"></script>
+<script>
+(function () {
+    var CDN = 'https://cdn.jsdelivr.net/npm/mermaid@12.3.0/dist/mermaid.min.js';
+    var dark = false;
+
+    /* ================= 两张图的源码 ================= */
+    var FLOW = [
+        'flowchart TD',
+        '    A([用户发起咨询]) --> B[多渠道接入<br/>Web · App · 公众号 · 电话]',
+        '    B --> C{是否已登录}',
+        '    C -->|否| D[引导微信授权登录]',
+        '    C -->|是| E[加载历史会话上下文]',
+        '    D --> E',
+        '    E --> F[NLU 意图识别]',
+        '    F --> G{意图类型}',
+        '    G -->|业务查询| H[调用业务系统接口<br/>订单 · 物流 · 账户]',
+        '    G -->|知识问答| I[知识库检索]',
+        '    G -->|投诉建议| J[创建工单]',
+        '    I --> K[向量召回 + 重排序<br/>Top-K 片段]',
+        '    K --> L[组装 Prompt<br/>问题 + 片段 + 系统指令]',
+        '    H --> L',
+        '    L --> M[大模型生成回答]',
+        '    M --> N{置信度 ≥ 阈值}',
+        '    N -->|是| O[返回答案 + 引用来源]',
+        '    N -->|否| J',
+        '    J --> P[转人工坐席]',
+        '    P --> Q[坐席处理并回填知识库]',
+        '    O --> R[用户反馈]',
+        '    R -->|满意| S([结束会话])',
+        '    R -->|不满意| J',
+        '    Q --> S',
+        '',
+        '    classDef ai fill:#e8f3ff,stroke:#1d6fe0,color:#0d4a9e',
+        '    classDef human fill:#fff4e0,stroke:#e8720c,color:#8a4b00',
+        '    classDef end2 fill:#e7f8f0,stroke:#0b8a5c,color:#075c3d',
+        '    class F,I,K,L,M ai',
+        '    class J,P,Q human',
+        '    class A,S end2'
+    ].join('\n');
+
+    var ER = [
+        'erDiagram',
+        '    USER ||--o{ SESSION : "发起"',
+        '    USER ||--o{ TICKET : "提交"',
+        '    SESSION ||--o{ MESSAGE : "包含"',
+        '    MESSAGE }o--|| INTENT : "命中"',
+        '    TICKET ||--o{ MESSAGE : "关联"',
+        '    AGENT ||--o{ TICKET : "处理"',
+        '    MESSAGE ||--o{ RETRIEVAL : "触发"',
+        '    KNOWLEDGE_BASE ||--o{ DOCUMENT : "包含"',
+        '    DOCUMENT ||--o{ CHUNK : "切分为"',
+        '    CHUNK ||--o{ EMBEDDING : "编码为"',
+        '    RETRIEVAL }o--|| CHUNK : "召回"',
+        '',
+        '    USER {',
+        '        bigint id PK "用户 ID"',
+        '        varchar openid UK "微信 openid"',
+        '        varchar nickname "昵称"',
+        '        varchar phone "手机号"',
+        '        varchar channel "来源渠道"',
+        '        datetime created_at "注册时间"',
+        '    }',
+        '',
+        '    SESSION {',
+        '        bigint id PK "会话 ID"',
+        '        bigint user_id FK "所属用户"',
+        '        varchar status "进行中 / 已结束"',
+        '        datetime started_at "开始时间"',
+        '        datetime ended_at "结束时间"',
+        '    }',
+        '',
+        '    MESSAGE {',
+        '        bigint id PK "消息 ID"',
+        '        bigint session_id FK "所属会话"',
+        '        tinyint role "1 用户 2 机器人 3 坐席"',
+        '        text content "消息内容"',
+        '        decimal confidence "置信度"',
+        '        datetime created_at "发送时间"',
+        '    }',
+        '',
+        '    INTENT {',
+        '        int id PK "意图 ID"',
+        '        varchar name "意图名称"',
+        '        varchar category "业务 / 知识 / 投诉"',
+        '        text sample_query "示例问法"',
+        '    }',
+        '',
+        '    TICKET {',
+        '        bigint id PK "工单 ID"',
+        '        bigint user_id FK "提交人"',
+        '        bigint agent_id FK "处理坐席"',
+        '        varchar type "投诉 / 转人工"',
+        '        varchar status "待处理 / 处理中 / 已完成"',
+        '        datetime created_at "创建时间"',
+        '    }',
+        '',
+        '    AGENT {',
+        '        int id PK "坐席 ID"',
+        '        varchar name "姓名"',
+        '        varchar group_name "所属技能组"',
+        '        tinyint online "在线状态"',
+        '    }',
+        '',
+        '    KNOWLEDGE_BASE {',
+        '        int id PK "知识库 ID"',
+        '        varchar name "知识库名称"',
+        '        varchar domain "业务域"',
+        '        datetime updated_at "更新时间"',
+        '    }',
+        '',
+        '    DOCUMENT {',
+        '        bigint id PK "文档 ID"',
+        '        int kb_id FK "所属知识库"',
+        '        varchar title "文档标题"',
+        '        varchar source_type "PDF / Word / 网页 / FAQ"',
+        '        int chunk_count "切片数量"',
+        '    }',
+        '',
+        '    CHUNK {',
+        '        bigint id PK "切片 ID"',
+        '        bigint doc_id FK "所属文档"',
+        '        int seq_no "在文档中的序号"',
+        '        text content "切片正文"',
+        '        int token_len "token 长度"',
+        '    }',
+        '',
+        '    EMBEDDING {',
+        '        bigint id PK "向量 ID"',
+        '        bigint chunk_id FK "对应切片"',
+        '        varchar model "编码模型"',
+        '        int dim "向量维度"',
+        '        varchar vector_ref "向量库中的存储位置"',
+        '    }',
+        '',
+        '    RETRIEVAL {',
+        '        bigint id PK "检索记录 ID"',
+        '        bigint message_id FK "对应消息"',
+        '        bigint chunk_id FK "命中切片"',
+        '        decimal score "相似度分数"',
+        '        int rank_no "排序名次"',
+        '    }'
+    ].join('\n');
+
+    /* ================= 主题变量 ================= */
+    var LIGHT_VARS = {
+        fontFamily: '-apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif',
+        fontSize: '14px',
+        primaryColor: '#eef5ff',
+        primaryTextColor: '#1f2329',
+        primaryBorderColor: '#1d6fe0',
+        secondaryColor: '#f4f7fb',
+        tertiaryColor: '#fbfcfe',
+        mainBkg: '#ffffff',
+        nodeBorder: '#c9d4e4',
+        nodeTextColor: '#1f2329',
+        clusterBkg: '#f7f9fc',
+        clusterBorder: '#dde4ee',
+        lineColor: '#94a3b8',
+        textColor: '#1f2329',
+        edgeLabelBackground: '#ffffff',
+        attributeBackgroundColorOdd: '#f7f9fc',
+        attributeBackgroundColorEven: '#ffffff'
+    };
+
+    var DARK_VARS = {
+        fontFamily: '-apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif',
+        fontSize: '14px',
+        primaryColor: '#1b2637',
+        primaryTextColor: '#e8edf5',
+        primaryBorderColor: '#4a9bff',
+        secondaryColor: '#182131',
+        tertiaryColor: '#111825',
+        mainBkg: '#161d2b',
+        nodeBorder: '#2c3646',
+        nodeTextColor: '#e8edf5',
+        clusterBkg: '#111825',
+        clusterBorder: '#26303f',
+        lineColor: '#5a6b82',
+        textColor: '#e8edf5',
+        edgeLabelBackground: '#161d2b',
+        attributeBackgroundColorOdd: '#182131',
+        attributeBackgroundColorEven: '#161d2b'
+    };
+
+    /* ================= 渲染 ================= */
+    var flowEl = document.getElementById('flow');
+    var erEl = document.getElementById('er');
+
+    function renderAll() {
+        var vars = dark ? DARK_VARS : LIGHT_VARS;
+
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: vars,
+            securityLevel: 'loose',
+            flowchart: {
+                curve: 'basis',
+                padding: 14,
+                nodeSpacing: 34,
+                rankSpacing: 40,
+                wrappingWidth: 190,   /* 让节点宽一点，文字别一行三四个字 */
+                useMaxWidth: true
+            },
+            er: {
+                diagramPadding: 12,
+                layoutDirection: 'TB',
+                minEntityWidth: 100,
+                minEntityHeight: 40,
+                entityPadding: 9,     /* 表格行更紧凑，整张图不至于太长 */
+                useMaxWidth: true
+            }
+        });
+
+        /* 每次渲染前把源码塞回容器，Mermaid 会把它换成 svg */
+        flowEl.removeAttribute('data-processed');
+        erEl.removeAttribute('data-processed');
+        flowEl.innerHTML = FLOW;
+        erEl.innerHTML = ER;
+
+        return mermaid.run({ nodes: [flowEl, erEl] });
+    }
+
+    /* ================= 交互 ================= */
+    document.getElementById('btnReplay').addEventListener('click', function () {
+        renderAll();
+    });
+
+    document.getElementById('btnTheme').addEventListener('click', function () {
+        dark = !dark;
+        document.body.classList.toggle('dark', dark);
+        this.textContent = dark ? '切到浅色' : '切到深色';
+        renderAll();
+    });
+
+    /* 导出 SVG */
+    document.querySelectorAll('.mini[data-save]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var key = btn.dataset.save;
+            var host = key === 'flow' ? flowEl : erEl;
+            var svg = host.querySelector('svg');
+            if (!svg) return;
+
+            var clone = svg.cloneNode(true);
+            clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+            var box = svg.getBBox();
+            clone.setAttribute('width', Math.ceil(box.width + 40));
+            clone.setAttribute('height', Math.ceil(box.height + 40));
+
+            var src = '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(clone);
+            var blob = new Blob([src], { type: 'image/svg+xml;charset=utf-8' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = (key === 'flow' ? '智能客服业务流程图' : '智能客服系统ER图') + '.svg';
+            a.click();
+            setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+        });
+    });
+
+    /* ================= 启动 ================= */
+    function boot() {
+        if (!window.mermaid) {
+            var s = document.createElement('script');
+            s.src = CDN;
+            s.onload = init;
+            s.onerror = function () {
+                document.getElementById('err').style.display = 'block';
+                document.querySelectorAll('.board').forEach(function (b) { b.style.display = 'none'; });
+            };
+            document.head.appendChild(s);
+            return;
+        }
+        init();
+    }
+
+    function init() {
+        document.getElementById('flow-code').textContent = FLOW;
+        document.getElementById('er-code').textContent = ER;
+        renderAll().catch(function (e) {
+            console.error(e);
+            document.getElementById('err').style.display = 'block';
+        });
+    }
+
+    boot();
+})();
+</script>
+</body>
+</html>

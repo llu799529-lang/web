@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>18-4 ECharts 极坐标双值轴</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <!--
+      作者：lyb
+      建立时间：2026-11-05
+      使用的大模型：DeepSeek-V4.1-Flash
+      功能名称：ECharts 极坐标双值轴玫瑰线（angleAxis 角度 + radiusAxis 半径，动画重播）
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            padding: 36px 24px 56px;
+            background: #f5f6f8;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #1f2329;
+        }
+
+        .wrap { max-width: 1080px; margin: 0 auto; }
+
+        .head { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+
+        h1 { font-size: 24px; font-weight: 600; letter-spacing: .4px; }
+
+        .sub {
+            flex: 1;
+            min-width: 280px;
+            font-size: 13px;
+            line-height: 1.85;
+            color: #6b7484;
+        }
+
+        .sub code {
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            background: #e7ebf2;
+            padding: 1px 5px;
+            border-radius: 4px;
+        }
+
+        .acts { display: flex; gap: 8px; }
+
+        .acts button {
+            padding: 8px 16px;
+            border: 1px solid #d8dee8;
+            border-radius: 9px;
+            background: #fff;
+            font-size: 12.5px;
+            color: #3d4653;
+            cursor: pointer;
+            transition: all .16s;
+        }
+
+        .acts button:hover { border-color: #1d6fe0; color: #1d6fe0; }
+
+        .acts button.primary { background: #1f2329; border-color: #1f2329; color: #fff; }
+        .acts button.primary:hover { background: #000; color: #fff; }
+
+        .card {
+            margin-top: 18px;
+            background: #fff;
+            border: 1px solid #e2e6ee;
+            border-radius: 14px;
+            padding: 18px 20px 10px;
+            box-shadow: 0 6px 24px rgba(31, 35, 41, .05);
+        }
+
+        .card h2 {
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .card h2 em {
+            font-style: normal;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #e8f3ff;
+            color: #1d6fe0;
+        }
+
+        .card p {
+            margin-top: 8px;
+            font-size: 12.5px;
+            line-height: 1.8;
+            color: #8a9099;
+        }
+
+        #main { width: 100%; height: 580px; }
+
+        .note {
+            margin-top: 14px;
+            padding: 13px 16px;
+            background: #fff;
+            border: 1px solid #e2e6ee;
+            border-radius: 12px;
+            font-size: 12.5px;
+            line-height: 1.9;
+            color: #6b7484;
+        }
+
+        .note b { color: #3d4653; }
+        .note code { font-family: Consolas, monospace; font-size: 11.5px; color: #c7254e; }
+
+        .err {
+            display: none;
+            margin-top: 18px;
+            padding: 28px;
+            background: #fff;
+            border: 1px dashed #e8c4c4;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 13px;
+            line-height: 1.9;
+            color: #b2404a;
+        }
+
+        footer { margin-top: 20px; font-size: 12px; color: #9aa3b2; }
+        footer a { color: #5b7fb4; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="head">
+        <h1>极坐标双值轴 · 玫瑰线</h1>
+        <p class="sub">
+            这是 ECharts 的 <b>polar</b> 坐标系：<code>angleAxis</code> 管角度（0 - 360），
+            <code>radiusAxis</code> 管半径（0 - 0.5），数据写成 <code>[半径, 角度]</code> 的数组，
+            连起来就是一条闭合的花瓣曲线。
+        </p>
+        <div class="acts">
+            <button id="btnReplay">重播动画</button>
+            <button class="primary" id="btnLight">切到深色</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Two Value-Axes in Polar <em>官方示例</em></h2>
+        <p>数据：r = sin(2t) · cos(2t)，t 从 0 到 2π 采样 361 个点。</p>
+        <div id="main"></div>
+    </div>
+
+    <div class="note">
+        <b>看点：</b>同一个 chart 上挂了两个「数值轴」——角度轴按 30° 一格，半径轴按 0.1 一格。
+        曲线之所以是八瓣，是因为 <code>r = sin(2t)·cos(2t) = ½·sin(4t)</code>；极坐标下 r = sin(nθ)，n 为偶数时画出来是 2n 瓣，所以 n=4 得到 8 瓣（r 取负值时点会落到反方向，正是多出一倍的原因）。
+        右上角可以下载图片，也可以拖动图例把曲线临时隐藏。
+    </div>
+
+    <div class="err" id="err">图表库没能加载成功，请检查 <code>cdn/echarts/echarts.min.js</code> 是否存在，或者联网后再打开。</div>
+
+    <footer>
+        lyb · 计算机24004 · 2026-11-05 ·
+        <a href="https://github.com/llu799529-lang/html-homework" target="_blank" rel="noopener">GitHub 仓库</a>
+    </footer>
+</div>
+
+<script src="cdn/echarts/echarts.min.js"></script>
+<script>
+(function () {
+    var CDN = 'https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js';
+    var myChart = null;
+    var dark = false;
+
+    /* 本地文件没加载到就回退 CDN */
+    function boot() {
+        if (!window.echarts) {
+            var s = document.createElement('script');
+            s.src = CDN;
+            s.onload = start;
+            s.onerror = function () {
+                document.getElementById('err').style.display = 'block';
+                document.getElementById('main').style.display = 'none';
+            };
+            document.head.appendChild(s);
+            return;
+        }
+        start();
+    }
+
+    function start() {
+        var chartDom = document.getElementById('main');
+        myChart = echarts.init(chartDom);
+
+        /* ---------- 数据：玫瑰线 ---------- */
+        var data = [];
+        for (var i = 0; i <= 360; i++) {
+            var t = (i / 180) * Math.PI;
+            var r = Math.sin(2 * t) * Math.cos(2 * t);
+            data.push([r, i]);
+        }
+
+        var option = {
+            title: {
+                text: 'Two Value-Axes in Polar',
+                subtext: 'angleAxis 角度 × radiusAxis 半径',
+                left: 'center',
+                textStyle: { fontSize: 17, fontWeight: 600 },
+                subtextStyle: { fontSize: 12, color: '#98a2b3' }
+            },
+            legend: {
+                data: ['line'],
+                bottom: 10
+            },
+            polar: {
+                center: ['50%', '54%'],
+                radius: '72%'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'cross' }
+            },
+            angleAxis: {
+                type: 'value',
+                startAngle: 0,
+                splitNumber: 12
+            },
+            radiusAxis: {
+                min: 0,
+                splitNumber: 5
+            },
+            toolbox: {
+                right: 10,
+                top: 6,
+                feature: {
+                    saveAsImage: { title: '保存为图片', pixelRatio: 2 }
+                }
+            },
+            series: [
+                {
+                    coordinateSystem: 'polar',
+                    name: 'line',
+                    type: 'line',
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: { width: 1.6 },
+                    data: data
+                }
+            ],
+            animationDuration: 2000
+        };
+
+        myChart.setOption(option);
+
+        /* ---------- 重播动画 ---------- */
+        document.getElementById('btnReplay').addEventListener('click', function () {
+            myChart.clear();
+            myChart.setOption(option, true);
+        });
+
+        /* ---------- 深浅色切换 ---------- */
+        document.getElementById('btnLight').addEventListener('click', function () {
+            dark = !dark;
+            var btn = this;
+            if (dark) {
+                btn.textContent = '切到浅色';
+                document.body.style.background = '#0e1420';
+                document.body.style.color = '#e8edf5';
+                document.querySelectorAll('.card, .note').forEach(function (el) {
+                    el.style.background = '#161d2b';
+                    el.style.borderColor = '#26303f';
+                });
+                myChart.setOption({
+                    backgroundColor: 'transparent',
+                    title: { textStyle: { color: '#e8edf5' }, subtextStyle: { color: '#6b7a92' } },
+                    angleAxis: { axisLabel: { color: '#8b98ab' }, axisLine: { lineStyle: { color: '#2c3646' } },
+                        splitLine: { lineStyle: { color: '#222b39' } } },
+                    radiusAxis: { axisLabel: { color: '#8b98ab' }, axisLine: { lineStyle: { color: '#2c3646' } },
+                        splitLine: { lineStyle: { color: '#222b39' } } },
+                    legend: { textStyle: { color: '#a6b3c6' } }
+                });
+            } else {
+                btn.textContent = '切到深色';
+                document.body.style.background = '#f5f6f8';
+                document.body.style.color = '#1f2329';
+                document.querySelectorAll('.card, .note').forEach(function (el) {
+                    el.style.background = '#fff';
+                    el.style.borderColor = '#e2e6ee';
+                });
+                myChart.setOption({
+                    backgroundColor: 'transparent',
+                    title: { textStyle: { color: '#1f2329' }, subtextStyle: { color: '#98a2b3' } },
+                    angleAxis: { axisLabel: { color: '#6b7484' }, axisLine: { lineStyle: { color: '#c8d0dc' } },
+                        splitLine: { lineStyle: { color: '#eef1f6' } } },
+                    radiusAxis: { axisLabel: { color: '#6b7484' }, axisLine: { lineStyle: { color: '#c8d0dc' } },
+                        splitLine: { lineStyle: { color: '#eef1f6' } } },
+                    legend: { textStyle: { color: '#3d4653' } }
+                });
+            }
+        });
+
+        window.addEventListener('resize', function () {
+            myChart.resize();
+        });
+    }
+
+    boot();
+})();
+</script>
+</body>
+</html>

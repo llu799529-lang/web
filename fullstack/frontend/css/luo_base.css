@@ -1,0 +1,308 @@
+/*
+ * 姓名：罗亚博 | 学号：8409
+ * 时间：2026-11-09 | 大模型：DeepSeek-V4.1-Flash
+ * 功能名称：全站基础样式（版心、页头、页脚、按钮、表单）
+ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --luo-bg: #f4f6f9;
+    --luo-surface: #ffffff;
+    --luo-border: #e4e8ef;
+    --luo-text: #1d2129;
+    --luo-muted: #8a94a3;
+    --luo-accent: #2f6feb;
+    --luo-ok: #0b8a5c;
+    --luo-err: #c0392b;
+    --luo-radius: 14px;
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    background: var(--luo-bg);
+    color: var(--luo-text);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* 背景 canvas：铺满视口，压在内容下面 */
+.luo_canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 0.62;
+    pointer-events: none;
+}
+
+.luo_page {
+    position: relative;
+    z-index: 1;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 68px 28px 56px;
+}
+
+/* ---------- 页头 ---------- */
+
+.luo_head {
+    padding-bottom: 26px;
+    border-bottom: 1px solid var(--luo-border);
+}
+
+.luo_title {
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    line-height: 1.28;
+}
+
+.luo_sub {
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--luo-muted);
+}
+
+.luo_meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 40px;
+    margin-top: 22px;
+}
+
+.luo_meta > div {
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+}
+
+.luo_meta dt {
+    font-size: 12px;
+    color: var(--luo-muted);
+}
+
+.luo_meta dd {
+    font-size: 14px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 区块标题 ---------- */
+
+.luo_h2 {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 38px 0 4px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.luo_count {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--luo-muted);
+}
+
+.luo_hint {
+    margin-top: 8px;
+    font-size: 12.5px;
+    color: var(--luo-muted);
+}
+
+/* ---------- 页脚 ---------- */
+
+.luo_foot {
+    margin-top: 46px;
+    padding-top: 18px;
+    border-top: 1px solid var(--luo-border);
+    font-size: 12px;
+    color: var(--luo-muted);
+}
+
+/* ---------- 通用卡片 ---------- */
+
+.luo_card {
+    margin-top: 18px;
+    padding: 24px 26px;
+    background: var(--luo-surface);
+    border: 1px solid var(--luo-border);
+    border-radius: var(--luo-radius);
+    box-shadow: 0 2px 10px rgba(29, 33, 41, 0.03);
+}
+
+/* ---------- 按钮 ---------- */
+
+.luo_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 20px;
+    border: 1px solid var(--luo-border);
+    border-radius: 10px;
+    background: #fff;
+    font-family: inherit;
+    font-size: 13.5px;
+    color: var(--luo-text);
+    cursor: pointer;
+    transition: border-color 0.16s, color 0.16s, background 0.16s;
+}
+
+.luo_btn:hover {
+    border-color: #c7d2e2;
+}
+
+.luo_btn:active {
+    background: #f7f9fc;
+}
+
+.luo_btn[disabled] {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.luo_btn_primary {
+    border-color: var(--luo-accent);
+    background: var(--luo-accent);
+    color: #fff;
+}
+
+.luo_btn_primary:hover {
+    border-color: #2a63d4;
+    background: #2a63d4;
+}
+
+.luo_btn_primary:active {
+    background: #2559c0;
+}
+
+/* ---------- 表单 ---------- */
+
+.luo_form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 18px;
+}
+
+.luo_field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.luo_field.luo_wide {
+    grid-column: 1 / -1;
+}
+
+.luo_field label {
+    font-size: 12.5px;
+    color: var(--luo-muted);
+}
+
+.luo_field input {
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--luo-border);
+    border-radius: 10px;
+    background: #fbfcfe;
+    font-family: inherit;
+    font-size: 13.5px;
+    color: var(--luo-text);
+    outline: none;
+    transition: border-color 0.16s, background 0.16s;
+}
+
+.luo_field input:focus {
+    border-color: var(--luo-accent);
+    background: #fff;
+}
+
+.luo_actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+/* ---------- 结果提示 ---------- */
+
+.luo_result {
+    margin-top: 20px;
+    padding: 16px 18px;
+    border: 1px solid var(--luo-border);
+    border-radius: 12px;
+    background: #fbfcfe;
+    font-size: 13.5px;
+    color: var(--luo-muted);
+}
+
+.luo_result.luo_ok {
+    border-color: rgba(11, 138, 92, 0.32);
+    background: rgba(11, 138, 92, 0.06);
+    color: #0a6f4b;
+}
+
+.luo_result.luo_err {
+    border-color: rgba(192, 57, 43, 0.3);
+    background: rgba(192, 57, 43, 0.05);
+    color: #a5352a;
+}
+
+.luo_result b {
+    font-weight: 600;
+}
+
+.luo_kv {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 26px;
+    margin-top: 8px;
+    font-size: 13px;
+}
+
+.luo_kv i {
+    font-style: normal;
+    color: var(--luo-muted);
+    margin-right: 6px;
+}
+
+.luo_dbs {
+    margin-top: 10px;
+    font-size: 12.5px;
+    font-family: Consolas, "SF Mono", monospace;
+    line-height: 2;
+    word-break: break-all;
+}
+
+/* ---------- 响应式 ---------- */
+
+@media (max-width: 620px) {
+    .luo_page {
+        padding: 44px 18px 40px;
+    }
+
+    .luo_title {
+        font-size: 26px;
+    }
+
+    .luo_form {
+        grid-template-columns: 1fr;
+    }
+
+    .luo_meta {
+        gap: 0 24px;
+    }
+}

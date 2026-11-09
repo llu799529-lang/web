@@ -1,0 +1,16 @@
+{
+  "name": "luo-fullstack-409",
+  "version": "1.0.0",
+  "private": true,
+  "description": "罗亚博 8409 全栈项目后端",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "mysql2": "^3.24.6"
+  }
+}

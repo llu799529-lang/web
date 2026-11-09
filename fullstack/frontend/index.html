@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!--
+    姓名：罗亚博 | 学号：8409
+    时间：2026-11-09 | 大模型：DeepSeek-V4.1-Flash
+    功能名称：项目首页（项目信息 + 全部页面导航，canvas 粒子背景）
+-->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全栈项目 · 罗亚博 8409</title>
+    <link rel="stylesheet" href="css/luo_base.css">
+    <link rel="stylesheet" href="css/luo_index.css">
+</head>
+<body>
+<canvas id="luoCanvas" class="luo_canvas"></canvas>
+
+<div class="luo_page">
+    <header class="luo_head">
+        <h1 class="luo_title">全栈项目</h1>
+        <p class="luo_sub">原生 HTML / CSS / JS + Node.js + Express + MySQL，页面与接口都跑在本机 409 端口</p>
+
+        <dl class="luo_meta">
+            <div><dt>姓名</dt><dd>罗亚博</dd></div>
+            <div><dt>学号</dt><dd>8409</dd></div>
+            <div><dt>项目类别</dt><dd>自选</dd></div>
+            <div><dt>运行端口</dt><dd>409</dd></div>
+        </dl>
+    </header>
+
+    <main>
+        <h2 class="luo_h2">页面导航 <span class="luo_count" id="luoCount">共 2 个页面</span></h2>
+        <p class="luo_hint">点任意一行进入对应页面。后续每新增一个 HTML 页面，都会在这里追加一行入口。</p>
+
+        <ul class="luo_nav" id="luoNav">
+            <li>
+                <a href="index.html">
+                    <span class="luo_no">01</span>
+                    <span class="luo_text">
+                        <span class="luo_name">项目首页</span>
+                        <span class="luo_desc">项目基本信息与本页导航</span>
+                    </span>
+                    <span class="luo_tag">HTML</span>
+                    <span class="luo_arrow">→</span>
+                </a>
+            </li>
+            <li>
+                <a href="database.html">
+                    <span class="luo_no">02</span>
+                    <span class="luo_text">
+                        <span class="luo_name">数据库连接测试</span>
+                        <span class="luo_desc">输入用户名和密码，验证 MySQL 是否连得上，成功与失败都有提示</span>
+                    </span>
+                    <span class="luo_tag">MySQL</span>
+                    <span class="luo_arrow">→</span>
+                </a>
+            </li>
+        </ul>
+
+        <h2 class="luo_h2">运行状态 <span class="luo_count" id="luoStatusHint">检测中…</span></h2>
+
+        <dl class="luo_rows">
+            <div class="luo_row">
+                <dt>后端服务</dt>
+                <dd><i class="luo_dot" id="luoDotApi"></i><span id="luoApiText">检测中…</span></dd>
+            </div>
+            <div class="luo_row">
+                <dt>数据库</dt>
+                <dd><i class="luo_dot" id="luoDotDb"></i><span id="luoDbText">检测中…</span></dd>
+            </div>
+            <div class="luo_row">
+                <dt>静态目录</dt>
+                <dd>frontend/ 由 express.static 托管</dd>
+            </div>
+            <div class="luo_row">
+                <dt>接口前缀</dt>
+                <dd>/api　（统一返回 code / msg / data）</dd>
+            </div>
+        </dl>
+    </main>
+
+    <footer class="luo_foot">
+        罗亚博 · 学号 8409 · 计算机 24004 · 2026-11-09
+    </footer>
+</div>
+
+<script src="js/luo_canvas.js"></script>
+<script src="js/luo_index.js"></script>
+</body>
+</html>

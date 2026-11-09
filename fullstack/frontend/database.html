@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<!--
+    姓名：罗亚博 | 学号：8409
+    时间：2026-11-09 | 大模型：DeepSeek-V4.1-Flash
+    功能名称：数据库连接测试页（输入用户名密码，连接 MySQL 并提示成功或失败）
+-->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据库连接测试 · 罗亚博 8409</title>
+    <link rel="stylesheet" href="css/luo_base.css">
+    <link rel="stylesheet" href="css/luo_database.css">
+</head>
+<body>
+<canvas id="luoCanvas" class="luo_canvas"></canvas>
+
+<div class="luo_page luo_page_narrow">
+    <header class="luo_head">
+        <h1 class="luo_title">数据库连接测试</h1>
+        <p class="luo_sub">填写 MySQL 的账号密码，点「测试连接」后由后端真实发起一次连接，成功与失败都会给出明确提示</p>
+
+        <dl class="luo_meta">
+            <div><dt>姓名</dt><dd>罗亚博</dd></div>
+            <div><dt>学号</dt><dd>8409</dd></div>
+            <div><dt>接口</dt><dd>POST /api/db/test</dd></div>
+        </dl>
+    </header>
+
+    <main>
+        <h2 class="luo_h2">当前项目配置 <span class="luo_count" id="luoEnvState">检测中…</span></h2>
+        <p class="luo_hint" id="luoEnvText">正在读取 backend/.env 里的数据库配置。</p>
+
+        <div class="luo_card">
+            <form class="luo_form" id="luoForm" autocomplete="off">
+                <div class="luo_field">
+                    <label for="luoHost">主机地址</label>
+                    <input type="text" id="luoHost" name="host" value="127.0.0.1" placeholder="127.0.0.1">
+                </div>
+
+                <div class="luo_field">
+                    <label for="luoPort">端口</label>
+                    <input type="text" id="luoPort" name="port" value="3306" placeholder="3306">
+                </div>
+
+                <div class="luo_field">
+                    <label for="luoUser">用户名</label>
+                    <input type="text" id="luoUser" name="user" value="root" placeholder="root">
+                </div>
+
+                <div class="luo_field">
+                    <label for="luoPassword">密码</label>
+                    <input type="password" id="luoPassword" name="password" placeholder="输入数据库密码">
+                </div>
+
+                <div class="luo_field luo_wide">
+                    <label for="luoDatabase">数据库名（可留空：只验证账号密码，不指定库）</label>
+                    <input type="text" id="luoDatabase" name="database" placeholder="例如 luo_fullstack">
+                </div>
+            </form>
+
+            <div class="luo_actions">
+                <button type="button" class="luo_btn luo_btn_primary" id="luoTestBtn">测试连接</button>
+                <button type="button" class="luo_btn" id="luoFillBtn">填入 .env 配置</button>
+                <button type="button" class="luo_btn" id="luoClearBtn">清空结果</button>
+            </div>
+
+            <div class="luo_result" id="luoResult">
+                还没有测试。填好账号密码后点「测试连接」。
+            </div>
+        </div>
+
+        <h2 class="luo_h2">说明</h2>
+        <p class="luo_hint">
+            连接由后端 <code>mysql2</code> 建立，密码只在这一次请求中传递，不写入任何文件、不写进日志。
+            真实密码请自己填写，页面不会预填。
+        </p>
+    </main>
+
+    <footer class="luo_foot">
+        罗亚博 · 学号 8409 · 计算机 24004 · 2026-11-09 · <a href="index.html">返回首页</a>
+    </footer>
+</div>
+
+<script src="js/luo_canvas.js"></script>
+<script src="js/luo_db.js"></script>
+</body>
+</html>

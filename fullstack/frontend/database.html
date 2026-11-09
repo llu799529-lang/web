@@ -39,7 +39,7 @@
                 </div>
 
                 <div class="luo_field">
-                    <label for="luoPort">端口</label>
+                    <label for="luoPort">MySQL 端口（3306，不是网站的 409）</label>
                     <input type="text" id="luoPort" name="port" value="3306" placeholder="3306">
                 </div>
 
@@ -49,8 +49,8 @@
                 </div>
 
                 <div class="luo_field">
-                    <label for="luoPassword">密码</label>
-                    <input type="password" id="luoPassword" name="password" placeholder="输入数据库密码">
+                    <label for="luoPassword">密码（不预填，避免浏览器自动塞入旧密码）</label>
+                    <input type="password" id="luoPassword" name="password" autocomplete="new-password" placeholder="输入数据库密码">
                 </div>
 
                 <div class="luo_field luo_wide">
@@ -60,20 +60,21 @@
             </form>
 
             <div class="luo_actions">
-                <button type="button" class="luo_btn luo_btn_primary" id="luoTestBtn">测试连接</button>
-                <button type="button" class="luo_btn" id="luoFillBtn">填入 .env 配置</button>
+                <button type="button" class="luo_btn luo_btn_primary" id="luoEnvBtn">一键测试 .env 里的连接</button>
+                <button type="button" class="luo_btn" id="luoTestBtn">用上面的账号密码测试</button>
                 <button type="button" class="luo_btn" id="luoClearBtn">清空结果</button>
             </div>
 
             <div class="luo_result" id="luoResult">
-                还没有测试。填好账号密码后点「测试连接」。
+                还没有测试。最省事的是点「一键测试 .env 里的连接」，用后端 .env 里保存的账号密码直接连一次。
             </div>
         </div>
 
         <h2 class="luo_h2">说明</h2>
         <p class="luo_hint">
-            连接由后端 <code>mysql2</code> 建立，密码只在这一次请求中传递，不写入任何文件、不写进日志。
-            真实密码请自己填写，页面不会预填。
+            「一键测试」由后端读取 <code>backend/.env</code> 里的账号密码发起连接，<b>密码不会下发到浏览器</b>，
+            也不会写进任何文件或日志。要测别的账号，就在上面填好再点「用上面的账号密码测试」——
+            密码框故意不做预填，避免浏览器把别的网站保存的旧密码自动填进来（那样会报 1045 用户名或密码错误）。
         </p>
     </main>
 

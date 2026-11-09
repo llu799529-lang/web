@@ -10,7 +10,7 @@
     var luoForm = document.getElementById('luoForm');
     var luoResult = document.getElementById('luoResult');
     var luoTestBtn = document.getElementById('luoTestBtn');
-    var luoFillBtn = document.getElementById('luoFillBtn');
+    var luoEnvBtn = document.getElementById('luoEnvBtn');
     var luoClearBtn = document.getElementById('luoClearBtn');
     var luoEnvState = document.getElementById('luoEnvState');
     var luoEnvText = document.getElementById('luoEnvText');
@@ -44,6 +44,9 @@
             '  <span><i>目标</i>' + luoEscape(data.host) + ':' + luoEscape(data.port) + '</span>' +
             '  <span><i>库名</i>' + luoEscape(data.database || '（未指定）') + '</span>' +
             '</div>' +
+            (data.source === 'env'
+                ? '<div class="luo_kv"><span><i>凭据来源</i>backend/.env（密码未下发到浏览器）</span></div>'
+                : '') +
             (luoDbList
                 ? '<div class="luo_dbs"><i>可见的库</i>：' + luoEscape(luoDbList) + '</div>'
                 : '');
@@ -81,23 +84,12 @@
         };
     }
 
-    function luoTestConnection() {
-        var luoBody = luoCollectBody();
+    /* 统一的测试调用：body 由调用方给，按钮各自忙碌 */
+    function luoRunTest(luoBody, luoBtn, luoBusyText) {
+        var luoOldText = luoBtn.textContent;
 
-        console.log('[luo] 发起连接测试：', {
-            host: luoBody.host,
-            port: luoBody.port,
-            user: luoBody.user,
-            database: luoBody.database
-        });
-
-        if (!luoBody.user) {
-            luoShowError({ msg: '请填写用户名', data: null });
-            return;
-        }
-
-        luoTestBtn.disabled = true;
-        luoTestBtn.textContent = '连接中…';
+        luoBtn.disabled = true;
+        luoBtn.textContent = luoBusyText;
         luoShowPending('正在连接数据库，请稍候…');
 
         fetch('/api/db/test', {
@@ -123,9 +115,33 @@
                 });
             })
             .finally(function () {
-                luoTestBtn.disabled = false;
-                luoTestBtn.textContent = '测试连接';
+                luoBtn.disabled = false;
+                luoBtn.textContent = luoOldText;
             });
+    }
+
+    function luoTestConnection() {
+        var luoBody = luoCollectBody();
+
+        console.log('[luo] 用手填的账号发起连接测试：', {
+            host: luoBody.host,
+            port: luoBody.port,
+            user: luoBody.user,
+            database: luoBody.database
+        });
+
+        if (!luoBody.user) {
+            luoShowError({ msg: '请填写用户名', data: null });
+            return;
+        }
+
+        luoRunTest(luoBody, luoTestBtn, '连接中…');
+    }
+
+    /* 一键测试：用 backend/.env 里的账号密码，密码不出后端 */
+    function luoTestFromEnv() {
+        console.log('[luo] 使用 backend/.env 里的凭据测试连接');
+        luoRunTest({ fromEnv: true }, luoEnvBtn, '连接中…');
     }
 
     /* 读取 .env 的配置，用于「填入」按钮与页面顶部状态 */
@@ -168,23 +184,10 @@
         luoTestConnection();
     });
 
-    luoFillBtn.addEventListener('click', function () {
-        if (!luoEnvConfig) {
-            luoShowPending('还没有读到 .env 配置，请先启动后端后刷新。');
-            return;
-        }
-
-        document.getElementById('luoHost').value = luoEnvConfig.host;
-        document.getElementById('luoPort').value = luoEnvConfig.port;
-        document.getElementById('luoUser').value = luoEnvConfig.user;
-        document.getElementById('luoDatabase').value = luoEnvConfig.database;
-        document.getElementById('luoPassword').focus();
-
-        luoShowPending('已填入 .env 的主机、端口、用户名和库名，密码按规则不显示，请手动输入。');
-    });
+    luoEnvBtn.addEventListener('click', luoTestFromEnv);
 
     luoClearBtn.addEventListener('click', function () {
-        luoShowPending('还没有测试。填好账号密码后点「测试连接」。');
+        luoShowPending('还没有测试。最省事的是点「一键测试 .env 里的连接」。');
     });
 
     luoLoadEnvInfo();

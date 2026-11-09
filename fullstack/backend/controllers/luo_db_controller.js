@@ -36,11 +36,25 @@ function luoErrorText(err) {
  */
 async function luoTestConnection(req, res) {
     const luoBody = req.body || {};
-    const luoUser = String(luoBody.user || '').trim();
-    const luoPassword = typeof luoBody.password === 'string' ? luoBody.password : '';
-    const luoHost = String(luoBody.host || '127.0.0.1').trim();
-    const luoPort = Number(luoBody.port) || 3306;
-    const luoDatabase = String(luoBody.database || '').trim();
+
+    /* fromEnv = true 时，全部用 backend/.env 里的凭据，密码不下发到浏览器 */
+    const luoFromEnv = luoBody.fromEnv === true;
+
+    const luoUser = luoFromEnv
+        ? String(process.env.DB_USER || '').trim()
+        : String(luoBody.user || '').trim();
+    const luoPassword = luoFromEnv
+        ? String(process.env.DB_PASSWORD || '')
+        : (typeof luoBody.password === 'string' ? luoBody.password : '');
+    const luoHost = luoFromEnv
+        ? String(process.env.DB_HOST || '127.0.0.1').trim()
+        : String(luoBody.host || '127.0.0.1').trim();
+    const luoPort = luoFromEnv
+        ? (Number(process.env.DB_PORT) || 3306)
+        : (Number(luoBody.port) || 3306);
+    const luoDatabase = luoFromEnv
+        ? String(process.env.DB_NAME || '').trim()
+        : String(luoBody.database || '').trim();
 
     if (!luoUser) {
         return res.json({ code: 4001, msg: '请填写用户名', data: null });
@@ -84,6 +98,7 @@ async function luoTestConnection(req, res) {
                 currentUser: luoVersion.currentUser,
                 database: luoVersion.currentDb,
                 databases: luoDatabases,
+                source: luoFromEnv ? 'env' : 'form',
                 elapsed: Date.now() - luoStartedAt
             }
         });
@@ -96,6 +111,7 @@ async function luoTestConnection(req, res) {
                 errno: luoErr.errno || null,
                 code: luoErr.code || null,
                 sqlState: luoErr.sqlState || null,
+                source: luoFromEnv ? 'env' : 'form',
                 elapsed: Date.now() - luoStartedAt
             }
         });

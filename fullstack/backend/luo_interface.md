@@ -103,3 +103,34 @@
 其他失败码：`4001` 用户名为空、`4002` 主机为空、`4003` 连接失败（含库不存在、服务未启动、超时等，`msg` 均为中文说明）。
 
 修改时间：2026-11-09 13:55
+
+---
+
+## POST /api/db/test（补充：fromEnv 方式）
+
+- 接口路径：`/api/db/test`
+- HTTP 方法：`POST`
+- 请求参数（JSON Body）：`{ "fromEnv": true }`
+- 说明：为 `true` 时，后端直接使用 `backend/.env` 里的 `DB_HOST / DB_PORT / DB_USER / DB_PASSWORD / DB_NAME` 发起连接，
+  **密码不下发到浏览器**。响应里的 `data.source` 为 `"env"`；用表单提交时为 `"form"`。
+
+响应示例：
+
+```json
+{
+  "code": 0,
+  "msg": "连接成功",
+  "data": {
+    "host": "127.0.0.1",
+    "port": 3306,
+    "user": "root",
+    "version": "9.4.0",
+    "currentUser": "root@localhost",
+    "database": "luo_fullstack",
+    "source": "env",
+    "elapsed": 5
+  }
+}
+```
+
+修改时间：2026-11-09 14:35

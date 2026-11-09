@@ -6,6 +6,8 @@
 
 const express = require('express');
 const luoDbController = require('../controllers/luo_db_controller');
+const luoNewsController = require('../controllers/luo_news_controller');
+const luoGalleryController = require('../controllers/luo_gallery_controller');
 
 const luoRouter = express.Router();
 
@@ -27,5 +29,11 @@ luoRouter.post('/db/test', luoDbController.luoTestConnection);
 
 /* 当前 .env 指向的数据库概况 */
 luoRouter.get('/db/info', luoDbController.luoDbInfo);
+
+/* 新闻列表：分页 + 分类筛选 */
+luoRouter.get('/news', luoNewsController.luoListNews);
+
+/* 图片列表：分页 + 分类筛选 */
+luoRouter.get('/gallery', luoGalleryController.luoListGallery);
 
 module.exports = luoRouter;

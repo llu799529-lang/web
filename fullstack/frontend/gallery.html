@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<!--
+    姓名：罗亚博 | 学号：8409
+    时间：2026-11-09 | 大模型：DeepSeek-V4.1-Flash
+    功能名称：图片列表页（数据存于 MySQL 的 luo_gallery 表，图片为本地生成的封面）
+-->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片列表 · 罗亚博 8409</title>
+    <link rel="stylesheet" href="css/luo_base.css">
+    <link rel="stylesheet" href="css/luo_gallery.css">
+</head>
+<body>
+<canvas id="luoCanvas" class="luo_canvas"></canvas>
+
+<div class="luo_page">
+    <header class="luo_head">
+        <h1 class="luo_title">图片列表</h1>
+        <p class="luo_sub">
+            图片信息存在 MySQL 的 <b>luo_gallery</b> 表里，本页通过 <code>GET /api/gallery</code> 取回。
+            图片文件在 <code>frontend/images/gallery/</code>，共 12 张，本地生成，不依赖外网。
+        </p>
+
+        <dl class="luo_meta">
+            <div><dt>姓名</dt><dd>罗亚博</dd></div>
+            <div><dt>学号</dt><dd>8409</dd></div>
+            <div><dt>数据表</dt><dd>luo_gallery</dd></div>
+            <div><dt>接口</dt><dd>/api/gallery</dd></div>
+        </dl>
+    </header>
+
+    <main>
+        <h2 class="luo_h2">后端接口 <span class="luo_count" id="luoApiState">连接中…</span></h2>
+
+        <div class="luo_api">
+            <span class="luo_method">GET</span>
+            <a class="luo_url" id="luoApiUrl" href="/api/gallery" target="_blank" rel="noopener">/api/gallery</a>
+            <span class="luo_api_meta" id="luoApiMeta">—</span>
+        </div>
+
+        <p class="luo_hint">点链接可以在新标签页直接看到接口返回的 JSON；下面每张图的标题、分类、说明、点赞数都来自数据库。</p>
+
+        <h2 class="luo_h2">分类 <span class="luo_count" id="luoCatHint">全部</span></h2>
+        <div class="luo_tabs" id="luoTabs"></div>
+
+        <div class="luo_grid" id="luoGrid">
+            <p class="luo_empty">正在从数据库读取…</p>
+        </div>
+
+        <div class="luo_pager" id="luoPager"></div>
+
+        <h2 class="luo_h2">接口返回的数据 <span class="luo_count" id="luoRawHint">data.list</span></h2>
+        <details class="luo_raw" id="luoRawBox">
+            <summary>展开原始 JSON 与本次执行的 SQL</summary>
+            <pre class="luo_code" id="luoRaw">—</pre>
+        </details>
+    </main>
+
+    <footer class="luo_foot">
+        罗亚博 · 学号 8409 · 计算机 24004 · 2026-11-09 · <a href="index.html">返回首页</a>
+    </footer>
+</div>
+
+<!-- 点击看大图 -->
+<div class="luo_lightbox" id="luoLightbox" hidden>
+    <div class="luo_lb_inner">
+        <img id="luoLightImg" src="" alt="">
+        <div class="luo_lb_cap">
+            <b id="luoLightTitle"></b>
+            <span id="luoLightDesc"></span>
+            <button type="button" class="luo_lb_close" id="luoLightClose">关闭</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/luo_canvas.js"></script>
+<script src="js/luo_gallery.js"></script>
+</body>
+</html>

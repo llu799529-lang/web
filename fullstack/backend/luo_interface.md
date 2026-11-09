@@ -134,3 +134,136 @@
 ```
 
 修改时间：2026-11-09 14:35
+
+---
+
+## GET /api/news
+
+- 接口路径：`/api/news`
+- HTTP 方法：`GET`
+- 请求参数（Query）：
+
+| 参数 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `category` | string | 否 | 分类名：校园 / 通知 / 学术 / 活动 / 就业；不传或传「全部」表示不过滤 |
+| `page` | number | 否 | 页码，默认 1 |
+| `pageSize` | number | 否 | 每页条数，默认 8，最大 50 |
+
+请求示例：
+
+```
+GET http://localhost:409/api/news?category=通知&page=1&pageSize=8
+```
+
+响应示例（截取前两条）：
+
+```json
+{
+  "code": 0,
+  "msg": "ok",
+  "data": {
+    "total": 12,
+    "page": 1,
+    "pageSize": 8,
+    "totalPages": 2,
+    "category": "全部",
+    "list": [
+      {
+        "id": 1,
+        "title": "学校召开 2026 年秋季学期教学工作会",
+        "category": "校园",
+        "author": "宣传部",
+        "source": "校园新闻网",
+        "summary": "会议总结了上学期教学运行情况，部署本学期课程建设与课堂质量提升的重点任务。",
+        "views": 1286,
+        "is_top": 1,
+        "publish_time": "2026-11-08 09:20"
+      }
+    ],
+    "categories": [
+      { "name": "学术", "count": 3 },
+      { "name": "校园", "count": 3 },
+      { "name": "通知", "count": 3 },
+      { "name": "活动", "count": 2 },
+      { "name": "就业", "count": 1 }
+    ],
+    "sql": "SELECT id, title, ... FROM luo_news ORDER BY is_top DESC, publish_time DESC LIMIT 8 OFFSET 0;",
+    "elapsed": 28
+  }
+}
+```
+
+失败响应示例（分类不存在）：
+
+```json
+{ "code": 4001, "msg": "分类不存在：abc", "data": null }
+```
+
+说明：`publish_time` 在 SQL 里用 `DATE_FORMAT(publish_time, '%Y-%m-%d %H:%i')` 输出为字符串，避免前后端时区换算差异。
+
+修改时间：2026-11-09 14:42
+
+---
+
+## GET /api/gallery
+
+- 接口路径：`/api/gallery`
+- HTTP 方法：`GET`
+- 请求参数（Query）：
+
+| 参数 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `category` | string | 否 | 分类：校园 / 建筑 / 风景 / 活动 / 实验；不传或「全部」表示不过滤 |
+| `page` | number | 否 | 页码，默认 1 |
+| `pageSize` | number | 否 | 每页张数，默认 9，最大 48 |
+
+请求示例：
+
+```
+GET http://localhost:409/api/gallery?category=风景&page=1&pageSize=9
+```
+
+响应示例：
+
+```json
+{
+  "code": 0,
+  "msg": "ok",
+  "data": {
+    "total": 12,
+    "page": 1,
+    "pageSize": 9,
+    "totalPages": 2,
+    "category": "全部",
+    "list": [
+      {
+        "id": 1,
+        "title": "图书馆的清晨",
+        "category": "校园",
+        "image_url": "images/gallery/g01.jpg",
+        "author": "罗亚博",
+        "description": "开馆前的半小时，自习区只有翻书声和窗外的光。",
+        "likes": 326,
+        "created_at": "2026-11-08 07:30"
+      }
+    ],
+    "categories": [
+      { "name": "建筑", "count": 3 },
+      { "name": "校园", "count": 3 },
+      { "name": "实验", "count": 2 },
+      { "name": "活动", "count": 2 },
+      { "name": "风景", "count": 2 }
+    ],
+    "sql": "SELECT id, title, ... FROM luo_gallery ORDER BY id ASC LIMIT 9 OFFSET 0;",
+    "elapsed": 25
+  }
+}
+```
+
+失败响应示例（分类不存在）：
+
+```json
+{ "code": 4001, "msg": "分类不存在：人物", "data": null }
+```
+
+修改时间：2026-11-09 14:46

@@ -19,6 +19,7 @@
 
     var luoState = { category: '全部', page: 1, pageSize: 8 };
     var luoCategories = [];
+    var luoRows = [];
 
     function luoEscape(text) {
         return String(text === undefined || text === null ? '' : text)
@@ -124,49 +125,87 @@
             '\n\n<span class="luo_k">-- 本次后端执行的 SQL --</span>\n' + luoEscape(sqlText || '');
     }
 
+    function luoFetchJson(luoUrl) {
+        return fetch(luoUrl)
+            .then(function (res) { return res.text(); })
+            .then(function (txt) {
+                try {
+                    return JSON.parse(txt);
+                } catch (e) {
+                    throw new Error('接口返回的不是 JSON（可能没有后端）');
+                }
+            });
+    }
+
+    function luoApplyPayload(json) {
+        var luoData = json.data;
+
+        luoCategories = luoData.categories || [];
+        luoRows = luoData.list || [];
+        luoApiState.textContent = luoData.staticMode
+            ? '静态快照 · 未连后端'
+            : 'HTTP 200 · ' + luoData.total + ' 条 · ' + luoData.elapsed + ' ms';
+        luoApiMeta.textContent = luoData.pageSize + ' 条/页 · 第 ' +
+            luoData.page + '/' + luoData.totalPages + ' 页';
+        luoCatHint.textContent = luoData.category;
+        luoRawHint.textContent = 'data.list · ' + luoData.list.length + ' 条';
+
+        luoRenderTabs();
+        luoRenderList(luoRows);
+        luoRenderPager(luoData);
+        luoShowRaw(json, luoData.sql);
+    }
+
+    function luoLoadSnapshot() {
+        luoFetchJson('data/news.json').then(function (snap) {
+            var luoAll = snap.data.list;
+            var luoPick = luoState.category === '全部'
+                ? luoAll
+                : luoAll.filter(function (row) { return row.category === luoState.category; });
+            var luoStart = (luoState.page - 1) * luoState.pageSize;
+
+            luoApplyPayload({
+                code: 0,
+                msg: '静态快照',
+                data: {
+                    total: luoPick.length,
+                    page: luoState.page,
+                    pageSize: luoState.pageSize,
+                    totalPages: Math.max(1, Math.ceil(luoPick.length / luoState.pageSize)),
+                    category: luoState.category,
+                    list: luoPick.slice(luoStart, luoStart + luoState.pageSize),
+                    categories: snap.data.categories,
+                    sql: snap.data.sql,
+                    elapsed: 0,
+                    staticMode: true
+                }
+            });
+            console.log('[luo] 已切换到静态快照');
+        }).catch(function (err) {
+            luoApiState.textContent = '读取失败';
+            luoApiMeta.textContent = err.message;
+            luoList.innerHTML = '<p class="luo_empty">读取失败：' + luoEscape(err.message) + '</p>';
+        });
+    }
+
     function luoLoad() {
         var luoUrl = luoBuildUrl();
 
         luoApiUrl.textContent = window.location.origin + luoUrl;
         luoApiUrl.href = luoUrl;
         luoApiState.textContent = '请求中…';
-        luoList.innerHTML = '<p class="luo_empty">正在从数据库读取…</p>';
 
-        fetch(luoUrl)
-            .then(function (res) { return res.json(); })
+        luoFetchJson(luoUrl)
             .then(function (json) {
-                console.log('[luo] /api/news 返回：', json);
-
+                console.log('[luo] 接口返回：', json);
                 if (json.code !== 0) {
                     throw new Error(json.msg || '接口返回失败');
                 }
-
-                var luoData = json.data;
-
-                luoCategories = luoData.categories || [];
-                luoApiState.textContent = 'HTTP 200 · ' + luoData.total + ' 条 · ' + luoData.elapsed + ' ms';
-                luoApiMeta.textContent = luoData.pageSize + ' 条/页 · 第 ' +
-                    luoData.page + '/' + luoData.totalPages + ' 页';
-                luoCatHint.textContent = luoData.category;
-                luoRawHint.textContent = 'data.list · ' + luoData.list.length + ' 条';
-
-                luoRenderTabs();
-                luoRenderList(luoData.list);
-                luoRenderPager(luoData);
-
-                if (luoData.page > luoData.totalPages) {
-                    luoState.page = 1;
-                }
-
-                luoShowRaw(json, luoData.sql);
+                luoApplyPayload(json);
             })
             .catch(function (err) {
-                console.error('[luo] 读取新闻失败：', err.message);
-                luoApiState.textContent = '请求失败';
-                luoApiMeta.textContent = err.message;
-                luoList.innerHTML = '<p class="luo_empty">读取失败：' + luoEscape(err.message) +
-                    '<br>请确认后端已启动（run.bat），并且 MySQL 里已有 luo_news 表。</p>';
-                luoPager.innerHTML = '';
+                console.warn('[luo] 接口不可用，改用静态快照：', err.message);
+                luoLoadSnapshot();
             });
     }
 

@@ -1,0 +1,157 @@
+{
+ "code": 0,
+ "msg": "静态快照",
+ "data": {
+  "total": 12,
+  "page": 1,
+  "pageSize": 9,
+  "totalPages": 2,
+  "category": "全部",
+  "list": [
+   {
+    "id": 1,
+    "title": "图书馆的清晨",
+    "category": "校园",
+    "image_url": "images/gallery/g01.jpg",
+    "author": "罗亚博",
+    "description": "开馆前的半小时，自习区只有翻书声和窗外的光。",
+    "likes": 326,
+    "created_at": "2026-11-08 07:30"
+   },
+   {
+    "id": 2,
+    "title": "操场上的黄昏",
+    "category": "校园",
+    "image_url": "images/gallery/g02.jpg",
+    "author": "罗亚博",
+    "description": "跑道被夕阳拉出长影子，跑步的人一茬接一茬。",
+    "likes": 512,
+    "created_at": "2026-11-07 18:10"
+   },
+   {
+    "id": 3,
+    "title": "教学楼长廊",
+    "category": "建筑",
+    "image_url": "images/gallery/g03.jpg",
+    "author": "罗亚博",
+    "description": "下课铃后的走廊，一侧是教室，一侧是整排的窗。",
+    "likes": 208,
+    "created_at": "2026-11-06 16:40"
+   },
+   {
+    "id": 4,
+    "title": "秋天的银杏道",
+    "category": "风景",
+    "image_url": "images/gallery/g04.jpg",
+    "author": "罗亚博",
+    "description": "十一月最好看的一条路，风一过就落一层。",
+    "likes": 693,
+    "created_at": "2026-11-05 15:20"
+   },
+   {
+    "id": 5,
+    "title": "实验室的午后",
+    "category": "实验",
+    "image_url": "images/gallery/g05.jpg",
+    "author": "罗亚博",
+    "description": "设备都开着，屏幕上的波形慢慢稳定下来。",
+    "likes": 174,
+    "created_at": "2026-11-04 14:00"
+   },
+   {
+    "id": 6,
+    "title": "篮球赛决赛",
+    "category": "活动",
+    "image_url": "images/gallery/g06.jpg",
+    "author": "罗亚博",
+    "description": "最后一分钟反超两分，全场都站起来了。",
+    "likes": 845,
+    "created_at": "2026-11-03 20:30"
+   },
+   {
+    "id": 7,
+    "title": "湖畔倒影",
+    "category": "风景",
+    "image_url": "images/gallery/g07.jpg",
+    "author": "罗亚博",
+    "description": "没风的时候，湖面能把整片天装进去。",
+    "likes": 431,
+    "created_at": "2026-11-02 17:05"
+   },
+   {
+    "id": 8,
+    "title": "老校门",
+    "category": "建筑",
+    "image_url": "images/gallery/g08.jpg",
+    "author": "罗亚博",
+    "description": "比学校年纪还大的门，砖缝里长了草。",
+    "likes": 287,
+    "created_at": "2026-11-01 10:15"
+   },
+   {
+    "id": 9,
+    "title": "深夜自习室",
+    "category": "校园",
+    "image_url": "images/gallery/g09.jpg",
+    "author": "罗亚博",
+    "description": "十一点以后，还剩三分之一的人在坚持。",
+    "likes": 356,
+    "created_at": "2026-10-31 23:10"
+   },
+   {
+    "id": 10,
+    "title": "社团招新",
+    "category": "活动",
+    "image_url": "images/gallery/g10.jpg",
+    "author": "罗亚博",
+    "description": "广场摆满了展板，每个摊位都在喊自己的名字。",
+    "likes": 264,
+    "created_at": "2026-10-30 12:00"
+   },
+   {
+    "id": 11,
+    "title": "显微镜下的世界",
+    "category": "实验",
+    "image_url": "images/gallery/g11.jpg",
+    "author": "罗亚博",
+    "description": "第一次自己调出清晰的细胞结构，拍了很久。",
+    "likes": 198,
+    "created_at": "2026-10-29 15:45"
+   },
+   {
+    "id": 12,
+    "title": "雪后的钟楼",
+    "category": "建筑",
+    "image_url": "images/gallery/g12.jpg",
+    "author": "罗亚博",
+    "description": "那年冬天的第一场雪，钟楼顶上积了薄薄一层。",
+    "likes": 578,
+    "created_at": "2026-10-28 08:20"
+   }
+  ],
+  "categories": [
+   {
+    "name": "建筑",
+    "count": 3
+   },
+   {
+    "name": "校园",
+    "count": 3
+   },
+   {
+    "name": "实验",
+    "count": 2
+   },
+   {
+    "name": "活动",
+    "count": 2
+   },
+   {
+    "name": "风景",
+    "count": 2
+   }
+  ],
+  "sql": "静态快照：本地运行 run.bat 后，这里会显示实时查询的 SQL",
+  "elapsed": 0
+ }
+}

@@ -103,3 +103,25 @@ INSERT INTO luo_gallery (title, category, image_url, author, description, likes,
 - 图片文件位于 `frontend/images/gallery/g01.jpg ~ g12.jpg`，共 12 张，由脚本本地生成（640×420，总计约 218 KB），不依赖外网。
 - `image_url` 存相对路径，页面直接用 `<img src>` 引用。
 - 分类 5 类：校园 3 / 建筑 3 / 实验 2 / 活动 2 / 风景 2。
+
+---
+
+## 2026-11-09 14:52　图片改为真实照片，同步改标题与分类
+
+说明：`g01.jpg ~ g12.jpg` 换成 12 张真实照片（本地下载后打包，不依赖外网），标题 / 分类 / 说明按照片内容重写；
+分类由「校园/建筑/风景/活动/实验」改为「风景/动物/生活/食物」。
+
+```sql
+UPDATE luo_gallery SET title='峡湾深处',   category='风景', description='从山脊往下看，海水在峡湾里拐了个弯。', likes=326 WHERE id=1;
+UPDATE luo_gallery SET title='红色峡谷',   category='风景', description='夕阳把砂岩照成橘红色，一层一层堆上去。', likes=512 WHERE id=2;
+UPDATE luo_gallery SET title='云雾山谷',   category='风景', description='云压得很低，公路沿着山腰慢慢绕过去。', likes=208 WHERE id=3;
+UPDATE luo_gallery SET title='风暴前的海', category='风景', description='云层翻涌，海面已经起风，船都回港了。', likes=693 WHERE id=4;
+UPDATE luo_gallery SET title='展翅的秃鹫', category='动物', description='翼展接近两米，从头顶直接掠过去。', likes=174 WHERE id=5;
+UPDATE luo_gallery SET title='瀑布与彩虹', category='风景', description='水雾里出现一整道虹，站在下面的人很小。', likes=845 WHERE id=6;
+UPDATE luo_gallery SET title='松林与山谷', category='风景', description='河水清得能看见底，对岸是整片针叶林。', likes=431 WHERE id=7;
+UPDATE luo_gallery SET title='老工作室',   category='生活', description='墙上挂满旧照片和工具，桌上还有一台老相机。', likes=287 WHERE id=8;
+UPDATE luo_gallery SET title='深海水母',   category='动物', description='橙色伞盖，触手拖得很长，像一盏灯。', likes=356 WHERE id=9;
+UPDATE luo_gallery SET title='母狮',       category='动物', description='眼神很稳，一动不动地看着镜头。', likes=264 WHERE id=10;
+UPDATE luo_gallery SET title='草莓',       category='食物', description='刚从市场买回来，红得发亮，还带着叶子。', likes=198 WHERE id=11;
+UPDATE luo_gallery SET title='沙滩上的海象', category='动物', description='一堆挤在一起晒太阳，偶尔抬一下头。', likes=578 WHERE id=12;
+```

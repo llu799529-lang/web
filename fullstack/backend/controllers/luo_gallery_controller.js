@@ -6,7 +6,7 @@
 
 const luoDb = require('../config/luo_db');
 
-const LUO_CATEGORIES = ['校园', '建筑', '风景', '活动', '实验'];
+const LUO_CATEGORIES = ['风景', '动物', '生活', '食物'];
 
 /*
  * GET /api/gallery?category=风景&page=1&pageSize=9

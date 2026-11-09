@@ -10,145 +10,141 @@
   "list": [
    {
     "id": 1,
-    "title": "图书馆的清晨",
-    "category": "校园",
+    "title": "峡湾深处",
+    "category": "风景",
     "image_url": "images/gallery/g01.jpg",
     "author": "罗亚博",
-    "description": "开馆前的半小时，自习区只有翻书声和窗外的光。",
+    "description": "从山脊往下看，海水在峡湾里拐了个弯。",
     "likes": 326,
     "created_at": "2026-11-08 07:30"
    },
    {
     "id": 2,
-    "title": "操场上的黄昏",
-    "category": "校园",
+    "title": "红色峡谷",
+    "category": "风景",
     "image_url": "images/gallery/g02.jpg",
     "author": "罗亚博",
-    "description": "跑道被夕阳拉出长影子，跑步的人一茬接一茬。",
+    "description": "夕阳把砂岩照成橘红色，一层一层堆上去。",
     "likes": 512,
     "created_at": "2026-11-07 18:10"
    },
    {
     "id": 3,
-    "title": "教学楼长廊",
-    "category": "建筑",
+    "title": "云雾山谷",
+    "category": "风景",
     "image_url": "images/gallery/g03.jpg",
     "author": "罗亚博",
-    "description": "下课铃后的走廊，一侧是教室，一侧是整排的窗。",
+    "description": "云压得很低，公路沿着山腰慢慢绕过去。",
     "likes": 208,
     "created_at": "2026-11-06 16:40"
    },
    {
     "id": 4,
-    "title": "秋天的银杏道",
+    "title": "风暴前的海",
     "category": "风景",
     "image_url": "images/gallery/g04.jpg",
     "author": "罗亚博",
-    "description": "十一月最好看的一条路，风一过就落一层。",
+    "description": "云层翻涌，海面已经起风，船都回港了。",
     "likes": 693,
     "created_at": "2026-11-05 15:20"
    },
    {
     "id": 5,
-    "title": "实验室的午后",
-    "category": "实验",
+    "title": "展翅的秃鹫",
+    "category": "动物",
     "image_url": "images/gallery/g05.jpg",
     "author": "罗亚博",
-    "description": "设备都开着，屏幕上的波形慢慢稳定下来。",
+    "description": "翼展接近两米，从头顶直接掠过去。",
     "likes": 174,
     "created_at": "2026-11-04 14:00"
    },
    {
     "id": 6,
-    "title": "篮球赛决赛",
-    "category": "活动",
+    "title": "瀑布与彩虹",
+    "category": "风景",
     "image_url": "images/gallery/g06.jpg",
     "author": "罗亚博",
-    "description": "最后一分钟反超两分，全场都站起来了。",
+    "description": "水雾里出现一整道虹，站在下面的人很小。",
     "likes": 845,
     "created_at": "2026-11-03 20:30"
    },
    {
     "id": 7,
-    "title": "湖畔倒影",
+    "title": "松林与山谷",
     "category": "风景",
     "image_url": "images/gallery/g07.jpg",
     "author": "罗亚博",
-    "description": "没风的时候，湖面能把整片天装进去。",
+    "description": "河水清得能看见底，对岸是整片针叶林。",
     "likes": 431,
     "created_at": "2026-11-02 17:05"
    },
    {
     "id": 8,
-    "title": "老校门",
-    "category": "建筑",
+    "title": "老工作室",
+    "category": "生活",
     "image_url": "images/gallery/g08.jpg",
     "author": "罗亚博",
-    "description": "比学校年纪还大的门，砖缝里长了草。",
+    "description": "墙上挂满旧照片和工具，桌上还有一台老相机。",
     "likes": 287,
     "created_at": "2026-11-01 10:15"
    },
    {
     "id": 9,
-    "title": "深夜自习室",
-    "category": "校园",
+    "title": "深海水母",
+    "category": "动物",
     "image_url": "images/gallery/g09.jpg",
     "author": "罗亚博",
-    "description": "十一点以后，还剩三分之一的人在坚持。",
+    "description": "橙色伞盖，触手拖得很长，像一盏灯。",
     "likes": 356,
     "created_at": "2026-10-31 23:10"
    },
    {
     "id": 10,
-    "title": "社团招新",
-    "category": "活动",
+    "title": "母狮",
+    "category": "动物",
     "image_url": "images/gallery/g10.jpg",
     "author": "罗亚博",
-    "description": "广场摆满了展板，每个摊位都在喊自己的名字。",
+    "description": "眼神很稳，一动不动地看着镜头。",
     "likes": 264,
     "created_at": "2026-10-30 12:00"
    },
    {
     "id": 11,
-    "title": "显微镜下的世界",
-    "category": "实验",
+    "title": "草莓",
+    "category": "食物",
     "image_url": "images/gallery/g11.jpg",
     "author": "罗亚博",
-    "description": "第一次自己调出清晰的细胞结构，拍了很久。",
+    "description": "刚从市场买回来，红得发亮，还带着叶子。",
     "likes": 198,
     "created_at": "2026-10-29 15:45"
    },
    {
     "id": 12,
-    "title": "雪后的钟楼",
-    "category": "建筑",
+    "title": "沙滩上的海象",
+    "category": "动物",
     "image_url": "images/gallery/g12.jpg",
     "author": "罗亚博",
-    "description": "那年冬天的第一场雪，钟楼顶上积了薄薄一层。",
+    "description": "一堆挤在一起晒太阳，偶尔抬一下头。",
     "likes": 578,
     "created_at": "2026-10-28 08:20"
    }
   ],
   "categories": [
    {
-    "name": "建筑",
-    "count": 3
-   },
-   {
-    "name": "校园",
-    "count": 3
-   },
-   {
-    "name": "实验",
-    "count": 2
-   },
-   {
-    "name": "活动",
-    "count": 2
-   },
-   {
     "name": "风景",
-    "count": 2
+    "count": 6
+   },
+   {
+    "name": "动物",
+    "count": 4
+   },
+   {
+    "name": "生活",
+    "count": 1
+   },
+   {
+    "name": "食物",
+    "count": 1
    }
   ],
   "sql": "静态快照：本地运行 run.bat 后，这里会显示实时查询的 SQL",

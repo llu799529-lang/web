@@ -327,3 +327,36 @@ GET http://localhost:409/api/gallery?category=风景&page=1&pageSize=9
 | 5004 | 请求超时（60 秒）或网络异常 |
 
 修改时间：2026-11-12 13:58
+
+---
+
+## 会话管理接口（2026-11-12）
+
+| 方法 | 路径 | 说明 |
+|---|---|---|
+| GET | `/api/chat/sessions` | 会话列表，含每条会话的消息数与最后一条内容 |
+| POST | `/api/chat/sessions` | 新建会话，body `{ "title": "新的对话" }` |
+| PATCH | `/api/chat/sessions/:id` | 重命名，body `{ "title": "新标题" }` |
+| DELETE | `/api/chat/sessions/:id` | 删除会话及其全部消息 |
+| GET | `/api/chat/sessions/:id/messages` | 某会话的全部消息（按 id 升序） |
+
+`GET /api/chat/sessions` 响应示例：
+
+```json
+{
+  "code": 0,
+  "msg": "ok",
+  "data": {
+    "total": 8,
+    "list": [
+      { "id": 8, "title": "帮我润色一段项目总结", "created_at": "11-12 11:00",
+        "updated_at": "11-12 11:03", "msg_count": 2, "last_msg": "本项目基于前后端分离架构完成……" }
+    ]
+  }
+}
+```
+
+`POST /api/chat` 追加参数：`sessionId`（可选，传入则把用户消息与模型回复写入数据库），
+响应新增 `compressed`（被压缩掉的历史条数）与 `sentCount`（实际发给模型的消息条数）。
+
+修改时间：2026-11-12 14:40

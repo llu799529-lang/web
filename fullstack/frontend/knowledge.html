@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<!--
+    姓名：罗亚博 | 学号：409
+    时间：2026-11-12 | 大模型：DeepSeek-V4.1-Flash
+    功能名称：校园知识库页（数据存于 MySQL 的 luo_knowledge 表，展示接口端口、检索与原始返回）
+-->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园知识库 · 罗亚博 409</title>
+    <link rel="stylesheet" href="css/luo_base.css">
+    <link rel="stylesheet" href="css/luo_knowledge.css">
+</head>
+<body>
+<canvas id="luoCanvas" class="luo_canvas"></canvas>
+
+<div class="luo_page">
+    <header class="luo_head">
+        <h1 class="luo_title">校园知识库</h1>
+        <p class="luo_sub">
+            <b>14 条</b>校园知识存在 MySQL 的 <b>luo_knowledge</b> 表里，本页通过
+            <code>GET /api/knowledge</code> 取回。AI 聊天页会拿你的问题来这张表检索，
+            命中的片段拼进 system 提示词，控制台能看到命中了哪几条。
+        </p>
+
+        <dl class="luo_meta">
+            <div><dt>姓名</dt><dd>罗亚博</dd></div>
+            <div><dt>学号</dt><dd>409</dd></div>
+            <div><dt>数据表</dt><dd>luo_knowledge</dd></div>
+            <div><dt>服务端口</dt><dd>409</dd></div>
+        </dl>
+    </header>
+
+    <main>
+        <h2 class="luo_h2">后端接口 <span class="luo_count" id="luoApiState">连接中…</span></h2>
+
+        <div class="luo_api">
+            <span class="luo_method">GET</span>
+            <a class="luo_url" id="luoApiUrl" href="/api/knowledge" target="_blank" rel="noopener">/api/knowledge</a>
+            <span class="luo_port" id="luoPort">端口 409</span>
+            <span class="luo_api_meta" id="luoApiMeta">—</span>
+        </div>
+
+        <p class="luo_hint">
+            点这条链接会在新标签页直接看到接口返回的 JSON。端口 <b>409</b> 是本项目的 Node 服务端口，
+            数据库在 <b>3306</b>，两个数字不是一回事 —— 页面上的数据是「浏览器 → 409 的 Express → 3306 的 MySQL」这样取回来的。
+        </p>
+
+        <h2 class="luo_h2">检索知识</h2>
+        <div class="luo_search">
+            <input type="text" id="luoSearchInput" placeholder="试试点：图书馆几点关门 / 绩点怎么算 / 双选会什么时候">
+            <button type="button" class="luo_search_btn" id="luoSearchBtn">检索</button>
+            <button type="button" class="luo_search_reset" id="luoResetBtn">清空</button>
+        </div>
+        <p class="luo_search_tip" id="luoSearchTip">不填关键词就列出全部；填了就按关键词打分排序，只留命中的条目。</p>
+
+        <h2 class="luo_h2">分类 <span class="luo_count" id="luoCatHint">全部</span></h2>
+        <div class="luo_tabs" id="luoTabs"></div>
+
+        <div class="luo_kb_list" id="luoList">
+            <p class="luo_empty">正在从数据库读取…</p>
+        </div>
+
+        <div class="luo_pager" id="luoPager"></div>
+
+        <h2 class="luo_h2">接口返回的数据 <span class="luo_count" id="luoRawHint">data.list</span></h2>
+        <details class="luo_raw" id="luoRawBox">
+            <summary>展开原始 JSON 与本次执行的 SQL</summary>
+            <pre class="luo_code" id="luoRaw">—</pre>
+        </details>
+    </main>
+
+    <footer class="luo_foot">
+        罗亚博 · 学号 409 · 计算机 24004 · 2026-11-12 ·
+        <a href="index.html">返回首页</a> ·
+        <a href="chat.html">去 AI 聊天</a>
+    </footer>
+</div>
+
+<script src="js/luo_canvas.js"></script>
+<script src="js/luo_knowledge.js"></script>
+</body>
+</html>

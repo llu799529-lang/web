@@ -360,3 +360,116 @@ GET http://localhost:409/api/gallery?category=风景&page=1&pageSize=9
 响应新增 `compressed`（被压缩掉的历史条数）与 `sentCount`（实际发给模型的消息条数）。
 
 修改时间：2026-11-12 14:40
+
+---
+
+## GET /api/knowledge
+
+- 接口路径：`/api/knowledge`
+- HTTP 方法：`GET`
+- 说明：校园知识库列表，支持分类筛选、关键词检索、分页。
+
+| 参数 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `category` | string | 否 | 校园服务 / 教务 / 网络 / 生活 / 就业 / 奖助 / 实验；不传或「全部」不过滤 |
+| `q` | string | 否 | 检索关键词，命中后按匹配度降序，只返回命中的条目 |
+| `page` | number | 否 | 页码，默认 1 |
+| `pageSize` | number | 否 | 每页条数，默认 8，最大 50 |
+
+响应示例：
+
+```json
+{
+  "code": 0,
+  "msg": "ok",
+  "data": {
+    "total": 14,
+    "allTotal": 14,
+    "page": 1,
+    "pageSize": 8,
+    "totalPages": 2,
+    "category": "全部",
+    "query": "",
+    "port": 409,
+    "list": [
+      {
+        "id": 1,
+        "title": "图书馆开放时间",
+        "category": "校园服务",
+        "keywords": "图书馆,开放时间,几点,闭馆,开馆,自习",
+        "content": "图书馆周一至周日 7:30 开馆，22:00 闭馆；期末考试周（12 月 15 日至 31 日）延长至 23:00……",
+        "source": "图书馆公告",
+        "updated_at": "2026-11-05 10:30"
+      }
+    ],
+    "categories": [{ "name": "教务", "count": 4 }, { "name": "生活", "count": 4 }],
+    "sql": "SELECT id, title, ... FROM luo_knowledge ORDER BY id ASC LIMIT 8 OFFSET 0;",
+    "elapsed": 56
+  }
+}
+```
+
+`data.port` 是后端实际监听的端口（409），页面顶部的「端口 409」徽章就是读这个字段。
+
+修改时间：2026-11-12 15:00
+
+---
+
+## GET /api/knowledge/search
+
+- 接口路径：`/api/knowledge/search`
+- HTTP 方法：`GET`
+- 说明：只做检索、不分页，返回 Top 3 命中片段，方便单独验证打分逻辑。
+
+请求示例：`GET /api/knowledge/search?q=图书馆几点关门`
+
+响应示例：
+
+```json
+{
+  "code": 0,
+  "msg": "ok",
+  "data": {
+    "query": "图书馆几点关门",
+    "hitCount": 2,
+    "hits": [
+      {
+        "id": 1,
+        "title": "图书馆开放时间",
+        "category": "校园服务",
+        "score": 9.7,
+        "matched": ["图书馆", "几点", "标题匹配×2"],
+        "content": "图书馆周一至周日 7:30 开馆，22:00 闭馆……"
+      }
+    ],
+    "elapsed": 2
+  }
+}
+```
+
+修改时间：2026-11-12 15:00
+
+---
+
+## POST /api/chat（新增 knowledge 字段）
+
+请求体不变。响应 `data` 新增：
+
+```json
+{
+  "knowledge": {
+    "query": "图书馆几点关门？",
+    "injected": true,
+    "tookMs": 2,
+    "hitCount": 2,
+    "hits": [
+      { "id": 1, "title": "图书馆开放时间", "score": 9.7, "matched": ["图书馆", "几点"], "content": "……" }
+    ]
+  }
+}
+```
+
+后端会在把 messages 发给模型之前，先把命中的知识片段拼到 system 提示词末尾；
+未命中时 `injected` 为 `false`，行为与之前一致。
+
+修改时间：2026-11-12 15:00

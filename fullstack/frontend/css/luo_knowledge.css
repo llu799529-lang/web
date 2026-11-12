@@ -1,0 +1,244 @@
+/**
+ * 姓名：罗亚博 | 学号：409
+ * 建立时间：2026-11-12
+ * 大模型：DeepSeek-V4.1-Flash
+ * 功能：校园知识库页样式（卡片、关键词、匹配度、端口徽章）
+ */
+
+.luo_port {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    background: #eaf3ff;
+    border: 1px solid #c3dcff;
+    color: #1d6fe0;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: .2px;
+    white-space: nowrap;
+}
+
+.luo_port::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #1d6fe0;
+    box-shadow: 0 0 0 3px rgba(29, 111, 224, .14);
+}
+
+
+/* ---------- 分类标签（与新闻页一致） ---------- */
+
+.luo_tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.luo_tab {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 7px 13px;
+    border: 1px solid var(--luo-border);
+    border-radius: 9px;
+    background: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    color: #4a5568;
+    cursor: pointer;
+    transition: border-color 0.16s, color 0.16s, background 0.16s;
+}
+
+.luo_tab:hover {
+    border-color: #c7d2e2;
+}
+
+.luo_tab i {
+    font-style: normal;
+    font-size: 11.5px;
+    color: #a8b2c1;
+    font-variant-numeric: tabular-nums;
+}
+
+.luo_tab.on {
+    border-color: var(--luo-accent);
+    background: rgba(47, 111, 235, 0.06);
+    color: var(--luo-accent);
+}
+
+.luo_tab.on i {
+    color: rgba(47, 111, 235, 0.65);
+}
+
+/* ---------- 搜索 ---------- */
+
+.luo_search {
+    display: flex;
+    gap: 8px;
+    margin: 12px 0 8px;
+    flex-wrap: wrap;
+}
+
+.luo_search input {
+    flex: 1;
+    min-width: 260px;
+    padding: 10px 14px;
+    border: 1px solid #dde3ec;
+    border-radius: 9px;
+    background: #fff;
+    font-size: 13px;
+    color: #2b3341;
+    outline: none;
+    transition: border-color .16s, box-shadow .16s;
+}
+
+.luo_search input:focus {
+    border-color: #1d6fe0;
+    box-shadow: 0 0 0 3px rgba(29, 111, 224, .1);
+}
+
+.luo_search_btn,
+.luo_search_reset {
+    padding: 10px 18px;
+    border-radius: 9px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .16s;
+}
+
+.luo_search_btn {
+    border: 1px solid #1f2329;
+    background: #1f2329;
+    color: #fff;
+}
+
+.luo_search_btn:hover {
+    background: #000;
+}
+
+.luo_search_reset {
+    border: 1px solid #dde3ec;
+    background: #fff;
+    color: #5b6472;
+}
+
+.luo_search_reset:hover {
+    border-color: #b8c1cf;
+    color: #2b3341;
+}
+
+.luo_search_tip {
+    margin: 0 0 4px;
+    font-size: 12px;
+    color: #9aa3b2;
+}
+
+/* ---------- 知识卡片 ---------- */
+
+.luo_kb_list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.luo_kb {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 18px 15px;
+    border: 1px solid #e4e9f1;
+    border-radius: 12px;
+    background: #fff;
+    transition: border-color .16s, box-shadow .16s, transform .16s;
+}
+
+.luo_kb:hover {
+    border-color: #c3dcff;
+    box-shadow: 0 4px 16px rgba(29, 111, 224, .07);
+    transform: translateY(-1px);
+}
+
+.luo_kb_top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.luo_kb_id {
+    font-family: Consolas, monospace;
+    font-size: 11px;
+    color: #a3adbd;
+    background: #f3f5f9;
+    border-radius: 5px;
+    padding: 1px 6px;
+}
+
+.luo_kb_cat {
+    font-size: 11px;
+    color: #0b8a5c;
+    background: #e9f8f0;
+    border-radius: 5px;
+    padding: 1px 7px;
+}
+
+.luo_kb_score {
+    margin-left: auto;
+    font-size: 11px;
+    color: #c9741a;
+    background: #fff5e6;
+    border-radius: 5px;
+    padding: 1px 7px;
+    font-family: Consolas, monospace;
+}
+
+.luo_kb_title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2329;
+    margin: 0 0 7px;
+    line-height: 1.4;
+}
+
+.luo_kb_content {
+    font-size: 12.5px;
+    line-height: 1.85;
+    color: #5b6472;
+    margin: 0 0 10px;
+}
+
+.luo_kb_tags {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px dashed #eef1f6;
+}
+
+.luo_kb_tag {
+    font-size: 11px;
+    color: #7b8598;
+    background: #f6f8fb;
+    border-radius: 4px;
+    padding: 1px 6px;
+}
+
+.luo_kb_source {
+    font-size: 11px;
+    color: #a3adbd;
+    margin-left: auto;
+    white-space: nowrap;
+}
+
+@media (max-width: 820px) {
+    .luo_kb_list {
+        grid-template-columns: 1fr;
+    }
+}

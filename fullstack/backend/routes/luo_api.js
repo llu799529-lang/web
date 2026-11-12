@@ -9,6 +9,7 @@ const luoDbController = require('../controllers/luo_db_controller');
 const luoNewsController = require('../controllers/luo_news_controller');
 const luoGalleryController = require('../controllers/luo_gallery_controller');
 const luoChatController = require('../controllers/luo_chat_controller');
+const luoKnowledgeController = require('../controllers/luo_knowledge_controller');
 
 const luoRouter = express.Router();
 
@@ -36,6 +37,10 @@ luoRouter.get('/news', luoNewsController.luoListNews);
 
 /* 图片列表：分页 + 分类筛选 */
 luoRouter.get('/gallery', luoGalleryController.luoListGallery);
+
+/* 校园知识库 */
+luoRouter.get('/knowledge', luoKnowledgeController.luoListKnowledge);
+luoRouter.get('/knowledge/search', luoKnowledgeController.luoSearchApi);
 
 /* AI 聊天：会话管理 */
 luoRouter.get('/chat/sessions', luoChatController.luoListSessions);

@@ -7,6 +7,7 @@
 const https = require('https');
 const { URL } = require('url');
 const luoDb = require('../config/luo_db');
+const luoKnowledgeCtl = require('./luo_knowledge_controller');
 
 const LUO_TIMEOUT_MS = 60000;
 const LUO_KEEP_RECENT = 12;          /* 保留最近 12 条原文 */
@@ -209,6 +210,38 @@ async function luoChat(req, res) {
     /* 上下文压缩：只把最近若干条原文发给模型，更早的压成一段摘要 */
     const luoPacked = luoCompress(luoMessages);
 
+    /* 知识库检索：拿最后一条用户提问去匹配校园知识，命中就注入 system 提示词 */
+    const luoKnowledge = { query: luoLastUser.content, hits: [], injected: false, tookMs: 0 };
+
+    try {
+        const luoKbStartedAt = Date.now();
+        const [luoKbRows] = await luoDb.luoPool.query(
+            'SELECT id, title, category, keywords, content, source FROM luo_knowledge ORDER BY id ASC'
+        );
+        const luoHits = luoKnowledgeCtl.luoSearchKnowledge(luoLastUser.content, luoKbRows, 3);
+
+        if (luoHits.length) {
+            const luoKbPrompt = luoKnowledgeCtl.luoBuildKnowledgePrompt(luoHits);
+            const luoSystemIdx = luoPacked.messages.findIndex(function (m) { return m.role === 'system'; });
+
+            if (luoSystemIdx >= 0) {
+                luoPacked.messages[luoSystemIdx] = {
+                    role: 'system',
+                    content: luoPacked.messages[luoSystemIdx].content + '\n\n' + luoKbPrompt
+                };
+            } else {
+                luoPacked.messages.unshift({ role: 'system', content: luoKbPrompt });
+            }
+
+            luoKnowledge.hits = luoHits;
+            luoKnowledge.injected = true;
+        }
+
+        luoKnowledge.tookMs = Date.now() - luoKbStartedAt;
+    } catch (luoKbErr) {
+        console.error('[luo][知识库] 检索失败，按无知识库继续：', luoKbErr.message);
+    }
+
     const luoPayload = {
         model: process.env.LLM_MODEL || 'deepseek-ai/DeepSeek-V4-Flash',
         messages: luoPacked.messages,
@@ -221,6 +254,15 @@ async function luoChat(req, res) {
     console.log('  原始消息 ' + luoMessages.length + ' 条，压缩掉 ' + luoPacked.compressed + ' 条，实际发送 ' + luoPacked.messages.length + ' 条');
     luoPacked.messages.forEach(function (m, i) {
         console.log('  #' + (i + 1) + ' ' + m.role + '：' + String(m.content).slice(0, 200));
+    });
+    console.log('  知识库：' + (luoKnowledge.injected
+        ? '命中 ' + luoKnowledge.hits.length + ' 条（检索 ' + luoKnowledge.tookMs + ' ms）'
+        : '未命中（检索 ' + luoKnowledge.tookMs + ' ms）'));
+    luoKnowledge.hits.forEach(function (luoHit) {
+        console.log('    · [' + luoHit.id + '] ' + luoHit.title
+            + '　匹配度 ' + luoHit.score
+            + '　命中词 ' + luoHit.matched.join('/'));
+        console.log('      ' + String(luoHit.content).slice(0, 120));
     });
     console.log('  完整请求体：' + JSON.stringify(luoPayload));
 
@@ -288,6 +330,23 @@ async function luoChat(req, res) {
                 compressed: luoPacked.compressed,
                 sentCount: luoPacked.messages.length,
                 summary: luoPacked.summary,
+                knowledge: {
+                    query: luoKnowledge.query,
+                    injected: luoKnowledge.injected,
+                    tookMs: luoKnowledge.tookMs,
+                    hitCount: luoKnowledge.hits.length,
+                    hits: luoKnowledge.hits.map(function (luoHit) {
+                        return {
+                            id: luoHit.id,
+                            title: luoHit.title,
+                            category: luoHit.category,
+                            source: luoHit.source,
+                            score: luoHit.score,
+                            matched: luoHit.matched,
+                            content: luoHit.content
+                        };
+                    })
+                },
                 raw: luoJson
             }
         });

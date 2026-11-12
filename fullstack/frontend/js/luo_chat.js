@@ -250,6 +250,22 @@
                     console.log('  耗时 ' + d.elapsed + ' ms，压缩掉 ' + d.compressed +
                         ' 条历史，实际发送 ' + d.sentCount + ' 条', d.usage || '');
 
+                    /* ⑤ 控制台输出知识库命中情况 */
+                    var luoKb = d.knowledge;
+                    if (luoKb) {
+                        console.log('%c[luo] 知识库检索', 'color:#a855f7;font-weight:600',
+                            luoKb.injected
+                                ? ('命中 ' + luoKb.hitCount + ' 条，检索 ' + luoKb.tookMs + ' ms')
+                                : ('未命中，检索 ' + luoKb.tookMs + ' ms'));
+                        console.log('  检索词：' + luoKb.query);
+                        (luoKb.hits || []).forEach(function (luoHit, luoIdx) {
+                            console.log('  #' + (luoIdx + 1) + ' [' + luoHit.id + '] ' + luoHit.title +
+                                '　分类 ' + luoHit.category + '　匹配度 ' + luoHit.score +
+                                '　命中词 ' + (luoHit.matched || []).join('/'));
+                            console.log('      ' + String(luoHit.content).slice(0, 110));
+                        });
+                    }
+
                     luoHistory.push({ role: 'assistant', content: d.reply });
                     luoBubble('assistant', d.reply);
                     luoChatMeta.textContent = luoHistory.length + ' 条消息';

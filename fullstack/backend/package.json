@@ -2,7 +2,7 @@
   "name": "luo-fullstack-409",
   "version": "1.0.0",
   "private": true,
-  "description": "罗亚博 8409 全栈项目后端",
+  "description": "罗亚博 409 全栈项目后端",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"

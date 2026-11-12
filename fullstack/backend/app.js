@@ -1,5 +1,5 @@
 /*
- * 姓名：罗亚博 | 学号：8409
+ * 姓名：罗亚博 | 学号：409
  * 时间：2026-11-09 | 大模型：DeepSeek-V4.1-Flash
  * 功能名称：Express 服务入口（/api 接口前缀 + 跨域 + 静态托管 frontend）
  */
@@ -68,7 +68,7 @@ luoApp.use(function (err, req, res, next) {
 
 luoApp.listen(LUO_PORT, function () {
     console.log('==========================================');
-    console.log('  罗亚博 · 学号 8409 · 端口 ' + LUO_PORT);
+    console.log('  罗亚博 · 学号 409 · 端口 ' + LUO_PORT);
     console.log('  服务地址：http://localhost:' + LUO_PORT);
     console.log('  接口前缀：/api');
     console.log('  静态目录：frontend/');

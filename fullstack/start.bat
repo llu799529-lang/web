@@ -1,10 +1,10 @@
 @echo off
 chcp 65001 >nul
-title luo-fullstack-409  (Luo Yabo / ID 8409)
+title luo-fullstack-409  (Luo Yabo / ID 409)
 cd /d "%~dp0"
 
 echo ==========================================================
-echo   Luo Yabo . ID 8409 . Full Stack Project
+echo   Luo Yabo . ID 409 . Full Stack Project
 echo   Node.js + Express + MySQL + LLM
 echo ==========================================================
 echo.

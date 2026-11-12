@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!--
+    姓名：罗亚博 | 学号：8409
+    时间：2026-11-12 | 大模型：DeepSeek-V4.1-Flash
+    功能名称：AI 聊天页（调用 LLM 接口完成对话，提示词与返回数据都输出到控制台）
+-->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 聊天 · 罗亚博 8409</title>
+    <link rel="stylesheet" href="css/luo_base.css">
+    <link rel="stylesheet" href="css/luo_chat.css">
+</head>
+<body>
+<canvas id="luoCanvas" class="luo_canvas"></canvas>
+
+<div class="luo_page luo_page_chat">
+    <header class="luo_head">
+        <h1 class="luo_title">AI 聊天</h1>
+        <p class="luo_sub">
+            前端把对话发到 <code>POST /api/chat</code>，后端再带上密钥请求硅基流动的
+            <code>/v1/chat/completions</code>。<b>发送的提示词和收到的数据都会打印在浏览器控制台</b>。
+        </p>
+
+        <dl class="luo_meta">
+            <div><dt>姓名</dt><dd>罗亚博</dd></div>
+            <div><dt>学号</dt><dd>8409</dd></div>
+            <div><dt>模型</dt><dd>DeepSeek-V4-Flash</dd></div>
+            <div><dt>接口</dt><dd>/api/chat</dd></div>
+        </dl>
+    </header>
+
+    <main>
+        <div class="luo_chat">
+            <div class="luo_msgs" id="luoMsgs"></div>
+
+            <div class="luo_composer">
+                <textarea id="luoInput" rows="3" placeholder="说点什么…　Enter 发送，Shift + Enter 换行"></textarea>
+
+                <div class="luo_bar">
+                    <span class="luo_tip">按 F12 打开控制台，能看到每次请求的 <b>messages</b> 和返回的 <b>JSON</b></span>
+                    <button type="button" class="luo_btn" id="luoClearBtn">清空对话</button>
+                    <button type="button" class="luo_btn luo_btn_primary" id="luoSendBtn">发送</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="luo_foot">
+        罗亚博 · 学号 8409 · 计算机 24004 · 2026-11-12 · <a href="index.html">返回首页</a>
+    </footer>
+</div>
+
+<script src="js/luo_canvas.js"></script>
+<script src="js/luo_chat.js"></script>
+</body>
+</html>

@@ -275,3 +275,55 @@ GET http://localhost:409/api/gallery?category=风景&page=1&pageSize=9
 分类白名单改为：`风景` / `动物` / `生活` / `食物`（原「校园/建筑/活动/实验」不再接受，传旧值会返回 4001）。
 
 修改时间：2026-11-09 14:52
+
+---
+
+## POST /api/chat
+
+- 接口路径：`/api/chat`
+- HTTP 方法：`POST`
+- 说明：代理硅基流动 `https://api.siliconflow.cn/v1/chat/completions`，
+  密钥从 `backend/.env` 的 `LLM_API_KEY` 读取，**不会下发到浏览器**。
+  后端控制台会打印本次请求的完整 messages 与返回的 JSON。
+
+请求体：
+
+```json
+{
+  "messages": [
+    { "role": "system", "content": "你是一个有用的中文助手" },
+    { "role": "user", "content": "用一句话说明什么是全栈开发" }
+  ],
+  "temperature": 0.7,
+  "maxTokens": 1024
+}
+```
+
+`temperature` / `maxTokens` 可省略，默认 0.7 / 1024。
+
+成功响应：
+
+```json
+{
+  "code": 0,
+  "msg": "ok",
+  "data": {
+    "reply": "全栈开发是指一名开发者同时掌握前端与后端技术……",
+    "model": "deepseek-ai/DeepSeek-V4-Flash",
+    "usage": { "prompt_tokens": 36, "completion_tokens": 17, "total_tokens": 53 },
+    "elapsed": 6175,
+    "raw": { "id": "…", "choices": ["…"] }
+  }
+}
+```
+
+失败响应：
+
+| code | 含义 |
+|---|---|
+| 4001 | messages 为空 |
+| 4002 | 后端没有配置 `LLM_API_KEY` |
+| 5003 | LLM 返回非 2xx（401 密钥无效 / 402 余额不足 / 429 限流） |
+| 5004 | 请求超时（60 秒）或网络异常 |
+
+修改时间：2026-11-12 13:58

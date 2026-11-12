@@ -8,6 +8,7 @@ const express = require('express');
 const luoDbController = require('../controllers/luo_db_controller');
 const luoNewsController = require('../controllers/luo_news_controller');
 const luoGalleryController = require('../controllers/luo_gallery_controller');
+const luoChatController = require('../controllers/luo_chat_controller');
 
 const luoRouter = express.Router();
 
@@ -35,5 +36,8 @@ luoRouter.get('/news', luoNewsController.luoListNews);
 
 /* 图片列表：分页 + 分类筛选 */
 luoRouter.get('/gallery', luoGalleryController.luoListGallery);
+
+/* AI 聊天：代理硅基流动，密钥只在后端 */
+luoRouter.post('/chat', luoChatController.luoChat);
 
 module.exports = luoRouter;

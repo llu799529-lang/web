@@ -1,0 +1,204 @@
+/*
+ * 姓名：罗亚博 | 学号：8409
+ * 时间：2026-11-12 | 大模型：DeepSeek-V4.1-Flash
+ * 功能名称：AI 聊天页样式（对话气泡、输入区、等待动画）
+ */
+
+.luo_page_chat {
+    max-width: 860px;
+}
+
+.luo_chat {
+    display: flex;
+    flex-direction: column;
+    margin-top: 22px;
+    background: var(--luo-surface);
+    border: 1px solid var(--luo-border);
+    border-radius: var(--luo-radius);
+    box-shadow: 0 2px 12px rgba(29, 33, 41, 0.04);
+    overflow: hidden;
+}
+
+.luo_msgs {
+    flex: 1 1 auto;
+    min-height: 360px;
+    max-height: 56vh;
+    padding: 22px 22px 8px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+/* ---------- 气泡 ---------- */
+
+.luo_msg {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+}
+
+.luo_msg.luo_me {
+    flex-direction: row-reverse;
+}
+
+.luo_avatar {
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: #eef2f8;
+    color: #5b7fb4;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.3px;
+}
+
+.luo_msg.luo_me .luo_avatar {
+    background: var(--luo-accent);
+    color: #fff;
+}
+
+.luo_bubble {
+    max-width: 78%;
+    padding: 11px 15px;
+    border-radius: 12px;
+    background: #f5f7fb;
+    font-size: 14px;
+    line-height: 1.75;
+    color: #1d2129;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.luo_msg.luo_me .luo_bubble {
+    background: var(--luo-accent);
+    color: #fff;
+}
+
+.luo_msg.luo_err .luo_bubble {
+    background: rgba(192, 57, 43, 0.06);
+    border: 1px solid rgba(192, 57, 43, 0.22);
+    color: #a5352a;
+}
+
+.luo_time {
+    margin-top: 5px;
+    font-size: 11px;
+    color: #a8b2c1;
+    font-variant-numeric: tabular-nums;
+}
+
+.luo_msg.luo_me .luo_time {
+    color: rgba(255, 255, 255, 0.72);
+    text-align: right;
+}
+
+/* ---------- 等待动画 ---------- */
+
+.luo_typing {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    height: 20px;
+}
+
+.luo_typing i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #b6c0cf;
+    animation: luoBlink 1.2s infinite ease-in-out;
+}
+
+.luo_typing i:nth-child(2) { animation-delay: 0.18s; }
+.luo_typing i:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes luoBlink {
+    0%, 80%, 100% { opacity: 0.3; transform: translateY(0); }
+    40% { opacity: 1; transform: translateY(-3px); }
+}
+
+/* ---------- 输入区 ---------- */
+
+.luo_composer {
+    border-top: 1px solid var(--luo-border);
+    padding: 14px 18px 16px;
+    background: #fbfcfe;
+}
+
+.luo_composer textarea {
+    width: 100%;
+    min-height: 74px;
+    max-height: 180px;
+    padding: 11px 13px;
+    border: 1px solid var(--luo-border);
+    border-radius: 11px;
+    background: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--luo-text);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.16s;
+}
+
+.luo_composer textarea:focus {
+    border-color: var(--luo-accent);
+}
+
+.luo_bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 11px;
+}
+
+.luo_tip {
+    flex: 1 1 auto;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #9aa3b2;
+}
+
+.luo_tip b {
+    font-weight: 600;
+    color: #6b7484;
+}
+
+.luo_foot a {
+    color: var(--luo-accent);
+    text-decoration: none;
+}
+
+.luo_foot a:hover {
+    text-decoration: underline;
+}
+
+.luo_hint code,
+.luo_sub code {
+    padding: 1px 5px;
+    border-radius: 5px;
+    background: #eef2f8;
+    font-family: Consolas, "SF Mono", monospace;
+    font-size: 12px;
+    color: #4a5568;
+}
+
+@media (max-width: 620px) {
+    .luo_msgs {
+        min-height: 300px;
+        padding: 16px 14px 6px;
+    }
+
+    .luo_tip {
+        display: none;
+    }
+
+    .luo_bar {
+        justify-content: flex-end;
+    }
+}

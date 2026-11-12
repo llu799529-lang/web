@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
     姓名：罗亚博 | 学号：8409
-    时间：2026-11-09 | 大模型：DeepSeek-V4.1-Flash
+    时间：2026-11-12 | 大模型：DeepSeek-V4.1-Flash
     功能名称：项目首页（项目信息 + 全部页面导航，canvas 粒子背景）
 -->
 <html lang="zh-CN">
@@ -15,105 +15,82 @@
 <body>
 <canvas id="luoCanvas" class="luo_canvas"></canvas>
 
-<div class="luo_page">
-    <header class="luo_head">
-        <h1 class="luo_title">全栈项目</h1>
-        <p class="luo_sub">原生 HTML / CSS / JS + Node.js + Express + MySQL，页面与接口都跑在本机 409 端口</p>
+<div class="luo_page luo_home">
+    <header class="luo_hero">
+        <p class="luo_eyebrow">高级网页设计 I · 全栈项目</p>
+        <h1 class="luo_hero_title">全栈项目</h1>
+        <p class="luo_hero_sub">
+            原生 HTML / CSS / JavaScript + Node.js + Express + MySQL + LLM，
+            页面与接口都跑在本机 <b>409</b> 端口。
+        </p>
 
-        <dl class="luo_meta">
-            <div><dt>姓名</dt><dd>罗亚博</dd></div>
-            <div><dt>学号</dt><dd>8409</dd></div>
-            <div><dt>项目类别</dt><dd>自选</dd></div>
-            <div><dt>运行端口</dt><dd>409</dd></div>
-        </dl>
+        <ul class="luo_chips">
+            <li><span>姓名</span><b>罗亚博</b></li>
+            <li><span>学号</span><b>8409</b></li>
+            <li><span>项目类别</span><b>自选</b></li>
+            <li><span>运行端口</span><b>409</b></li>
+        </ul>
     </header>
 
     <main>
-        <h2 class="luo_h2">页面导航 <span class="luo_count" id="luoCount">共 5 个页面</span></h2>
-        <p class="luo_hint">点任意一行进入对应页面。后续每新增一个 HTML 页面，都会在这里追加一行入口。</p>
+        <div class="luo_section_head">
+            <h2>页面</h2>
+            <span id="luoCount">共 5 个</span>
+        </div>
 
-        <ul class="luo_nav" id="luoNav">
-            <li>
-                <a href="index.html">
-                    <span class="luo_no">01</span>
-                    <span class="luo_text">
-                        <span class="luo_name">项目首页</span>
-                        <span class="luo_desc">项目基本信息与本页导航</span>
-                    </span>
-                    <span class="luo_tag">HTML</span>
-                    <span class="luo_arrow">→</span>
-                </a>
-            </li>
-            <li>
-                <a href="news.html">
-                    <span class="luo_no">02</span>
-                    <span class="luo_text">
-                        <span class="luo_name">新闻列表</span>
-                        <span class="luo_desc">数据存在 MySQL 的 luo_news 表，页面显示接口链接与返回的 JSON</span>
-                    </span>
-                    <span class="luo_tag">MySQL</span>
-                    <span class="luo_arrow">→</span>
-                </a>
-            </li>
-            <li>
-                <a href="gallery.html">
-                    <span class="luo_no">03</span>
-                    <span class="luo_text">
-                        <span class="luo_name">图片列表</span>
-                        <span class="luo_desc">12 张本地封面存在 luo_gallery 表，三列网格，点开可看大图</span>
-                    </span>
-                    <span class="luo_tag">MySQL</span>
-                    <span class="luo_arrow">→</span>
-                </a>
-            </li>
-            <li>
-                <a href="chat.html">
-                    <span class="luo_no">04</span>
-                    <span class="luo_text">
-                        <span class="luo_name">AI 聊天</span>
-                        <span class="luo_desc">调用 LLM 接口完成对话，提示词与返回数据都打印在浏览器控制台</span>
-                    </span>
-                    <span class="luo_tag">LLM</span>
-                    <span class="luo_arrow">→</span>
-                </a>
-            </li>
-            <li>
-                <a href="database.html">
-                    <span class="luo_no">04</span>
-                    <span class="luo_text">
-                        <span class="luo_name">数据库连接测试</span>
-                        <span class="luo_desc">输入用户名密码验证 MySQL 连接，成功与失败都有提示</span>
-                    </span>
-                    <span class="luo_tag">MySQL</span>
-                    <span class="luo_arrow">→</span>
-                </a>
-            </li>
-        </ul>
+        <div class="luo_cards" id="luoNav">
+            <a class="luo_card" href="news.html">
+                <span class="luo_card_no">01</span>
+                <h3>新闻列表</h3>
+                <p>新闻存在 MySQL 的 luo_news 表，页面显示接口地址与返回的 JSON</p>
+                <span class="luo_card_meta">MySQL · /api/news</span>
+                <span class="luo_card_go">打开</span>
+            </a>
 
-        <h2 class="luo_h2">运行状态 <span class="luo_count" id="luoStatusHint">检测中…</span></h2>
+            <a class="luo_card" href="gallery.html">
+                <span class="luo_card_no">02</span>
+                <h3>图片列表</h3>
+                <p>12 张真实照片存在 luo_gallery 表，三列网格，点开可看大图</p>
+                <span class="luo_card_meta">MySQL · /api/gallery</span>
+                <span class="luo_card_go">打开</span>
+            </a>
 
-        <dl class="luo_rows">
-            <div class="luo_row">
-                <dt>后端服务</dt>
-                <dd><i class="luo_dot" id="luoDotApi"></i><span id="luoApiText">检测中…</span></dd>
-            </div>
-            <div class="luo_row">
-                <dt>数据库</dt>
-                <dd><i class="luo_dot" id="luoDotDb"></i><span id="luoDbText">检测中…</span></dd>
-            </div>
-            <div class="luo_row">
-                <dt>静态目录</dt>
-                <dd>frontend/ 由 express.static 托管</dd>
-            </div>
-            <div class="luo_row">
-                <dt>接口前缀</dt>
-                <dd>/api　（统一返回 code / msg / data）</dd>
-            </div>
-        </dl>
+            <a class="luo_card" href="chat.html">
+                <span class="luo_card_no">03</span>
+                <h3>AI 聊天</h3>
+                <p>多轮会话存入数据库，早期对话自动压缩，提示词与返回都打印在控制台</p>
+                <span class="luo_card_meta">LLM · /api/chat</span>
+                <span class="luo_card_go">打开</span>
+            </a>
+
+            <a class="luo_card" href="database.html">
+                <span class="luo_card_no">04</span>
+                <h3>数据库连接测试</h3>
+                <p>输入账号密码真实连一次 MySQL，成功与失败都有明确提示</p>
+                <span class="luo_card_meta">MySQL · /api/db/test</span>
+                <span class="luo_card_go">打开</span>
+            </a>
+
+            <a class="luo_card luo_card_self" href="index.html">
+                <span class="luo_card_no">00</span>
+                <h3>项目首页</h3>
+                <p>你现在看到的这一页：项目信息、页面导航与运行状态</p>
+                <span class="luo_card_meta">HTML · canvas 背景</span>
+                <span class="luo_card_go">打开</span>
+            </a>
+        </div>
+
+        <div class="luo_status">
+            <span class="luo_status_item"><i class="luo_dot" id="luoDotApi"></i>后端 <b id="luoApiText">检测中…</b></span>
+            <span class="luo_status_sep"></span>
+            <span class="luo_status_item"><i class="luo_dot" id="luoDotDb"></i>数据库 <b id="luoDbText">检测中…</b></span>
+            <span class="luo_status_sep"></span>
+            <span class="luo_status_item">接口前缀 <b>/api</b></span>
+        </div>
     </main>
 
     <footer class="luo_foot">
-        罗亚博 · 学号 8409 · 计算机 24004 · 2026-11-09
+        罗亚博 · 学号 8409 · 计算机 24004 · 2026-11-12
     </footer>
 </div>
 

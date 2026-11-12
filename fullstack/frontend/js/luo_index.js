@@ -7,20 +7,13 @@
 (function () {
     'use strict';
 
-    /* 导航条目自动编号与计数，新增页面时只改 HTML 里的 li 即可 */
+    /* 页面卡片计数；新增页面时只在 HTML 里加一张 .luo_card */
     var luoNav = document.getElementById('luoNav');
     var luoCount = document.getElementById('luoCount');
 
     if (luoNav && luoCount) {
-        var luoItems = luoNav.querySelectorAll('li');
-        luoCount.textContent = '共 ' + luoItems.length + ' 个页面';
-
-        Array.prototype.forEach.call(luoItems, function (li, index) {
-            var luoNo = li.querySelector('.luo_no');
-            if (luoNo) {
-                luoNo.textContent = String(index + 1).padStart(2, '0');
-            }
-        });
+        var luoCards = luoNav.querySelectorAll('.luo_card');
+        luoCount.textContent = '共 ' + luoCards.length + ' 个';
     }
 
     /* 运行状态：后端是否在跑、数据库是否连得上 */

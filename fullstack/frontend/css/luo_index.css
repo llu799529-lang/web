@@ -1,128 +1,216 @@
 /*
  * 姓名：罗亚博 | 学号：8409
- * 时间：2026-11-09 | 大模型：DeepSeek-V4.1-Flash
- * 功能名称：项目首页样式（页面导航列表）
+ * 时间：2026-11-12 | 大模型：DeepSeek-V4.1-Flash
+ * 功能名称：项目首页样式（Hero 信息区 + 页面卡片 + 运行状态）
  */
 
-.luo_nav {
-    margin-top: 14px;
-    list-style: none;
-    background: var(--luo-surface);
-    border: 1px solid var(--luo-border);
-    border-radius: var(--luo-radius);
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(29, 33, 41, 0.03);
+.luo_home {
+    max-width: 980px;
 }
 
-.luo_nav li + li {
-    border-top: 1px solid var(--luo-border);
+/* ---------- Hero ---------- */
+
+.luo_hero {
+    padding: 8px 0 34px;
 }
 
-.luo_nav a {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    padding: 18px 24px;
-    text-decoration: none;
-    color: inherit;
-    transition: background 0.16s;
-}
-
-.luo_nav a:hover {
-    background: #f8fafd;
-}
-
-.luo_no {
-    flex: 0 0 auto;
-    width: 26px;
-    font-family: Consolas, "SF Mono", monospace;
+.luo_eyebrow {
     font-size: 12px;
-    color: #b6c0cf;
-    letter-spacing: 0.5px;
+    letter-spacing: 1.4px;
+    color: #7c8aa0;
 }
 
-.luo_text {
-    flex: 1 1 auto;
-    min-width: 0;
+.luo_hero_title {
+    margin-top: 14px;
+    font-size: 46px;
+    font-weight: 600;
+    letter-spacing: -1.2px;
+    line-height: 1.15;
+    color: #16191f;
+}
+
+.luo_hero_sub {
+    max-width: 580px;
+    margin-top: 14px;
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: #6b7484;
+}
+
+.luo_hero_sub b {
+    color: #2f6feb;
+    font-weight: 600;
+}
+
+.luo_chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-top: 24px;
+    list-style: none;
+}
+
+.luo_chips li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid var(--luo-border);
+    border-radius: 10px;
+    backdrop-filter: blur(6px);
+}
+
+.luo_chips span {
+    font-size: 11.5px;
+    color: #9aa3b2;
+}
+
+.luo_chips b {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #1d2129;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 区块标题 ---------- */
+
+.luo_section_head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--luo-border);
+}
+
+.luo_section_head h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2b3341;
+}
+
+.luo_section_head span {
+    font-size: 12px;
+    color: #9aa3b2;
+}
+
+/* ---------- 卡片 ---------- */
+
+.luo_cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 16px;
+}
+
+.luo_card {
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 3px;
-}
-
-.luo_name {
-    font-size: 15px;
-    font-weight: 500;
-}
-
-.luo_desc {
-    font-size: 12.5px;
-    color: var(--luo-muted);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.luo_tag {
-    flex: 0 0 auto;
-    padding: 2px 8px;
+    padding: 20px 20px 18px;
+    background: #fff;
     border: 1px solid var(--luo-border);
-    border-radius: 6px;
-    font-size: 11px;
-    color: #93a0b1;
-    letter-spacing: 0.3px;
+    border-radius: 14px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.luo_arrow {
-    flex: 0 0 auto;
-    width: 18px;
-    text-align: right;
-    color: #c2cbd8;
-    transition: transform 0.18s, color 0.18s;
+.luo_card:hover {
+    transform: translateY(-3px);
+    border-color: #cdd9ea;
+    box-shadow: 0 12px 28px rgba(29, 33, 41, 0.08);
 }
 
-.luo_nav a:hover .luo_arrow {
-    transform: translateX(3px);
+.luo_card_no {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    font-family: Consolas, "SF Mono", monospace;
+    font-size: 12px;
+    color: #c3ccd9;
+}
+
+.luo_card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d2129;
+    padding-right: 34px;
+    transition: color 0.18s;
+}
+
+.luo_card:hover h3 {
     color: var(--luo-accent);
 }
 
-.luo_nav a:hover .luo_name {
+.luo_card p {
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 1.75;
+    color: #6b7484;
+    flex: 1 1 auto;
+}
+
+.luo_card_meta {
+    margin-top: 14px;
+    font-family: Consolas, "SF Mono", monospace;
+    font-size: 11.5px;
+    color: #a8b2c1;
+}
+
+.luo_card_go {
+    position: absolute;
+    right: 18px;
+    bottom: 16px;
+    font-size: 12.5px;
     color: var(--luo-accent);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.luo_card:hover .luo_card_go {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.luo_card_self {
+    grid-column: 1 / -1;
+    background: #fbfcfe;
+    border-style: dashed;
 }
 
 /* ---------- 运行状态 ---------- */
 
-.luo_rows {
-    margin-top: 14px;
-    padding: 6px 24px;
-    background: var(--luo-surface);
+.luo_status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-top: 18px;
+    padding: 13px 18px;
+    background: rgba(255, 255, 255, 0.72);
     border: 1px solid var(--luo-border);
-    border-radius: var(--luo-radius);
-    box-shadow: 0 2px 10px rgba(29, 33, 41, 0.03);
-}
-
-.luo_row {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 13px 0;
-    font-size: 13.5px;
-}
-
-.luo_row + .luo_row {
-    border-top: 1px solid #f0f3f8;
-}
-
-.luo_row dt {
-    flex: 0 0 96px;
+    border-radius: 12px;
     font-size: 12.5px;
-    color: var(--luo-muted);
+    color: #6b7484;
 }
 
-.luo_row dd {
-    display: flex;
+.luo_status_item {
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    color: #3d4653;
+    gap: 7px;
+}
+
+.luo_status_item b {
+    font-weight: 500;
+    color: #2b3341;
+}
+
+.luo_status_sep {
+    width: 1px;
+    height: 12px;
+    background: #e2e7f0;
 }
 
 .luo_dot {
@@ -143,17 +231,16 @@
     box-shadow: 0 0 0 3px rgba(208, 80, 63, 0.14);
 }
 
-@media (max-width: 620px) {
-    .luo_nav a {
-        gap: 12px;
-        padding: 16px 16px;
+@media (max-width: 720px) {
+    .luo_hero_title {
+        font-size: 34px;
     }
 
-    .luo_tag {
+    .luo_cards {
+        grid-template-columns: 1fr;
+    }
+
+    .luo_status_sep {
         display: none;
-    }
-
-    .luo_desc {
-        white-space: normal;
     }
 }

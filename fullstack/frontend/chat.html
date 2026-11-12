@@ -2,7 +2,7 @@
 <!--
     姓名：罗亚博 | 学号：8409
     时间：2026-11-12 | 大模型：DeepSeek-V4.1-Flash
-    功能名称：AI 聊天页（调用 LLM 接口完成对话，提示词与返回数据都输出到控制台）
+    功能名称：AI 聊天页（多轮会话、历史落库、上下文压缩，提示词与返回数据输出到控制台）
 -->
 <html lang="zh-CN">
 <head>
@@ -19,8 +19,8 @@
     <header class="luo_head">
         <h1 class="luo_title">AI 聊天</h1>
         <p class="luo_sub">
-            前端把对话发到 <code>POST /api/chat</code>，后端再带上密钥请求硅基流动的
-            <code>/v1/chat/completions</code>。<b>发送的提示词和收到的数据都会打印在浏览器控制台</b>。
+            多轮对话，消息存 MySQL，超出 12 条后自动把早期对话压成摘要。
+            前端只调 <code>POST /api/chat</code>，密钥留在后端。
         </p>
 
         <dl class="luo_meta">
@@ -32,18 +32,34 @@
     </header>
 
     <main>
-        <div class="luo_chat">
-            <div class="luo_msgs" id="luoMsgs"></div>
-
-            <div class="luo_composer">
-                <textarea id="luoInput" rows="3" placeholder="说点什么…　Enter 发送，Shift + Enter 换行"></textarea>
-
-                <div class="luo_bar">
-                    <span class="luo_tip">按 F12 打开控制台，能看到每次请求的 <b>messages</b> 和返回的 <b>JSON</b></span>
-                    <button type="button" class="luo_btn" id="luoClearBtn">清空对话</button>
-                    <button type="button" class="luo_btn luo_btn_primary" id="luoSendBtn">发送</button>
+        <div class="luo_app">
+            <aside class="luo_side">
+                <div class="luo_side_head">
+                    <span>会话</span>
+                    <button type="button" class="luo_mini" id="luoNewBtn">新建</button>
                 </div>
-            </div>
+                <div class="luo_sessions" id="luoSessions">
+                    <p class="luo_side_empty">加载中…</p>
+                </div>
+            </aside>
+
+            <section class="luo_main">
+                <div class="luo_main_head">
+                    <b id="luoChatTitle">正在加载会话…</b>
+                    <span id="luoChatMeta"></span>
+                </div>
+
+                <div class="luo_msgs" id="luoMsgs"></div>
+
+                <div class="luo_composer">
+                    <textarea id="luoInput" rows="2" placeholder="Enter 发送，Shift + Enter 换行"></textarea>
+                    <div class="luo_bar">
+                        <span class="luo_tip">F12 控制台可看到发给模型的 messages 与返回的 JSON</span>
+                        <button type="button" class="luo_btn" id="luoStopBtn" hidden>停止</button>
+                        <button type="button" class="luo_btn luo_btn_primary" id="luoSendBtn">发送</button>
+                    </div>
+                </div>
+            </section>
         </div>
     </main>
 

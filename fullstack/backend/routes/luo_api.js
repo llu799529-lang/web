@@ -37,6 +37,13 @@ luoRouter.get('/news', luoNewsController.luoListNews);
 /* 图片列表：分页 + 分类筛选 */
 luoRouter.get('/gallery', luoGalleryController.luoListGallery);
 
+/* AI 聊天：会话管理 */
+luoRouter.get('/chat/sessions', luoChatController.luoListSessions);
+luoRouter.post('/chat/sessions', luoChatController.luoCreateSession);
+luoRouter.patch('/chat/sessions/:id', luoChatController.luoRenameSession);
+luoRouter.delete('/chat/sessions/:id', luoChatController.luoDeleteSession);
+luoRouter.get('/chat/sessions/:id/messages', luoChatController.luoListMessages);
+
 /* AI 聊天：代理硅基流动，密钥只在后端 */
 luoRouter.post('/chat', luoChatController.luoChat);
 
